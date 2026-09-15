@@ -4,6 +4,14 @@ function toggleCard(cardId) {
     const card = document.getElementById(cardId);
     if (card) {
         card.classList.toggle('expanded');
+        if (card.classList.contains('expanded')) {
+            const n = cardId.split('-')[1];
+            if (visualizations[n] && visualizations[n].resize) {
+                setTimeout(() => {
+                    visualizations[n].resize();
+                }, 50);
+            }
+        }
     }
 }
 
@@ -28,7 +36,7 @@ function vizAuto(n) {
         } else {
             visualizations[n].autoTimer = setInterval(() => {
                 visualizations[n].step();
-            }, 800);
+            }, 1500);
         }
     }
 }
