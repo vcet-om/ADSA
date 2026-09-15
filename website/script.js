@@ -1226,167 +1226,862 @@ visualizations[11] = {
 };
 
 
+
 // ==========================================
-// Module 4: Basic Experiments (12 to 23)
+// Module 4: Basic Experiments (12 to 23) Graphical GUIs
 // ==========================================
 
-function createTextViz(id, steps) {
-    return {
-        stepIdx: 0,
-        autoTimer: null,
-        init: function() {
-            const container = document.getElementById('viz-' + id);
-            if (container) {
-                container.innerHTML = '<div id="v' + id + '-content" style="font-family: var(--font-mono); padding: 15px; background: #161b22; border-radius: 5px; border: 1px solid #30363d; min-height: 100px;"></div>';
-                this.reset();
+// --- E12: Merge Sort (DOM Array) ---
+visualizations[12] = {
+    states: [
+        [[12, 11, 13, 5, 6, 7]],
+        [[12, 11, 13], [5, 6, 7]],
+        [[12], [11, 13], [5], [6, 7]],
+        [[12], [11], [13], [5], [6], [7]],
+        [[12], [11, 13], [5], [6, 7]],
+        [[11, 12, 13], [5, 6, 7]],
+        [[5, 6, 7, 11, 12, 13]]
+    ],
+    stepIdx: 0,
+    autoTimer: null,
+    init: function() { this.reset(); },
+    reset: function() {
+        this.stepIdx = 0;
+        document.getElementById('status-12').textContent = "Ready.";
+        this.render();
+    },
+    step: function() {
+        if (this.stepIdx < this.states.length - 1) {
+            this.stepIdx++;
+            document.getElementById('status-12').textContent = `Step ${this.stepIdx}`;
+            this.render();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-12').textContent = "Merge Sort Complete!";
+        }
+    },
+    render: function() {
+        const c = document.getElementById('viz-12');
+        if (!c) return;
+        c.innerHTML = '<div style="display:flex; flex-direction:column; align-items:center; gap:20px; padding:20px 0;"></div>';
+        const wrapper = c.firstChild;
+        const currentLevel = this.states[this.stepIdx];
+        
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.gap = '30px';
+        
+        currentLevel.forEach(arr => {
+            const arrDiv = document.createElement('div');
+            arrDiv.style.display = 'flex';
+            arrDiv.style.gap = '5px';
+            arrDiv.style.padding = '10px';
+            arrDiv.style.background = '#161b22';
+            arrDiv.style.border = '2px solid #30363d';
+            arrDiv.style.borderRadius = '5px';
+            
+            arr.forEach(val => {
+                const box = document.createElement('div');
+                box.textContent = val;
+                box.style.width = '40px';
+                box.style.height = '40px';
+                box.style.display = 'flex';
+                box.style.alignItems = 'center';
+                box.style.justifyContent = 'center';
+                box.style.background = '#00d4aa';
+                box.style.color = '#0d1117';
+                box.style.fontWeight = 'bold';
+                box.style.borderRadius = '3px';
+                arrDiv.appendChild(box);
+            });
+            row.appendChild(arrDiv);
+        });
+        wrapper.appendChild(row);
+    }
+};
+
+// --- E13: Hash Table (DOM Grid) ---
+visualizations[13] = {
+    steps: [
+        { key: 15, idx: 1 },
+        { key: 11, idx: 4 },
+        { key: 27, idx: 6 },
+        { key: 8,  idx: 1 },
+        { key: 12, idx: 5 },
+        { key: 21, idx: 0 },
+        { key: 14, idx: 0 }
+    ],
+    table: [[], [], [], [], [], [], []],
+    stepIdx: 0,
+    autoTimer: null,
+    init: function() { this.reset(); },
+    reset: function() {
+        this.stepIdx = 0;
+        this.table = [[], [], [], [], [], [], []];
+        document.getElementById('status-13').textContent = "Ready.";
+        this.render();
+    },
+    step: function() {
+        if (this.stepIdx < this.steps.length) {
+            const s = this.steps[this.stepIdx];
+            this.table[s.idx].push(s.key);
+            document.getElementById('status-13').textContent = `Inserted ${s.key} into Bucket ${s.idx} (${s.key} % 7 = ${s.idx})`;
+            this.stepIdx++;
+            this.render();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-13').textContent = "Complete.";
+        }
+    },
+    render: function() {
+        const c = document.getElementById('viz-13');
+        if (!c) return;
+        c.innerHTML = '<div style="display:flex; flex-direction:column; gap:10px; width:80%; margin:0 auto; padding:20px 0;"></div>';
+        const wrapper = c.firstChild;
+        
+        for (let i = 0; i < 7; i++) {
+            const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.alignItems = 'center';
+            row.style.gap = '15px';
+            
+            const bucket = document.createElement('div');
+            bucket.textContent = `Bucket ${i}`;
+            bucket.style.width = '100px';
+            bucket.style.padding = '10px';
+            bucket.style.background = '#21262d';
+            bucket.style.border = '1px solid #30363d';
+            bucket.style.textAlign = 'center';
+            bucket.style.borderRadius = '5px';
+            row.appendChild(bucket);
+            
+            this.table[i].forEach(val => {
+                const node = document.createElement('div');
+                node.textContent = val;
+                node.style.padding = '10px 20px';
+                node.style.background = '#00d4aa';
+                node.style.color = '#0d1117';
+                node.style.fontWeight = 'bold';
+                node.style.borderRadius = '20px';
+                
+                const arrow = document.createElement('div');
+                arrow.innerHTML = '&#8594;';
+                arrow.style.color = '#8b949e';
+                
+                row.appendChild(arrow);
+                row.appendChild(node);
+            });
+            wrapper.appendChild(row);
+        }
+    }
+};
+
+// --- E14: Binary Tree Traversals (Canvas) ---
+visualizations[14] = {
+    nodes: [
+        { id: 1, x: 0.5, y: 0.2 },
+        { id: 2, x: 0.3, y: 0.5 },
+        { id: 3, x: 0.7, y: 0.5 },
+        { id: 4, x: 0.15, y: 0.8 },
+        { id: 5, x: 0.45, y: 0.8 }
+    ],
+    edges: [[1,2], [1,3], [2,4], [2,5]],
+    order: [1, 2, 4, 5, 3], // Pre-order
+    stepIdx: 0,
+    visited: [],
+    canvas: null,
+    ctx: null,
+    autoTimer: null,
+    init: function() {
+        const c = document.getElementById('viz-14');
+        if (!c) return;
+        c.innerHTML = '<canvas id="canvas-14"></canvas>';
+        this.canvas = document.getElementById('canvas-14');
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+        this.reset();
+    },
+    resize: function() {
+        const c = document.getElementById('viz-14');
+        this.canvas.width = c.clientWidth;
+        this.canvas.height = c.clientHeight || 300;
+        this.draw();
+    },
+    reset: function() {
+        this.stepIdx = 0;
+        this.visited = [];
+        document.getElementById('status-14').textContent = "Ready. (Showing Pre-Order)";
+        this.draw();
+    },
+    step: function() {
+        if (this.stepIdx < this.order.length) {
+            this.visited.push(this.order[this.stepIdx]);
+            document.getElementById('status-14').textContent = `Visited: ${this.visited.join(', ')}`;
+            this.stepIdx++;
+            this.draw();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-14').textContent = "Traversal Complete: " + this.visited.join(', ');
+        }
+    },
+    draw: function() {
+        if (!this.ctx) return;
+        const w = this.canvas.width;
+        const h = this.canvas.height;
+        this.ctx.clearRect(0, 0, w, h);
+        const getPos = (id) => { const n = this.nodes.find(x => x.id === id); return { x: n.x * w, y: n.y * h }; };
+        
+        this.ctx.strokeStyle = '#30363d';
+        this.ctx.lineWidth = 2;
+        this.edges.forEach(e => {
+            const p1 = getPos(e[0]), p2 = getPos(e[1]);
+            this.ctx.beginPath(); this.ctx.moveTo(p1.x, p1.y); this.ctx.lineTo(p2.x, p2.y); this.ctx.stroke();
+        });
+        
+        this.nodes.forEach(n => {
+            const p = getPos(n.id);
+            this.ctx.beginPath(); this.ctx.arc(p.x, p.y, 20, 0, 2*Math.PI);
+            this.ctx.fillStyle = this.visited.includes(n.id) ? '#00d4aa' : '#21262d';
+            this.ctx.fill(); this.ctx.stroke();
+            this.ctx.fillStyle = this.visited.includes(n.id) ? '#0d1117' : '#c9d1d9';
+            this.ctx.font = '16px sans-serif'; this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(n.id, p.x, p.y);
+        });
+    }
+};
+
+// --- E15: BT Search (Canvas) ---
+visualizations[15] = {
+    nodes: [
+        { id: 10, x: 0.5, y: 0.2 }, { id: 20, x: 0.3, y: 0.5 }, { id: 30, x: 0.7, y: 0.5 },
+        { id: 40, x: 0.15, y: 0.8 }, { id: 50, x: 0.45, y: 0.8 }
+    ],
+    edges: [[10,20], [10,30], [20,40], [20,50]],
+    order: [10, 20, 40, 50, 30], // Search path for 30
+    stepIdx: 0,
+    current: null,
+    canvas: null,
+    ctx: null,
+    autoTimer: null,
+    init: function() {
+        const c = document.getElementById('viz-15');
+        if (!c) return;
+        c.innerHTML = '<canvas id="canvas-15"></canvas>';
+        this.canvas = document.getElementById('canvas-15');
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+        this.reset();
+    },
+    resize: function() {
+        const c = document.getElementById('viz-15');
+        this.canvas.width = c.clientWidth;
+        this.canvas.height = c.clientHeight || 300;
+        this.draw();
+    },
+    reset: function() {
+        this.stepIdx = 0;
+        this.current = null;
+        document.getElementById('status-15').textContent = "Ready. Searching for 30.";
+        this.draw();
+    },
+    step: function() {
+        if (this.stepIdx < this.order.length) {
+            this.current = this.order[this.stepIdx];
+            let msg = `Checking ${this.current}...`;
+            if (this.current === 30) msg = "Found 30!";
+            document.getElementById('status-15').textContent = msg;
+            this.stepIdx++;
+            this.draw();
+            if (this.current === 30 && this.autoTimer) clearInterval(this.autoTimer);
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+        }
+    },
+    draw: function() {
+        if (!this.ctx) return;
+        const w = this.canvas.width, h = this.canvas.height;
+        this.ctx.clearRect(0, 0, w, h);
+        const getPos = (id) => { const n = this.nodes.find(x => x.id === id); return { x: n.x * w, y: n.y * h }; };
+        
+        this.ctx.strokeStyle = '#30363d';
+        this.ctx.lineWidth = 2;
+        this.edges.forEach(e => {
+            const p1 = getPos(e[0]), p2 = getPos(e[1]);
+            this.ctx.beginPath(); this.ctx.moveTo(p1.x, p1.y); this.ctx.lineTo(p2.x, p2.y); this.ctx.stroke();
+        });
+        
+        this.nodes.forEach(n => {
+            const p = getPos(n.id);
+            this.ctx.beginPath(); this.ctx.arc(p.x, p.y, 20, 0, 2*Math.PI);
+            this.ctx.fillStyle = (this.current === n.id) ? (n.id === 30 ? '#2ea043' : '#d29922') : '#21262d';
+            this.ctx.fill(); this.ctx.stroke();
+            this.ctx.fillStyle = (this.current === n.id) ? '#0d1117' : '#c9d1d9';
+            this.ctx.font = '16px sans-serif'; this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(n.id, p.x, p.y);
+        });
+    }
+};
+
+// --- E16: BFS (Canvas) ---
+visualizations[16] = {
+    nodes: [
+        { id: 0, x: 0.2, y: 0.5 }, { id: 1, x: 0.5, y: 0.2 }, { id: 2, x: 0.5, y: 0.8 }, { id: 3, x: 0.8, y: 0.5 }
+    ],
+    edges: [[0,1], [0,2], [1,2], [2,0], [2,3], [3,3]],
+    order: [2, 0, 3, 1], // Starting from 2
+    stepIdx: 0,
+    visited: [],
+    canvas: null,
+    ctx: null,
+    autoTimer: null,
+    init: function() {
+        const c = document.getElementById('viz-16');
+        if (!c) return;
+        c.innerHTML = '<canvas id="canvas-16"></canvas>';
+        this.canvas = document.getElementById('canvas-16');
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+        this.reset();
+    },
+    resize: function() {
+        const c = document.getElementById('viz-16');
+        this.canvas.width = c.clientWidth;
+        this.canvas.height = c.clientHeight || 300;
+        this.draw();
+    },
+    reset: function() {
+        this.stepIdx = 0;
+        this.visited = [];
+        document.getElementById('status-16').textContent = "Ready. Start BFS from Vertex 2.";
+        this.draw();
+    },
+    step: function() {
+        if (this.stepIdx < this.order.length) {
+            this.visited.push(this.order[this.stepIdx]);
+            document.getElementById('status-16').textContent = `Visited: ${this.visited.join(', ')}`;
+            this.stepIdx++;
+            this.draw();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-16').textContent = "BFS Complete.";
+        }
+    },
+    draw: function() {
+        if (!this.ctx) return;
+        const w = this.canvas.width, h = this.canvas.height;
+        this.ctx.clearRect(0, 0, w, h);
+        const getPos = (id) => { const n = this.nodes.find(x => x.id === id); return { x: n.x * w, y: n.y * h }; };
+        
+        this.ctx.strokeStyle = '#30363d';
+        this.ctx.lineWidth = 2;
+        this.edges.forEach(e => {
+            const p1 = getPos(e[0]), p2 = getPos(e[1]);
+            this.ctx.beginPath(); this.ctx.moveTo(p1.x, p1.y); this.ctx.lineTo(p2.x, p2.y); this.ctx.stroke();
+        });
+        
+        this.nodes.forEach(n => {
+            const p = getPos(n.id);
+            this.ctx.beginPath(); this.ctx.arc(p.x, p.y, 20, 0, 2*Math.PI);
+            this.ctx.fillStyle = this.visited.includes(n.id) ? '#00d4aa' : '#21262d';
+            this.ctx.fill(); this.ctx.stroke();
+            this.ctx.fillStyle = this.visited.includes(n.id) ? '#0d1117' : '#c9d1d9';
+            this.ctx.font = '16px sans-serif'; this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(n.id, p.x, p.y);
+        });
+    }
+};
+
+// --- E17: Optimal Storage (Bar Chart) ---
+visualizations[17] = {
+    states: [
+        [5, 10, 3, 2, 8],
+        [2, 3, 5, 8, 10]
+    ],
+    stepIdx: 0,
+    autoTimer: null,
+    init: function() { this.reset(); },
+    reset: function() {
+        this.stepIdx = 0;
+        document.getElementById('status-17').textContent = "Ready.";
+        this.render();
+    },
+    step: function() {
+        if (this.stepIdx < this.states.length - 1) {
+            this.stepIdx++;
+            document.getElementById('status-17').textContent = `Sorted to minimize MRT.`;
+            this.render();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-17').textContent = "Optimal Order Computed.";
+        }
+    },
+    render: function() {
+        const c = document.getElementById('viz-17');
+        if (!c) return;
+        c.innerHTML = '<div style="display:flex; align-items:flex-end; justify-content:center; gap:20px; height:200px; padding:20px 0;"></div>';
+        const wrapper = c.firstChild;
+        const arr = this.states[this.stepIdx];
+        
+        arr.forEach(val => {
+            const bar = document.createElement('div');
+            bar.style.width = '40px';
+            bar.style.height = (val * 15) + 'px';
+            bar.style.background = '#00d4aa';
+            bar.style.display = 'flex';
+            bar.style.alignItems = 'flex-end';
+            bar.style.justifyContent = 'center';
+            bar.style.paddingBottom = '5px';
+            bar.style.color = '#0d1117';
+            bar.style.fontWeight = 'bold';
+            bar.style.borderRadius = '3px 3px 0 0';
+            bar.style.transition = 'height 0.5s';
+            bar.textContent = val;
+            wrapper.appendChild(bar);
+        });
+    }
+};
+
+// --- E18: Prim's Algorithm (Canvas) ---
+visualizations[18] = {
+    nodes: [
+        { id: 0, x: 0.5, y: 0.1 }, { id: 1, x: 0.2, y: 0.4 }, { id: 2, x: 0.5, y: 0.5 },
+        { id: 3, x: 0.8, y: 0.4 }, { id: 4, x: 0.5, y: 0.9 }
+    ],
+    edges: [
+        {u:0, v:1, w:2}, {u:0, v:3, w:6}, {u:1, v:2, w:3},
+        {u:1, v:3, w:8}, {u:1, v:4, w:5}, {u:2, v:4, w:7}, {u:3, v:4, w:9}
+    ],
+    mst: [
+        {u:0, v:1, w:2}, {u:1, v:2, w:3}, {u:1, v:4, w:5}, {u:0, v:3, w:6}
+    ],
+    stepIdx: 0,
+    canvas: null,
+    ctx: null,
+    autoTimer: null,
+    init: function() {
+        const c = document.getElementById('viz-18');
+        if (!c) return;
+        c.innerHTML = '<canvas id="canvas-18"></canvas>';
+        this.canvas = document.getElementById('canvas-18');
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+        this.reset();
+    },
+    resize: function() {
+        const c = document.getElementById('viz-18');
+        this.canvas.width = c.clientWidth;
+        this.canvas.height = c.clientHeight || 300;
+        this.draw();
+    },
+    reset: function() {
+        this.stepIdx = 0;
+        document.getElementById('status-18').textContent = "Ready.";
+        this.draw();
+    },
+    step: function() {
+        if (this.stepIdx < this.mst.length) {
+            const e = this.mst[this.stepIdx];
+            document.getElementById('status-18').textContent = `Added Edge ${e.u}-${e.v} (Weight: ${e.w})`;
+            this.stepIdx++;
+            this.draw();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-18').textContent = "MST Complete (Cost: 16)";
+        }
+    },
+    draw: function() {
+        if (!this.ctx) return;
+        const w = this.canvas.width, h = this.canvas.height;
+        this.ctx.clearRect(0, 0, w, h);
+        const getPos = (id) => { const n = this.nodes.find(x => x.id === id); return { x: n.x * w, y: n.y * h }; };
+        
+        const active = this.mst.slice(0, this.stepIdx);
+        
+        this.edges.forEach(e => {
+            const p1 = getPos(e.u), p2 = getPos(e.v);
+            const isActive = active.some(a => (a.u===e.u && a.v===e.v) || (a.u===e.v && a.v===e.u));
+            this.ctx.beginPath(); this.ctx.moveTo(p1.x, p1.y); this.ctx.lineTo(p2.x, p2.y);
+            this.ctx.strokeStyle = isActive ? '#00d4aa' : '#30363d';
+            this.ctx.lineWidth = isActive ? 4 : 2;
+            this.ctx.stroke();
+            
+            this.ctx.fillStyle = '#c9d1d9';
+            this.ctx.font = '12px sans-serif';
+            this.ctx.fillText(e.w, (p1.x+p2.x)/2, (p1.y+p2.y)/2 - 10);
+        });
+        
+        this.nodes.forEach(n => {
+            const p = getPos(n.id);
+            this.ctx.beginPath(); this.ctx.arc(p.x, p.y, 20, 0, 2*Math.PI);
+            this.ctx.fillStyle = '#21262d';
+            this.ctx.fill(); this.ctx.stroke();
+            this.ctx.fillStyle = '#c9d1d9';
+            this.ctx.font = '16px sans-serif'; this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(n.id, p.x, p.y);
+        });
+    }
+};
+
+// --- E19: LCS (DOM Table) ---
+visualizations[19] = {
+    s1: "ACADB",
+    s2: "CBDA",
+    dp: [
+        [0,0,0,0,0],
+        [0,0,0,0,1],
+        [0,1,1,1,1],
+        [0,1,1,1,2],
+        [0,1,1,2,2],
+        [0,1,2,2,2]
+    ],
+    r: 1, c: 1,
+    autoTimer: null,
+    init: function() { this.reset(); },
+    reset: function() {
+        this.r = 1; this.c = 1;
+        document.getElementById('status-19').textContent = "Ready.";
+        this.render();
+    },
+    step: function() {
+        if (this.r <= 5) {
+            document.getElementById('status-19').textContent = `Filling L[${this.r}][${this.c}] = ${this.dp[this.r][this.c]}`;
+            this.c++;
+            if (this.c > 4) { this.c = 1; this.r++; }
+            this.render();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-19').textContent = "LCS Found: 'CB' (Length 2)";
+        }
+    },
+    render: function() {
+        const c = document.getElementById('viz-19');
+        if (!c) return;
+        c.innerHTML = '<table style="margin: 0 auto; border-collapse: collapse; text-align:center;"></table>';
+        const tbl = c.firstChild;
+        const h1 = ["", "", "C", "B", "D", "A"];
+        const h2 = ["", "A", "C", "A", "D", "B"];
+        
+        let tr = document.createElement('tr');
+        h1.forEach(thText => {
+            const th = document.createElement('th');
+            th.textContent = thText;
+            th.style.padding = '10px'; th.style.border = '1px solid #30363d'; th.style.background = '#161b22';
+            tr.appendChild(th);
+        });
+        tbl.appendChild(tr);
+        
+        for (let i = 0; i < 6; i++) {
+            tr = document.createElement('tr');
+            const th = document.createElement('th');
+            th.textContent = h2[i];
+            th.style.padding = '10px'; th.style.border = '1px solid #30363d'; th.style.background = '#161b22';
+            tr.appendChild(th);
+            
+            for (let j = 0; j < 5; j++) {
+                const td = document.createElement('td');
+                td.style.padding = '10px'; td.style.border = '1px solid #30363d';
+                if (i === 0 || j === 0) {
+                    td.textContent = 0; td.style.color = '#8b949e';
+                } else if (i < this.r || (i === this.r && j < this.c)) {
+                    td.textContent = this.dp[i][j];
+                    if (i === this.r && j === this.c - 1) {
+                        td.style.background = '#00d4aa'; td.style.color = '#0d1117';
+                    } else {
+                        td.style.color = '#c9d1d9';
+                    }
+                }
+                tr.appendChild(td);
             }
-        },
-        reset: function() {
-            this.stepIdx = 0;
-            const c = document.getElementById('v' + id + '-content');
-            if(c) c.innerHTML = '';
-            document.getElementById('status-' + id).textContent = "Ready.";
-        },
-        step: function() {
-            if (this.stepIdx < steps.length) {
-                const c = document.getElementById('v' + id + '-content');
-                const d = document.createElement('div');
-                d.textContent = '> ' + steps[this.stepIdx];
-                d.style.margin = '5px 0';
-                d.style.color = '#00d4aa';
-                c.appendChild(d);
-                document.getElementById('status-' + id).textContent = `Step ${this.stepIdx + 1} of ${steps.length}`;
-                this.stepIdx++;
-            } else {
-                if (this.autoTimer) clearInterval(this.autoTimer);
-                document.getElementById('status-' + id).textContent = "Complete.";
+            tbl.appendChild(tr);
+        }
+    }
+};
+
+// --- E20: Dijkstra (Canvas) ---
+visualizations[20] = {
+    nodes: [
+        {id:0,x:0.1,y:0.5},{id:1,x:0.3,y:0.2},{id:2,x:0.5,y:0.2},{id:3,x:0.7,y:0.2},{id:4,x:0.9,y:0.5},
+        {id:5,x:0.7,y:0.8},{id:6,x:0.5,y:0.8},{id:7,x:0.3,y:0.8},{id:8,x:0.5,y:0.5}
+    ],
+    edges: [
+        {u:0,v:1,w:4},{u:0,v:7,w:8},{u:1,v:2,w:8},{u:1,v:7,w:11},{u:2,v:3,w:7},
+        {u:2,v:8,w:2},{u:2,v:5,w:4},{u:3,v:4,w:9},{u:3,v:5,w:14},{u:4,v:5,w:10},
+        {u:5,v:6,w:2},{u:6,v:7,w:1},{u:6,v:8,w:6},{u:7,v:8,w:7}
+    ],
+    steps: [
+        {u:0, dists:[0,'∞','∞','∞','∞','∞','∞','∞','∞']},
+        {u:1, dists:[0,4,'∞','∞','∞','∞','∞',8,'∞']},
+        {u:7, dists:[0,4,12,'∞','∞','∞','∞',8,'∞']},
+        {u:6, dists:[0,4,12,'∞','∞','∞',9,8,15]},
+        {u:5, dists:[0,4,12,'∞','∞',11,9,8,15]}
+    ],
+    stepIdx: 0,
+    canvas: null,
+    ctx: null,
+    autoTimer: null,
+    init: function() {
+        const c = document.getElementById('viz-20');
+        if (!c) return;
+        c.innerHTML = '<canvas id="canvas-20"></canvas>';
+        this.canvas = document.getElementById('canvas-20');
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+        this.reset();
+    },
+    resize: function() {
+        const c = document.getElementById('viz-20');
+        this.canvas.width = c.clientWidth;
+        this.canvas.height = c.clientHeight || 300;
+        this.draw();
+    },
+    reset: function() {
+        this.stepIdx = 0;
+        document.getElementById('status-20').textContent = "Ready. (Source: 0)";
+        this.draw();
+    },
+    step: function() {
+        if (this.stepIdx < this.steps.length - 1) {
+            this.stepIdx++;
+            document.getElementById('status-20').textContent = `Picked vertex ${this.steps[this.stepIdx].u} & relaxed edges.`;
+            this.draw();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-20').textContent = "Dijkstra Complete.";
+        }
+    },
+    draw: function() {
+        if (!this.ctx) return;
+        const w = this.canvas.width, h = this.canvas.height;
+        this.ctx.clearRect(0, 0, w, h);
+        const getPos = (id) => { const n = this.nodes.find(x => x.id === id); return { x: n.x * w, y: n.y * h }; };
+        
+        this.ctx.strokeStyle = '#30363d';
+        this.ctx.lineWidth = 2;
+        this.edges.forEach(e => {
+            const p1 = getPos(e.u), p2 = getPos(e.v);
+            this.ctx.beginPath(); this.ctx.moveTo(p1.x, p1.y); this.ctx.lineTo(p2.x, p2.y); this.ctx.stroke();
+            this.ctx.fillStyle = '#8b949e'; this.ctx.font = '10px sans-serif';
+            this.ctx.fillText(e.w, (p1.x+p2.x)/2, (p1.y+p2.y)/2 - 5);
+        });
+        
+        const currentData = this.steps[this.stepIdx];
+        
+        this.nodes.forEach(n => {
+            const p = getPos(n.id);
+            this.ctx.beginPath(); this.ctx.arc(p.x, p.y, 16, 0, 2*Math.PI);
+            this.ctx.fillStyle = (n.id === currentData.u) ? '#00d4aa' : '#21262d';
+            this.ctx.fill(); this.ctx.stroke();
+            
+            this.ctx.fillStyle = (n.id === currentData.u) ? '#0d1117' : '#c9d1d9';
+            this.ctx.font = '12px sans-serif'; this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(n.id, p.x, p.y);
+            
+            // Draw Distance
+            this.ctx.fillStyle = '#d29922';
+            this.ctx.font = '12px monospace';
+            this.ctx.fillText(`[${currentData.dists[n.id]}]`, p.x, p.y - 25);
+        });
+    }
+};
+
+// --- E21: Floyd-Warshall (DOM Matrix) ---
+visualizations[21] = {
+    matrices: [
+        [[0, 5, '∞', 10], ['∞', 0, 3, '∞'], ['∞', '∞', 0, 1], ['∞', '∞', '∞', 0]],
+        [[0, 5, '∞', 10], ['∞', 0, 3, '∞'], ['∞', '∞', 0, 1], ['∞', '∞', '∞', 0]],
+        [[0, 5, 8, 10], ['∞', 0, 3, '∞'], ['∞', '∞', 0, 1], ['∞', '∞', '∞', 0]],
+        [[0, 5, 8, 9], ['∞', 0, 3, 4], ['∞', '∞', 0, 1], ['∞', '∞', '∞', 0]],
+        [[0, 5, 8, 9], ['∞', 0, 3, 4], ['∞', '∞', 0, 1], ['∞', '∞', '∞', 0]]
+    ],
+    stepIdx: 0,
+    autoTimer: null,
+    init: function() { this.reset(); },
+    reset: function() {
+        this.stepIdx = 0;
+        document.getElementById('status-21').textContent = "Ready. (Initial Matrix)";
+        this.render();
+    },
+    step: function() {
+        if (this.stepIdx < this.matrices.length - 1) {
+            this.stepIdx++;
+            document.getElementById('status-21').textContent = `k = ${this.stepIdx} (Intermediate Vertices: 0 to ${this.stepIdx-1})`;
+            this.render();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-21').textContent = "All-Pairs Shortest Path Computed.";
+        }
+    },
+    render: function() {
+        const c = document.getElementById('viz-21');
+        if (!c) return;
+        c.innerHTML = '<table style="margin: 0 auto; border-collapse: collapse; text-align:center;"></table>';
+        const tbl = c.firstChild;
+        const mat = this.matrices[this.stepIdx];
+        
+        for (let i = 0; i < 4; i++) {
+            const tr = document.createElement('tr');
+            for (let j = 0; j < 4; j++) {
+                const td = document.createElement('td');
+                td.textContent = mat[i][j];
+                td.style.padding = '15px 25px';
+                td.style.border = '2px solid #30363d';
+                td.style.background = '#161b22';
+                td.style.color = (mat[i][j] !== '∞') ? '#00d4aa' : '#8b949e';
+                td.style.fontWeight = 'bold';
+                tr.appendChild(td);
+            }
+            tbl.appendChild(tr);
+        }
+    }
+};
+
+// --- E22: N-Queens (CSS Grid) ---
+visualizations[22] = {
+    steps: [
+        { msg: "Start", qs: [] },
+        { msg: "Place Q(0,0)", qs: [[0,0]] },
+        { msg: "Place Q(1,2)", qs: [[0,0], [1,2]] },
+        { msg: "Row 2: Backtrack!", qs: [[0,0], [1,2]], fail: true },
+        { msg: "Place Q(0,1)", qs: [[0,1]] },
+        { msg: "Place Q(1,3)", qs: [[0,1], [1,3]] },
+        { msg: "Place Q(2,0)", qs: [[0,1], [1,3], [2,0]] },
+        { msg: "Place Q(3,2)", qs: [[0,1], [1,3], [2,0], [3,2]] }
+    ],
+    stepIdx: 0,
+    autoTimer: null,
+    init: function() { this.reset(); },
+    reset: function() {
+        this.stepIdx = 0;
+        document.getElementById('status-22').textContent = "Ready.";
+        this.render();
+    },
+    step: function() {
+        if (this.stepIdx < this.steps.length - 1) {
+            this.stepIdx++;
+            const s = this.steps[this.stepIdx];
+            document.getElementById('status-22').textContent = s.msg;
+            this.render();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-22').textContent = "Valid Configuration Found!";
+        }
+    },
+    render: function() {
+        const c = document.getElementById('viz-22');
+        if (!c) return;
+        c.innerHTML = '<div style="display:grid; grid-template-columns:repeat(4, 50px); grid-template-rows:repeat(4, 50px); gap:2px; justify-content:center; padding:20px 0;"></div>';
+        const grid = c.firstChild;
+        const s = this.steps[this.stepIdx];
+        
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                const cell = document.createElement('div');
+                cell.style.background = (i+j)%2 === 0 ? '#30363d' : '#21262d';
+                cell.style.display = 'flex';
+                cell.style.alignItems = 'center';
+                cell.style.justifyContent = 'center';
+                cell.style.fontSize = '30px';
+                
+                const hasQ = s.qs.find(q => q[0]===i && q[1]===j);
+                if (hasQ) {
+                    cell.innerHTML = '&#9819;'; // Queen symbol
+                    cell.style.color = s.fail && i === s.qs[s.qs.length-1][0] ? '#f85149' : '#00d4aa';
+                }
+                grid.appendChild(cell);
             }
         }
-    };
-}
+    }
+};
 
-visualizations[12] = createTextViz(12, [
-    "Original array: [12, 11, 13, 5, 6, 7]",
-    "Split: [12, 11, 13] and [5, 6, 7]",
-    "Split: [12], [11, 13] and [5], [6, 7]",
-    "Merge: [11, 12, 13]",
-    "Merge: [5, 6, 7]",
-    "Final Merge: [5, 6, 7, 11, 12, 13]"
-]);
-
-visualizations[13] = createTextViz(13, [
-    "Inserting 15 (15%7=1) -> Bucket 1: 15",
-    "Inserting 11 (11%7=4) -> Bucket 4: 11",
-    "Inserting 27 (27%7=6) -> Bucket 6: 27",
-    "Inserting 8  (8%7=1)  -> Bucket 1: 15 -> 8",
-    "Inserting 12 (12%7=5) -> Bucket 5: 12",
-    "Inserting 21 (21%7=0) -> Bucket 0: 21",
-    "Inserting 14 (14%7=0) -> Bucket 0: 21 -> 14"
-]);
-
-visualizations[14] = createTextViz(14, [
-    "Constructing tree: 1(2(4,5),3)",
-    "Pre-order: Root -> Left -> Right",
-    "Result: 1, 2, 4, 5, 3",
-    "In-order: Left -> Root -> Right",
-    "Result: 4, 2, 5, 1, 3",
-    "Post-order: Left -> Right -> Root",
-    "Result: 4, 5, 2, 3, 1"
-]);
-
-visualizations[15] = createTextViz(15, [
-    "Tree: 10(20(40,50),30)",
-    "In-order traversal: 40, 20, 50, 10, 30",
-    "Searching for 30...",
-    "Check 10 (No) -> Check Right -> 30 (Yes!). Found.",
-    "Searching for 60...",
-    "Check all nodes -> Not Found."
-]);
-
-visualizations[16] = createTextViz(16, [
-    "Start at vertex 2. Queue: [2], Visited: {2}",
-    "Dequeue 2. Visit neighbors 0, 3.",
-    "Queue: [0, 3], Visited: {2, 0, 3}",
-    "Dequeue 0. Visit neighbor 1.",
-    "Queue: [3, 1], Visited: {2, 0, 3, 1}",
-    "Dequeue 3. No unvisited neighbors.",
-    "Dequeue 1. No unvisited neighbors. Done."
-]);
-
-visualizations[17] = createTextViz(17, [
-    "Programs: [5, 10, 3, 2, 8]",
-    "Sorting to minimize MRT...",
-    "Sorted Order: [2, 3, 5, 8, 10]",
-    "Summing cumulative retrieval times...",
-    "2 + (2+3) + (5+5) + (10+8) + (18+10)",
-    "Total = 2 + 5 + 10 + 18 + 28 = 63",
-    "Mean Retrieval Time (MRT) = 63 / 5 = 12.6"
-]);
-
-visualizations[18] = createTextViz(18, [
-    "Initialize MST set and Key values to INF.",
-    "Pick vertex 0. Update neighbors 1(2), 3(6)",
-    "Pick vertex 1. Add edge 0-1 (w:2). Update neighbors.",
-    "Pick vertex 2. Add edge 1-2 (w:3).",
-    "Pick vertex 4. Add edge 1-4 (w:5).",
-    "Pick vertex 3. Add edge 0-3 (w:6).",
-    "Total Cost = 16."
-]);
-
-visualizations[19] = createTextViz(19, [
-    "Strings: S1 = ACADB, S2 = CBDA",
-    "Building DP Table...",
-    "Match 'C' (S1[1], S2[0]) -> LCS length 1",
-    "Match 'A' (S1[2], S2[3]) -> LCS length 2",
-    "Match 'D' (S1[3], S2[2]) -> LCS length 2",
-    "Match 'B' (S1[4], S2[1]) -> LCS length 3",
-    "Backtracking table...",
-    "LCS is 'CB'"
-]);
-
-visualizations[20] = createTextViz(20, [
-    "Dijkstra from Source 0.",
-    "Distances: [0, INF, INF, INF, INF, INF, INF, INF, INF]",
-    "Relax neighbors of 0 -> 1(4), 7(8)",
-    "Pick 1. Relax neighbors -> 2(12)",
-    "Pick 7. Relax neighbors -> 6(9), 8(15)",
-    "Pick 6. Relax neighbors -> 5(11)",
-    "Pick 5. Relax neighbors -> 2(15), 3(25), 4(21)",
-    "Final distances computed."
-]);
-
-visualizations[21] = createTextViz(21, [
-    "Floyd-Warshall all-pairs shortest paths.",
-    "Initial distance matrix (k=0)",
-    "k=1: Path through vertex 0",
-    "k=2: Path through vertex 1",
-    "k=3: Path through vertex 2",
-    "k=4: Path through vertex 3",
-    "Matrix updated with minimal path weights."
-]);
-
-visualizations[22] = createTextViz(22, [
-    "N-Queens Backtracking (4x4)",
-    "Place Q at (0,0)",
-    "Place Q at (1,2)",
-    "Row 2: no safe spot! Backtrack.",
-    "Move Q to (0,1)",
-    "Place Q at (1,3)",
-    "Place Q at (2,0)",
-    "Place Q at (3,2)",
-    "Valid configuration found!"
-]);
-
-visualizations[23] = createTextViz(23, [
-    "Hamiltonian Cycle Backtracking (5 vertices)",
-    "Start at 0.",
-    "Path: 0 -> 1",
-    "Path: 0 -> 1 -> 2",
-    "Path: 0 -> 1 -> 2 -> 4",
-    "Path: 0 -> 1 -> 2 -> 4 -> 3",
-    "Check edge 3 -> 0. Valid!",
-    "Cycle found: 0 1 2 4 3 0"
-]);
+// --- E23: Hamiltonian Cycle (Canvas) ---
+visualizations[23] = {
+    nodes: [
+        {id:0, x:0.5, y:0.2}, {id:1, x:0.2, y:0.5}, {id:2, x:0.3, y:0.8}, 
+        {id:3, x:0.8, y:0.5}, {id:4, x:0.7, y:0.8}
+    ],
+    edges: [
+        [0,1], [0,3], [1,2], [1,3], [1,4], [2,4], [3,4]
+    ],
+    pathSteps: [
+        [0], [0,1], [0,1,2], [0,1,2,4], [0,1,2,4,3], [0,1,2,4,3,0]
+    ],
+    stepIdx: 0,
+    canvas: null,
+    ctx: null,
+    autoTimer: null,
+    init: function() {
+        const c = document.getElementById('viz-23');
+        if (!c) return;
+        c.innerHTML = '<canvas id="canvas-23"></canvas>';
+        this.canvas = document.getElementById('canvas-23');
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+        this.reset();
+    },
+    resize: function() {
+        const c = document.getElementById('viz-23');
+        this.canvas.width = c.clientWidth;
+        this.canvas.height = c.clientHeight || 300;
+        this.draw();
+    },
+    reset: function() {
+        this.stepIdx = 0;
+        document.getElementById('status-23').textContent = "Ready.";
+        this.draw();
+    },
+    step: function() {
+        if (this.stepIdx < this.pathSteps.length - 1) {
+            this.stepIdx++;
+            document.getElementById('status-23').textContent = `Path: ${this.pathSteps[this.stepIdx].join(' -> ')}`;
+            this.draw();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-23').textContent = "Hamiltonian Cycle Found!";
+        }
+    },
+    draw: function() {
+        if (!this.ctx) return;
+        const w = this.canvas.width, h = this.canvas.height;
+        this.ctx.clearRect(0, 0, w, h);
+        const getPos = (id) => { const n = this.nodes.find(x => x.id === id); return { x: n.x * w, y: n.y * h }; };
+        
+        const path = this.pathSteps[this.stepIdx];
+        
+        // Draw all edges faded
+        this.ctx.strokeStyle = '#30363d';
+        this.ctx.lineWidth = 2;
+        this.edges.forEach(e => {
+            const p1 = getPos(e[0]), p2 = getPos(e[1]);
+            this.ctx.beginPath(); this.ctx.moveTo(p1.x, p1.y); this.ctx.lineTo(p2.x, p2.y); this.ctx.stroke();
+        });
+        
+        // Draw active path edges
+        this.ctx.strokeStyle = '#00d4aa';
+        this.ctx.lineWidth = 4;
+        for (let i = 0; i < path.length - 1; i++) {
+            const p1 = getPos(path[i]), p2 = getPos(path[i+1]);
+            this.ctx.beginPath(); this.ctx.moveTo(p1.x, p1.y); this.ctx.lineTo(p2.x, p2.y); this.ctx.stroke();
+        }
+        
+        // Draw nodes
+        this.nodes.forEach(n => {
+            const p = getPos(n.id);
+            this.ctx.beginPath(); this.ctx.arc(p.x, p.y, 20, 0, 2*Math.PI);
+            this.ctx.fillStyle = path.includes(n.id) ? '#00d4aa' : '#21262d';
+            this.ctx.fill();
+            this.ctx.strokeStyle = '#30363d'; this.ctx.lineWidth = 2; this.ctx.stroke();
+            this.ctx.fillStyle = path.includes(n.id) ? '#0d1117' : '#c9d1d9';
+            this.ctx.font = '16px sans-serif'; this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(n.id, p.x, p.y);
+        });
+    }
+};
 
 // ==========================================
 // Initialization
