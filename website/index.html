@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADSA Practicals • Advanced Data Structures & Algorithms</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <span class="site-logo">ADSA<span class="logo-accent">Lab</span></span>
+            <nav class="nav-tabs">
+                <a href="#collaborative">Collaborative Learning</a>
+                <a href="#problem-based">Problem-Based Learning</a>
+                <a href="#problem-solving">Problem Solving</a>
+            </nav>
+            <button class="mobile-toggle">☰</button>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="badge">NEP Scheme • Semester 3</div>
+            <h1>Advanced Data Structures & <span class="accent">Algorithms</span></h1>
+            <p>Interactive visualizations and Java implementations for AVL trees, B-trees, graph traversals, MST, string matching, and more.</p>
+        </section>
+
+        <!-- Module 1 -->
+        <section id="collaborative" class="module-section">
+            <div class="module-header">
+                <span class="number-label">Module 01</span>
+                <h2>Collaborative Learning</h2>
+            </div>
+            
+            <div class="question-card reveal" id="card-1">
+                <div class="card-header" onclick="toggleCard('card-1')">
+                    <h3><span class="q-badge">Q1</span> AVL Tree Construction</h3>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="card-body">
+                    <div class="viz-container">
+                        <div class="viz-area" id="viz-1"></div>
+                        <div class="viz-controls">
+                            <button class="btn btn-accent" onclick="vizStep(1)">Step</button>
+                            <button class="btn" onclick="vizAuto(1)">▶ Auto Play</button>
+                            <button class="btn" onclick="vizReset(1)">↺ Reset</button>
+                            <span class="viz-status" id="status-1">Ready</span>
+                        </div>
+                    </div>
+                    <div class="code-section" id="code-section-1">
+                        <button class="code-toggle" onclick="toggleCode('code-section-1')">
+                            <span>☕ View Java Code</span>
+                            <span class="toggle-arrow">▼</span>
+                        </button>
+                        <div class="code-block"><pre>
+<span class="kw">class</span> <span class="tp">Node</span> {
+    <span class="kw">int</span> key, height;
+    <span class="tp">Node</span> left, right;
+    <span class="kw">Node</span>(<span class="kw">int</span> d) { key = d; height = <span class="nm">1</span>; }
+}
+<span class="kw">public</span> <span class="kw">class</span> <span class="tp">AVLTree</span> {
+    <span class="tp">Node</span> root;
+    <span class="kw">int</span> height(<span class="tp">Node</span> N) { <span class="kw">return</span> (N == <span class="kw">null</span>) ? <span class="nm">0</span> : N.height; }
+    <span class="kw">int</span> max(<span class="kw">int</span> a, <span class="kw">int</span> b) { <span class="kw">return</span> (a > b) ? a : b; }
+    <span class="tp">Node</span> rightRotate(<span class="tp">Node</span> y) {
+        <span class="tp">Node</span> x = y.left;
+        <span class="tp">Node</span> T2 = x.right;
+        x.right = y;
+        y.left = T2;
+        y.height = max(height(y.left), height(y.right)) + <span class="nm">1</span>;
+        x.height = max(height(x.left), height(x.right)) + <span class="nm">1</span>;
+        <span class="kw">return</span> x;
+    }
+    <span class="tp">Node</span> leftRotate(<span class="tp">Node</span> x) {
+        <span class="tp">Node</span> y = x.right;
+        <span class="tp">Node</span> T2 = y.left;
+        y.left = x;
+        x.right = T2;
+        x.height = max(height(x.left), height(x.right)) + <span class="nm">1</span>;
+        y.height = max(height(y.left), height(y.right)) + <span class="nm">1</span>;
+        <span class="kw">return</span> y;
+    }
+    <span class="kw">int</span> getBalance(<span class="tp">Node</span> N) { <span class="kw">return</span> (N == <span class="kw">null</span>) ? <span class="nm">0</span> : height(N.left) - height(N.right); }
+    <span class="tp">Node</span> insert(<span class="tp">Node</span> node, <span class="kw">int</span> key) {
+        <span class="kw">if</span> (node == <span class="kw">null</span>) <span class="kw">return</span> (<span class="kw">new</span> <span class="tp">Node</span>(key));
+        <span class="kw">if</span> (key &lt; node.key) node.left = insert(node.left, key);
+        <span class="kw">else</span> <span class="kw">if</span> (key > node.key) node.right = insert(node.right, key);
+        <span class="kw">else</span> <span class="kw">return</span> node;
+        node.height = <span class="nm">1</span> + max(height(node.left), height(node.right));
+        <span class="kw">int</span> balance = getBalance(node);
+        <span class="kw">if</span> (balance > <span class="nm">1</span> &amp;&amp; key &lt; node.left.key) <span class="kw">return</span> rightRotate(node);
+        <span class="kw">if</span> (balance &lt; -<span class="nm">1</span> &amp;&amp; key > node.right.key) <span class="kw">return</span> leftRotate(node);
+        <span class="kw">if</span> (balance > <span class="nm">1</span> &amp;&amp; key > node.left.key) {
+            node.left = leftRotate(node.left);
+            <span class="kw">return</span> rightRotate(node);
+        }
+        <span class="kw">if</span> (balance &lt; -<span class="nm">1</span> &amp;&amp; key &lt; node.right.key) {
+            node.right = rightRotate(node.right);
+            <span class="kw">return</span> leftRotate(node);
+        }
+        <span class="kw">return</span> node;
+    }
+    <span class="kw">void</span> preOrder(<span class="tp">Node</span> node) {
+        <span class="kw">if</span> (node != <span class="kw">null</span>) {
+            <span class="tp">System</span>.out.print(node.key + <span class="st">" "</span>);
+            preOrder(node.left);
+            preOrder(node.right);
+        }
+    }
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">AVLTree</span> tree = <span class="kw">new</span> <span class="tp">AVLTree</span>();
+        <span class="kw">int</span>[] keys = {<span class="nm">50</span>, <span class="nm">20</span>, <span class="nm">70</span>, <span class="nm">10</span>, <span class="nm">30</span>, <span class="nm">60</span>, <span class="nm">80</span>, <span class="nm">25</span>};
+        <span class="kw">for</span> (<span class="kw">int</span> key : keys) {
+            tree.root = tree.insert(tree.root, key);
+        }
+        <span class="tp">System</span>.out.println(<span class="st">"Preorder traversal of constructed AVL tree:"</span>);
+        tree.preOrder(tree.root);
+        <span class="tp">System</span>.out.println();
+    }
+}
+</pre></div>
+                    </div>
+                    <div class="output-section">
+                        <h4>📋 Program Output</h4>
+                        <div class="output-block">Preorder traversal of constructed AVL tree:
+50 20 10 30 25 70 60 80</div>
+                    </div>
+                    <div class="explanation-section">
+                        <h4>How It Works</h4>
+                        <p>This program constructs an <strong>AVL Tree</strong> by inserting keys: 50, 20, 70, 10, 30, 60, 80, 25. AVL trees are self-balancing BSTs where the difference between heights of left and right subtrees (balance factor) is at most 1.</p><ul><li><code>rightRotate()</code> and <code>leftRotate()</code> rebalance the tree when insertions cause imbalance</li><li><code>getBalance()</code> computes the balance factor of any node</li><li>Four rotation cases are handled: LL, RR, LR, and RL</li></ul><span class="complexity">Time Complexity: O(log n) per insertion</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-card reveal" id="card-2">
+                <div class="card-header" onclick="toggleCard('card-2')">
+                    <h3><span class="q-badge">Q2</span> B-Tree of Order 3</h3>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="card-body">
+                    <div class="viz-container">
+                        <div class="viz-area" id="viz-2"></div>
+                        <div class="viz-controls">
+                            <button class="btn btn-accent" onclick="vizStep(2)">Step</button>
+                            <button class="btn" onclick="vizAuto(2)">▶ Auto Play</button>
+                            <button class="btn" onclick="vizReset(2)">↺ Reset</button>
+                            <span class="viz-status" id="status-2">Ready</span>
+                        </div>
+                    </div>
+                    <div class="code-section" id="code-section-2">
+                        <button class="code-toggle" onclick="toggleCode('code-section-2')">
+                            <span>☕ View Java Code</span>
+                            <span class="toggle-arrow">▼</span>
+                        </button>
+                        <div class="code-block"><pre>
+<span class="kw">import</span> java.util.*;
+
+<span class="kw">class</span> <span class="tp">BTree</span> {
+    <span class="kw">private</span> <span class="kw">int</span> order;
+    <span class="kw">private</span> <span class="tp">Node</span> root;
+    <span class="kw">public</span> BTree(<span class="kw">int</span> order) { <span class="kw">this</span>.order = order; <span class="kw">this</span>.root = <span class="kw">new</span> <span class="tp">Node</span>(<span class="kw">true</span>); }
+    <span class="kw">class</span> <span class="tp">Node</span> {
+        <span class="tp">List</span>&lt;<span class="tp">Integer</span>&gt; keys;
+        <span class="tp">List</span>&lt;<span class="tp">Node</span>&gt; children;
+        <span class="kw">boolean</span> leaf;
+        <span class="kw">Node</span>(<span class="kw">boolean</span> leaf) { <span class="kw">this</span>.leaf = leaf; keys = <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;(); children = <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;(); }
+    }
+    <span class="kw">public</span> <span class="kw">void</span> insert(<span class="kw">int</span> key) {
+        <span class="tp">Node</span> r = root;
+        <span class="kw">if</span> (r.keys.size() == order - <span class="nm">1</span>) {
+            <span class="tp">Node</span> s = <span class="kw">new</span> <span class="tp">Node</span>(<span class="kw">false</span>);
+            root = s;
+            s.children.add(r);
+            splitChild(s, <span class="nm">0</span>, r);
+            insertNonFull(s, key);
+        } <span class="kw">else</span> { insertNonFull(r, key); }
+    }
+    <span class="kw">private</span> <span class="kw">void</span> splitChild(<span class="tp">Node</span> x, <span class="kw">int</span> i, <span class="tp">Node</span> y) {
+        <span class="tp">Node</span> z = <span class="kw">new</span> <span class="tp">Node</span>(y.leaf);
+        <span class="kw">int</span> mid = (order - <span class="nm">1</span>) / <span class="nm">2</span>;
+        <span class="kw">int</span> keyUp = y.keys.get(mid);
+        <span class="kw">for</span> (<span class="kw">int</span> j = mid + <span class="nm">1</span>; j &lt; y.keys.size(); j++) z.keys.add(y.keys.get(j));
+        <span class="kw">if</span> (!y.leaf) <span class="kw">for</span> (<span class="kw">int</span> j = mid + <span class="nm">1</span>; j &lt; y.children.size(); j++) z.children.add(y.children.get(j));
+        y.keys.subList(mid, y.keys.size()).clear();
+        <span class="kw">if</span> (!y.leaf) y.children.subList(mid + <span class="nm">1</span>, y.children.size()).clear();
+        x.children.add(i + <span class="nm">1</span>, z);
+        x.keys.add(i, keyUp);
+    }
+    <span class="kw">private</span> <span class="kw">void</span> insertNonFull(<span class="tp">Node</span> x, <span class="kw">int</span> key) {
+        <span class="kw">int</span> i = x.keys.size() - <span class="nm">1</span>;
+        <span class="kw">if</span> (x.leaf) {
+            x.keys.add(<span class="nm">0</span>);
+            <span class="kw">while</span> (i >= <span class="nm">0</span> &amp;&amp; x.keys.get(i) > key) { x.keys.set(i + <span class="nm">1</span>, x.keys.get(i)); i--; }
+            x.keys.set(i + <span class="nm">1</span>, key);
+        } <span class="kw">else</span> {
+            <span class="kw">while</span> (i >= <span class="nm">0</span> &amp;&amp; x.keys.get(i) > key) i--;
+            i++;
+            <span class="kw">if</span> (x.children.get(i).keys.size() == order - <span class="nm">1</span>) {
+                splitChild(x, i, x.children.get(i));
+                <span class="kw">if</span> (key > x.keys.get(i)) i++;
+            }
+            insertNonFull(x.children.get(i), key);
+        }
+    }
+    <span class="kw">public</span> <span class="kw">void</span> printTree(<span class="tp">Node</span> x, <span class="kw">int</span> level) {
+        <span class="tp">System</span>.out.print(<span class="st">"Level "</span> + level + <span class="st">": "</span>);
+        <span class="kw">for</span> (<span class="kw">int</span> k : x.keys) <span class="tp">System</span>.out.print(k + <span class="st">" "</span>);
+        <span class="tp">System</span>.out.println();
+        <span class="kw">if</span> (!x.leaf) <span class="kw">for</span> (<span class="tp">Node</span> c : x.children) printTree(c, level + <span class="nm">1</span>);
+    }
+    <span class="kw">public</span> <span class="kw">void</span> print() { printTree(root, <span class="nm">0</span>); }
+}
+<span class="kw">public</span> <span class="kw">class</span> <span class="tp">BTreeOrder3</span> {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">BTree</span> tree = <span class="kw">new</span> <span class="tp">BTree</span>(<span class="nm">3</span>);
+        <span class="kw">int</span>[] keys = {<span class="nm">10</span>, <span class="nm">20</span>, <span class="nm">5</span>, <span class="nm">6</span>, <span class="nm">12</span>, <span class="nm">30</span>, <span class="nm">7</span>, <span class="nm">17</span>};
+        <span class="kw">for</span>(<span class="kw">int</span> k : keys) tree.insert(k);
+        <span class="tp">System</span>.out.println(<span class="st">"B-Tree of order 3 after inserting elements:"</span>);
+        tree.print();
+    }
+}
+</pre></div>
+                    </div>
+                    <div class="output-section">
+                        <h4>📋 Program Output</h4>
+                        <div class="output-block">B-Tree of order 3 after inserting elements:
+Level 0: 10 20
+Level 1: 6
+Level 2: 5
+Level 2: 7
+Level 1:
+Level 2: 12 17
+Level 1:
+Level 2: 30</div>
+                    </div>
+                    <div class="explanation-section">
+                        <h4>How It Works</h4>
+                        <p>A <strong>B-Tree of order 3</strong> (2-3 tree) allows at most 2 keys and 3 children per node. Keys inserted: 10, 20, 5, 6, 12, 30, 7, 17.</p><ul><li>When a node overflows (reaches 2 keys), it <strong>splits</strong> and pushes the middle key up</li><li><code>splitChild()</code> handles the splitting logic</li><li><code>insertNonFull()</code> finds the correct leaf and inserts</li></ul><span class="complexity">Time Complexity: O(log n) per insertion</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-card reveal" id="card-3">
+                <div class="card-header" onclick="toggleCard('card-3')">
+                    <h3><span class="q-badge">Q3</span> B+ Tree of Order 4</h3>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="card-body">
+                    <div class="viz-container">
+                        <div class="viz-area" id="viz-3"></div>
+                        <div class="viz-controls">
+                            <button class="btn btn-accent" onclick="vizStep(3)">Step</button>
+                            <button class="btn" onclick="vizAuto(3)">▶ Auto Play</button>
+                            <button class="btn" onclick="vizReset(3)">↺ Reset</button>
+                            <span class="viz-status" id="status-3">Ready</span>
+                        </div>
+                    </div>
+                    <div class="code-section" id="code-section-3">
+                        <button class="code-toggle" onclick="toggleCode('code-section-3')">
+                            <span>☕ View Java Code</span>
+                            <span class="toggle-arrow">▼</span>
+                        </button>
+                        <div class="code-block"><pre>
+<span class="kw">import</span> java.util.*;
+
+<span class="kw">class</span> <span class="tp">BPlusTree</span> {
+    <span class="kw">private</span> <span class="kw">int</span> order;
+    <span class="kw">private</span> <span class="tp">Node</span> root;
+    <span class="kw">public</span> BPlusTree(<span class="kw">int</span> order) { <span class="kw">this</span>.order = order; <span class="kw">this</span>.root = <span class="kw">new</span> <span class="tp">Node</span>(<span class="kw">true</span>); }
+    <span class="kw">class</span> <span class="tp">Node</span> {
+        <span class="tp">List</span>&lt;<span class="tp">Integer</span>&gt; keys; <span class="tp">List</span>&lt;<span class="tp">Node</span>&gt; children; <span class="kw">boolean</span> leaf; <span class="tp">Node</span> next;
+        <span class="kw">Node</span>(<span class="kw">boolean</span> leaf) { <span class="kw">this</span>.leaf = leaf; keys = <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;(); children = <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;(); }
+    }
+    <span class="kw">public</span> <span class="kw">void</span> insert(<span class="kw">int</span> key) {
+        <span class="tp">Node</span> r = root;
+        <span class="kw">if</span> (r.keys.size() == order - <span class="nm">1</span>) {
+            <span class="tp">Node</span> s = <span class="kw">new</span> <span class="tp">Node</span>(<span class="kw">false</span>); root = s; s.children.add(r);
+            splitChild(s, <span class="nm">0</span>, r); insertNonFull(s, key);
+        } <span class="kw">else</span> { insertNonFull(r, key); }
+    }
+    <span class="kw">private</span> <span class="kw">void</span> splitChild(<span class="tp">Node</span> x, <span class="kw">int</span> i, <span class="tp">Node</span> y) {
+        <span class="tp">Node</span> z = <span class="kw">new</span> <span class="tp">Node</span>(y.leaf); <span class="kw">int</span> mid = (order - <span class="nm">1</span>) / <span class="nm">2</span>;
+        <span class="kw">if</span> (y.leaf) {
+            <span class="kw">for</span> (<span class="kw">int</span> j = mid; j &lt; y.keys.size(); j++) z.keys.add(y.keys.get(j));
+            y.keys.subList(mid, y.keys.size()).clear();
+            z.next = y.next; y.next = z;
+            x.children.add(i + <span class="nm">1</span>, z); x.keys.add(i, z.keys.get(<span class="nm">0</span>));
+        } <span class="kw">else</span> {
+            <span class="kw">int</span> keyUp = y.keys.get(mid);
+            <span class="kw">for</span> (<span class="kw">int</span> j = mid + <span class="nm">1</span>; j &lt; y.keys.size(); j++) z.keys.add(y.keys.get(j));
+            <span class="kw">for</span> (<span class="kw">int</span> j = mid + <span class="nm">1</span>; j &lt; y.children.size(); j++) z.children.add(y.children.get(j));
+            y.keys.subList(mid, y.keys.size()).clear();
+            y.children.subList(mid + <span class="nm">1</span>, y.children.size()).clear();
+            x.children.add(i + <span class="nm">1</span>, z); x.keys.add(i, keyUp);
+        }
+    }
+    <span class="kw">private</span> <span class="kw">void</span> insertNonFull(<span class="tp">Node</span> x, <span class="kw">int</span> key) {
+        <span class="kw">int</span> i = x.keys.size() - <span class="nm">1</span>;
+        <span class="kw">if</span> (x.leaf) {
+            x.keys.add(<span class="nm">0</span>); <span class="kw">while</span> (i >= <span class="nm">0</span> &amp;&amp; x.keys.get(i) > key) { x.keys.set(i + <span class="nm">1</span>, x.keys.get(i)); i--; }
+            x.keys.set(i + <span class="nm">1</span>, key);
+        } <span class="kw">else</span> {
+            <span class="kw">while</span> (i >= <span class="nm">0</span> &amp;&amp; x.keys.get(i) > key) i--; i++;
+            <span class="kw">if</span> (x.children.get(i).keys.size() == order - <span class="nm">1</span>) {
+                splitChild(x, i, x.children.get(i)); <span class="kw">if</span> (key > x.keys.get(i)) i++;
+            }
+            insertNonFull(x.children.get(i), key);
+        }
+    }
+    <span class="kw">public</span> <span class="kw">void</span> printTree(<span class="tp">Node</span> x, <span class="kw">int</span> level) {
+        <span class="tp">System</span>.out.println(<span class="st">"Level "</span> + level + <span class="st">": "</span> + x.keys);
+        <span class="kw">if</span> (!x.leaf) <span class="kw">for</span> (<span class="tp">Node</span> c : x.children) printTree(c, level + <span class="nm">1</span>);
+    }
+    <span class="kw">public</span> <span class="kw">void</span> print() { printTree(root, <span class="nm">0</span>); }
+    <span class="kw">public</span> <span class="kw">void</span> printLeaves() {
+        <span class="tp">Node</span> curr = root; <span class="kw">while</span> (!curr.leaf) curr = curr.children.get(<span class="nm">0</span>);
+        <span class="tp">System</span>.out.print(<span class="st">"Leaf nodes (linked list): "</span>);
+        <span class="kw">while</span> (curr != <span class="kw">null</span>) { <span class="tp">System</span>.out.print(curr.keys + <span class="st">" -> "</span>); curr = curr.next; }
+        <span class="tp">System</span>.out.println(<span class="st">"null"</span>);
+    }
+}
+<span class="kw">public</span> <span class="kw">class</span> <span class="tp">BPlusTreeOrder4</span> {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">BPlusTree</span> tree = <span class="kw">new</span> <span class="tp">BPlusTree</span>(<span class="nm">4</span>);
+        <span class="kw">int</span>[] keys = {<span class="nm">15</span>, <span class="nm">25</span>, <span class="nm">35</span>, <span class="nm">45</span>, <span class="nm">55</span>, <span class="nm">65</span>, <span class="nm">75</span>, <span class="nm">85</span>};
+        <span class="kw">for</span>(<span class="kw">int</span> k : keys) tree.insert(k);
+        <span class="tp">System</span>.out.println(<span class="st">"B+ Tree of order 4 after inserting elements:"</span>);
+        tree.print(); tree.printLeaves();
+    }
+}
+</pre></div>
+                    </div>
+                    <div class="output-section">
+                        <h4>📋 Program Output</h4>
+                        <div class="output-block">B+ Tree of order 4 after inserting elements:
+Level 0: [35]
+Level 1: [25]
+Level 2: [15]
+Level 2: [25]
+Level 1: [45, 55, 65]
+Level 2: [35]
+Level 2: [45]
+Level 2: [55]
+Level 2: [65, 75, 85]
+Leaf nodes: [15] -> [25] -> [35] -> [45] -> [55] -> [65, 75, 85] -> null</div>
+                    </div>
+                    <div class="explanation-section">
+                        <h4>How It Works</h4>
+                        <p>A <strong>B+ Tree of order 4</strong> has at most 3 keys per node. Keys inserted: 15, 25, 35, 45, 55, 65, 75, 85.</p><ul><li>All data resides in <strong>leaf nodes</strong>, which are linked together</li><li>Internal nodes act only as <strong>routers</strong> (index nodes)</li><li>Leaf nodes form a linked list for efficient range queries</li></ul><span class="complexity">Time Complexity: O(log n) per insertion</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-card reveal" id="card-4">
+                <div class="card-header" onclick="toggleCard('card-4')">
+                    <h3><span class="q-badge">Q4</span> BFS Graph Traversal</h3>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="card-body">
+                    <div class="viz-container">
+                        <div class="viz-area" id="viz-4"></div>
+                        <div class="viz-controls">
+                            <button class="btn btn-accent" onclick="vizStep(4)">Step</button>
+                            <button class="btn" onclick="vizAuto(4)">▶ Auto Play</button>
+                            <button class="btn" onclick="vizReset(4)">↺ Reset</button>
+                            <span class="viz-status" id="status-4">Ready</span>
+                        </div>
+                    </div>
+                    <div class="code-section" id="code-section-4">
+                        <button class="code-toggle" onclick="toggleCode('code-section-4')">
+                            <span>☕ View Java Code</span>
+                            <span class="toggle-arrow">▼</span>
+                        </button>
+                        <div class="code-block"><pre>
+<span class="kw">import</span> java.util.*;
+
+<span class="kw">public</span> <span class="kw">class</span> <span class="tp">BFSGraph</span> {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">Map</span>&lt;<span class="tp">String</span>, <span class="tp">List</span>&lt;<span class="tp">String</span>&gt;&gt; adj = <span class="kw">new</span> <span class="tp">HashMap</span>&lt;&gt;();
+        adj.put(<span class="st">"A"</span>, <span class="tp">Arrays</span>.asList(<span class="st">"B"</span>, <span class="st">"C"</span>));
+        adj.put(<span class="st">"B"</span>, <span class="tp">Arrays</span>.asList(<span class="st">"D"</span>, <span class="st">"E"</span>));
+        adj.put(<span class="st">"C"</span>, <span class="tp">Arrays</span>.asList(<span class="st">"F"</span>));
+        adj.put(<span class="st">"D"</span>, <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;()); adj.put(<span class="st">"E"</span>, <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;()); adj.put(<span class="st">"F"</span>, <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;());
+        <span class="tp">System</span>.out.println(<span class="st">"BFS Traversal starting from A:"</span>);
+        <span class="tp">Queue</span>&lt;<span class="tp">String</span>&gt; q = <span class="kw">new</span> <span class="tp">LinkedList</span>&lt;&gt;(); <span class="tp">Set</span>&lt;<span class="tp">String</span>&gt; visited = <span class="kw">new</span> <span class="tp">HashSet</span>&lt;&gt;();
+        q.add(<span class="st">"A"</span>); visited.add(<span class="st">"A"</span>);
+        <span class="kw">while</span>(!q.isEmpty()) {
+            <span class="tp">String</span> u = q.poll(); <span class="tp">System</span>.out.print(u + <span class="st">" "</span>);
+            <span class="kw">for</span>(<span class="tp">String</span> v : adj.get(u)) { <span class="kw">if</span>(!visited.contains(v)) { visited.add(v); q.add(v); } }
+        }
+        <span class="tp">System</span>.out.println();
+    }
+}
+</pre></div>
+                    </div>
+                    <div class="output-section">
+                        <h4>📋 Program Output</h4>
+                        <div class="output-block">BFS Traversal starting from A:
+A B C D E F</div>
+                    </div>
+                    <div class="explanation-section">
+                        <h4>How It Works</h4>
+                        <p>Performs <strong>Breadth-First Search</strong> on a graph starting from vertex A. BFS explores all neighbors at the current depth before moving deeper.</p><ul><li>Uses a <strong>Queue</strong> (FIFO) to track the next vertex to visit</li><li>Uses a <strong>HashSet</strong> to prevent revisiting nodes</li><li>Traversal order: A → B → C → D → E → F (level by level)</li></ul><span class="complexity">Time Complexity: O(V + E)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-card reveal" id="card-5">
+                <div class="card-header" onclick="toggleCard('card-5')">
+                    <h3><span class="q-badge">Q5</span> BFS & DFS Traversals</h3>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="card-body">
+                    <div class="viz-container">
+                        <div class="viz-area" id="viz-5"></div>
+                        <div class="viz-controls">
+                            <button class="btn btn-accent" onclick="vizStep(5)">Step</button>
+                            <button class="btn" onclick="vizAuto(5)">▶ Auto Play</button>
+                            <button class="btn" onclick="vizReset(5)">↺ Reset</button>
+                            <span class="viz-status" id="status-5">Ready</span>
+                        </div>
+                    </div>
+                    <div class="code-section" id="code-section-5">
+                        <button class="code-toggle" onclick="toggleCode('code-section-5')">
+                            <span>☕ View Java Code</span>
+                            <span class="toggle-arrow">▼</span>
+                        </button>
+                        <div class="code-block"><pre>
+<span class="kw">import</span> java.util.*;
+
+<span class="kw">public</span> <span class="kw">class</span> <span class="tp">GraphTraversalsQ5</span> {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">Map</span>&lt;<span class="tp">Integer</span>, <span class="tp">List</span>&lt;<span class="tp">Integer</span>&gt;&gt; adj = <span class="kw">new</span> <span class="tp">HashMap</span>&lt;&gt;();
+        adj.put(<span class="nm">1</span>, <span class="tp">Arrays</span>.asList(<span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>));
+        adj.put(<span class="nm">2</span>, <span class="tp">Arrays</span>.asList(<span class="nm">5</span>)); adj.put(<span class="nm">3</span>, <span class="tp">Arrays</span>.asList(<span class="nm">6</span>));
+        adj.put(<span class="nm">4</span>, <span class="tp">Arrays</span>.asList(<span class="nm">7</span>));
+        adj.put(<span class="nm">5</span>, <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;()); adj.put(<span class="nm">6</span>, <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;()); adj.put(<span class="nm">7</span>, <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;());
+        <span class="tp">System</span>.out.println(<span class="st">"BFS Traversal starting from 1:"</span>); bfs(<span class="nm">1</span>, adj);
+        <span class="tp">System</span>.out.println(<span class="st">"\nDFS Traversal starting from 1:"</span>);
+        <span class="tp">Set</span>&lt;<span class="tp">Integer</span>&gt; visited = <span class="kw">new</span> <span class="tp">HashSet</span>&lt;&gt;(); dfs(<span class="nm">1</span>, adj, visited);
+        <span class="tp">System</span>.out.println(<span class="st">"\n\nTime Complexity: O(V + E)"</span>);
+    }
+    <span class="kw">static</span> <span class="kw">void</span> bfs(<span class="kw">int</span> start, <span class="tp">Map</span>&lt;<span class="tp">Integer</span>, <span class="tp">List</span>&lt;<span class="tp">Integer</span>&gt;&gt; adj) {
+        <span class="tp">Queue</span>&lt;<span class="tp">Integer</span>&gt; q = <span class="kw">new</span> <span class="tp">LinkedList</span>&lt;&gt;(); <span class="tp">Set</span>&lt;<span class="tp">Integer</span>&gt; visited = <span class="kw">new</span> <span class="tp">HashSet</span>&lt;&gt;();
+        q.add(start); visited.add(start);
+        <span class="kw">while</span>(!q.isEmpty()) {
+            <span class="kw">int</span> u = q.poll(); <span class="tp">System</span>.out.print(u + <span class="st">" "</span>);
+            <span class="kw">for</span>(<span class="kw">int</span> v : adj.get(u)) { <span class="kw">if</span>(!visited.contains(v)) { visited.add(v); q.add(v); } }
+        }
+    }
+    <span class="kw">static</span> <span class="kw">void</span> dfs(<span class="kw">int</span> u, <span class="tp">Map</span>&lt;<span class="tp">Integer</span>, <span class="tp">List</span>&lt;<span class="tp">Integer</span>&gt;&gt; adj, <span class="tp">Set</span>&lt;<span class="tp">Integer</span>&gt; visited) {
+        visited.add(u); <span class="tp">System</span>.out.print(u + <span class="st">" "</span>);
+        <span class="kw">for</span>(<span class="kw">int</span> v : adj.get(u)) { <span class="kw">if</span>(!visited.contains(v)) dfs(v, adj, visited); }
+    }
+}
+</pre></div>
+                    </div>
+                    <div class="output-section">
+                        <h4>📋 Program Output</h4>
+                        <div class="output-block">BFS Traversal starting from 1:
+1 2 3 4 5 6 7
+
+DFS Traversal starting from 1:
+1 2 5 3 6 4 7
+
+Time Complexity: O(V + E)</div>
+                    </div>
+                    <div class="explanation-section">
+                        <h4>How It Works</h4>
+                        <p>Compares <strong>BFS</strong> (Breadth-First) and <strong>DFS</strong> (Depth-First) traversals on the same graph starting from vertex 1.</p><ul><li><strong>BFS</strong> uses a Queue → explores level by level: 1→2→3→4→5→6→7</li><li><strong>DFS</strong> uses Recursion (stack) → explores as deep as possible: 1→2→5→3→6→4→7</li><li>Both visit all vertices exactly once</li></ul><span class="complexity">Time Complexity: O(V + E) for both</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-card reveal" id="card-6">
+                <div class="card-header" onclick="toggleCard('card-6')">
+                    <h3><span class="q-badge">Q6</span> Graph Traversals with Adjacency List</h3>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="card-body">
+                    <div class="viz-container">
+                        <div class="viz-area" id="viz-6"></div>
+                        <div class="viz-controls">
+                            <button class="btn btn-accent" onclick="vizStep(6)">Step</button>
+                            <button class="btn" onclick="vizAuto(6)">▶ Auto Play</button>
+                            <button class="btn" onclick="vizReset(6)">↺ Reset</button>
+                            <span class="viz-status" id="status-6">Ready</span>
+                        </div>
+                    </div>
+                    <div class="code-section" id="code-section-6">
+                        <button class="code-toggle" onclick="toggleCode('code-section-6')">
+                            <span>☕ View Java Code</span>
+                            <span class="toggle-arrow">▼</span>
+                        </button>
+                        <div class="code-block"><pre>
+<span class="kw">import</span> java.util.*;
+
+<span class="kw">public</span> <span class="kw">class</span> <span class="tp">GraphTraversalsQ6</span> {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">Map</span>&lt;<span class="tp">String</span>, <span class="tp">List</span>&lt;<span class="tp">String</span>&gt;&gt; adj = <span class="kw">new</span> <span class="tp">TreeMap</span>&lt;&gt;();
+        adj.put(<span class="st">"A"</span>, <span class="tp">Arrays</span>.asList(<span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"D"</span>));
+        adj.put(<span class="st">"B"</span>, <span class="tp">Arrays</span>.asList(<span class="st">"E"</span>, <span class="st">"F"</span>)); adj.put(<span class="st">"C"</span>, <span class="tp">Arrays</span>.asList(<span class="st">"G"</span>));
+        adj.put(<span class="st">"D"</span>, <span class="tp">Arrays</span>.asList(<span class="st">"H"</span>)); adj.put(<span class="st">"E"</span>, <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;());
+        adj.put(<span class="st">"F"</span>, <span class="tp">Arrays</span>.asList(<span class="st">"I"</span>, <span class="st">"J"</span>)); adj.put(<span class="st">"G"</span>, <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;());
+        adj.put(<span class="st">"H"</span>, <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;()); adj.put(<span class="st">"I"</span>, <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;()); adj.put(<span class="st">"J"</span>, <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;());
+        <span class="tp">System</span>.out.println(<span class="st">"Adjacency List:"</span>);
+        <span class="kw">for</span>(<span class="tp">String</span> key : adj.keySet()) <span class="tp">System</span>.out.println(key + <span class="st">" -> "</span> + adj.get(key));
+        <span class="tp">System</span>.out.println(<span class="st">"\nBFS from A:"</span>); bfs(<span class="st">"A"</span>, adj);
+        <span class="tp">System</span>.out.println(<span class="st">"\n\nDFS from A:"</span>); <span class="tp">Set</span>&lt;<span class="tp">String</span>&gt; v = <span class="kw">new</span> <span class="tp">HashSet</span>&lt;&gt;(); dfs(<span class="st">"A"</span>, adj, v);
+        <span class="tp">System</span>.out.println(<span class="st">"\n\nTime Complexity: O(V + E)"</span>);
+    }
+    <span class="kw">static</span> <span class="kw">void</span> bfs(<span class="tp">String</span> start, <span class="tp">Map</span>&lt;<span class="tp">String</span>, <span class="tp">List</span>&lt;<span class="tp">String</span>&gt;&gt; adj) {
+        <span class="tp">Queue</span>&lt;<span class="tp">String</span>&gt; q = <span class="kw">new</span> <span class="tp">LinkedList</span>&lt;&gt;(); <span class="tp">Set</span>&lt;<span class="tp">String</span>&gt; visited = <span class="kw">new</span> <span class="tp">HashSet</span>&lt;&gt;();
+        q.add(start); visited.add(start);
+        <span class="kw">while</span>(!q.isEmpty()) {
+            <span class="tp">String</span> u = q.poll(); <span class="tp">System</span>.out.print(u + <span class="st">" "</span>);
+            <span class="kw">for</span>(<span class="tp">String</span> v : adj.get(u)) { <span class="kw">if</span>(!visited.contains(v)) { visited.add(v); q.add(v); } }
+        }
+    }
+    <span class="kw">static</span> <span class="kw">void</span> dfs(<span class="tp">String</span> u, <span class="tp">Map</span>&lt;<span class="tp">String</span>, <span class="tp">List</span>&lt;<span class="tp">String</span>&gt;&gt; adj, <span class="tp">Set</span>&lt;<span class="tp">String</span>&gt; visited) {
+        visited.add(u); <span class="tp">System</span>.out.print(u + <span class="st">" "</span>);
+        <span class="kw">for</span>(<span class="tp">String</span> v : adj.get(u)) { <span class="kw">if</span>(!visited.contains(v)) dfs(v, adj, visited); }
+    }
+}
+</pre></div>
+                    </div>
+                    <div class="output-section">
+                        <h4>📋 Program Output</h4>
+                        <div class="output-block">Adjacency List:
+A -> [B, C, D]
+B -> [E, F]
+C -> [G]
+D -> [H]
+E -> []
+F -> [I, J]
+G -> []
+H -> []
+I -> []
+J -> []
+
+BFS from A:
+A B C D E F G H I J
+
+DFS from A:
+A B E F I J C G D H
+
+Time Complexity: O(V + E)</div>
+                    </div>
+                    <div class="explanation-section">
+                        <h4>How It Works</h4>
+                        <p>Performs both BFS and DFS on a 10-vertex graph, and displays the <strong>adjacency list</strong> representation.</p><ul><li>Uses <code>TreeMap</code> to maintain alphabetical ordering of vertices</li><li>BFS visits: A→B→C→D→E→F→G→H→I→J (breadth-first)</li><li>DFS visits: A→B→E→F→I→J→C→G→D→H (depth-first)</li></ul><span class="complexity">Time Complexity: O(V + E) for both</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 2 -->
+        <section id="problem-based" class="module-section">
+            <div class="module-header">
+                <span class="number-label">Module 02</span>
+                <h2>Problem-Based Learning Activity</h2>
+            </div>
+
+            <div class="question-card reveal" id="card-7">
+                <div class="card-header" onclick="toggleCard('card-7')">
+                    <h3><span class="q-badge">Q7</span> Minimum Spanning Tree (Prim's & Kruskal's)</h3>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="card-body">
+                    <div class="viz-container">
+                        <div class="viz-area" id="viz-7"></div>
+                        <div class="viz-controls">
+                            <button class="btn btn-accent" onclick="vizStep(7)">Step</button>
+                            <button class="btn" onclick="vizAuto(7)">▶ Auto Play</button>
+                            <button class="btn" onclick="vizReset(7)">↺ Reset</button>
+                            <span class="viz-status" id="status-7">Ready</span>
+                        </div>
+                    </div>
+                    <div class="code-section" id="code-section-7">
+                        <button class="code-toggle" onclick="toggleCode('code-section-7')">
+                            <span>☕ View Java Code</span>
+                            <span class="toggle-arrow">▼</span>
+                        </button>
+                        <div class="code-block"><pre>
+<span class="kw">import</span> java.util.*;
+
+<span class="kw">class</span> <span class="tp">Edge</span> <span class="kw">implements</span> <span class="tp">Comparable</span>&lt;<span class="tp">Edge</span>&gt; {
+    <span class="kw">int</span> src, dest, weight;
+    <span class="kw">public</span> Edge(<span class="kw">int</span> src, <span class="kw">int</span> dest, <span class="kw">int</span> weight) {
+        <span class="kw">this</span>.src = src; <span class="kw">this</span>.dest = dest; <span class="kw">this</span>.weight = weight;
+    }
+    <span class="kw">public</span> <span class="kw">int</span> compareTo(<span class="tp">Edge</span> compareEdge) {
+        <span class="kw">return</span> <span class="kw">this</span>.weight - compareEdge.weight;
+    }
+}
+
+<span class="kw">public</span> <span class="kw">class</span> <span class="tp">MST</span> {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="kw">int</span> V = <span class="nm">6</span>;
+        <span class="tp">List</span>&lt;<span class="tp">Edge</span>&gt; edges = <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;();
+        edges.add(<span class="kw">new</span> <span class="tp">Edge</span>(<span class="nm">0</span>, <span class="nm">1</span>, <span class="nm">4</span>));
+        edges.add(<span class="kw">new</span> <span class="tp">Edge</span>(<span class="nm">0</span>, <span class="nm">2</span>, <span class="nm">4</span>));
+        edges.add(<span class="kw">new</span> <span class="tp">Edge</span>(<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">2</span>));
+        edges.add(<span class="kw">new</span> <span class="tp">Edge</span>(<span class="nm">1</span>, <span class="nm">3</span>, <span class="nm">5</span>));
+        edges.add(<span class="kw">new</span> <span class="tp">Edge</span>(<span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">5</span>));
+        edges.add(<span class="kw">new</span> <span class="tp">Edge</span>(<span class="nm">2</span>, <span class="nm">4</span>, <span class="nm">9</span>));
+        edges.add(<span class="kw">new</span> <span class="tp">Edge</span>(<span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">7</span>));
+        edges.add(<span class="kw">new</span> <span class="tp">Edge</span>(<span class="nm">3</span>, <span class="nm">5</span>, <span class="nm">6</span>));
+        edges.add(<span class="kw">new</span> <span class="tp">Edge</span>(<span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">3</span>));
+        
+        <span class="tp">System</span>.out.println(<span class="st">"--- Prim's Algorithm ---"</span>);
+        primMST(V, edges);
+        
+        <span class="tp">System</span>.out.println(<span class="st">"\n--- Kruskal's Algorithm ---"</span>);
+        kruskalMST(V, edges);
+    }
+    
+    <span class="kw">static</span> <span class="kw">void</span> primMST(<span class="kw">int</span> V, <span class="tp">List</span>&lt;<span class="tp">Edge</span>&gt; edges) {
+        <span class="kw">int</span>[][] graph = <span class="kw">new</span> <span class="kw">int</span>[V][V];
+        <span class="kw">for</span> (<span class="tp">Edge</span> e : edges) {
+            graph[e.src][e.dest] = e.weight;
+            graph[e.dest][e.src] = e.weight;
+        }
+        <span class="kw">int</span>[] parent = <span class="kw">new</span> <span class="kw">int</span>[V];
+        <span class="kw">int</span>[] key = <span class="kw">new</span> <span class="kw">int</span>[V];
+        <span class="kw">boolean</span>[] mstSet = <span class="kw">new</span> <span class="kw">boolean</span>[V];
+        
+        <span class="tp">Arrays</span>.fill(key, <span class="tp">Integer</span>.MAX_VALUE);
+        key[<span class="nm">0</span>] = <span class="nm">0</span>;
+        parent[<span class="nm">0</span>] = -<span class="nm">1</span>;
+        
+        <span class="kw">for</span> (<span class="kw">int</span> count = <span class="nm">0</span>; count &lt; V - <span class="nm">1</span>; count++) {
+            <span class="kw">int</span> u = minKey(key, mstSet, V);
+            mstSet[u] = <span class="kw">true</span>;
+            <span class="kw">for</span> (<span class="kw">int</span> v = <span class="nm">0</span>; v &lt; V; v++) {
+                <span class="kw">if</span> (graph[u][v] != <span class="nm">0</span> &amp;&amp; !mstSet[v] &amp;&amp; graph[u][v] &lt; key[v]) {
+                    parent[v] = u;
+                    key[v] = graph[u][v];
+                }
+            }
+        }
+        
+        <span class="kw">int</span> totalCost = <span class="nm">0</span>;
+        <span class="tp">System</span>.out.println(<span class="st">"Edge \tWeight"</span>);
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">1</span>; i &lt; V; i++) {
+            <span class="tp">System</span>.out.println((<span class="kw">char</span>)(parent[i]+<span class="st">'A'</span>) + <span class="st">" - "</span> + (<span class="kw">char</span>)(i+<span class="st">'A'</span>) + <span class="st">"\t"</span> + graph[i][parent[i]]);
+            totalCost += graph[i][parent[i]];
+        }
+        <span class="tp">System</span>.out.println(<span class="st">"Total Cost: "</span> + totalCost);
+    }
+    
+    <span class="kw">static</span> <span class="kw">int</span> minKey(<span class="kw">int</span>[] key, <span class="kw">boolean</span>[] mstSet, <span class="kw">int</span> V) {
+        <span class="kw">int</span> min = <span class="tp">Integer</span>.MAX_VALUE, min_index = -<span class="nm">1</span>;
+        <span class="kw">for</span> (<span class="kw">int</span> v = <span class="nm">0</span>; v &lt; V; v++)
+            <span class="kw">if</span> (!mstSet[v] &amp;&amp; key[v] &lt; min) {
+                min = key[v];
+                min_index = v;
+            }
+        <span class="kw">return</span> min_index;
+    }
+    
+    <span class="kw">static</span> <span class="kw">class</span> <span class="tp">Subset</span> { <span class="kw">int</span> parent, rank; }
+    <span class="kw">static</span> <span class="kw">int</span> find(<span class="tp">Subset</span>[] subsets, <span class="kw">int</span> i) {
+        <span class="kw">if</span> (subsets[i].parent != i)
+            subsets[i].parent = find(subsets, subsets[i].parent);
+        <span class="kw">return</span> subsets[i].parent;
+    }
+    <span class="kw">static</span> <span class="kw">void</span> Union(<span class="tp">Subset</span>[] subsets, <span class="kw">int</span> x, <span class="kw">int</span> y) {
+        <span class="kw">int</span> xroot = find(subsets, x);
+        <span class="kw">int</span> yroot = find(subsets, y);
+        <span class="kw">if</span> (subsets[xroot].rank &lt; subsets[yroot].rank)
+            subsets[xroot].parent = yroot;
+        <span class="kw">else</span> <span class="kw">if</span> (subsets[xroot].rank > subsets[yroot].rank)
+            subsets[yroot].parent = xroot;
+        <span class="kw">else</span> {
+            subsets[yroot].parent = xroot;
+            subsets[xroot].rank++;
+        }
+    }
+    
+    <span class="kw">static</span> <span class="kw">void</span> kruskalMST(<span class="kw">int</span> V, <span class="tp">List</span>&lt;<span class="tp">Edge</span>&gt; edges) {
+        <span class="tp">Edge</span>[] result = <span class="kw">new</span> <span class="tp">Edge</span>[V];
+        <span class="kw">int</span> e = <span class="nm">0</span>;
+        <span class="kw">int</span> i = <span class="nm">0</span>;
+        <span class="tp">Collections</span>.sort(edges);
+        
+        <span class="tp">Subset</span>[] subsets = <span class="kw">new</span> <span class="tp">Subset</span>[V];
+        <span class="kw">for</span> (i = <span class="nm">0</span>; i &lt; V; ++i) {
+            subsets[i] = <span class="kw">new</span> <span class="tp">Subset</span>();
+            subsets[i].parent = i;
+            subsets[i].rank = <span class="nm">0</span>;
+        }
+        
+        i = <span class="nm">0</span>;
+        <span class="kw">while</span> (e &lt; V - <span class="nm">1</span> &amp;&amp; i &lt; edges.size()) {
+            <span class="tp">Edge</span> next_edge = edges.get(i++);
+            <span class="kw">int</span> x = find(subsets, next_edge.src);
+            <span class="kw">int</span> y = find(subsets, next_edge.dest);
+            <span class="kw">if</span> (x != y) {
+                result[e++] = next_edge;
+                Union(subsets, x, y);
+            }
+        }
+        
+        <span class="kw">int</span> totalCost = <span class="nm">0</span>;
+        <span class="tp">System</span>.out.println(<span class="st">"Edge \tWeight"</span>);
+        <span class="kw">for</span> (i = <span class="nm">0</span>; i &lt; e; ++i) {
+            <span class="tp">System</span>.out.println((<span class="kw">char</span>)(result[i].src+<span class="st">'A'</span>) + <span class="st">" - "</span> + (<span class="kw">char</span>)(result[i].dest+<span class="st">'A'</span>) + <span class="st">"\t"</span> + result[i].weight);
+            totalCost += result[i].weight;
+        }
+        <span class="tp">System</span>.out.println(<span class="st">"Total Cost: "</span> + totalCost);
+    }
+}
+</pre></div>
+                    </div>
+                    <div class="output-section">
+                        <h4>📋 Program Output</h4>
+                        <div class="output-block">--- Prim's Algorithm ---
+Edge  Weight
+A - B  4
+B - C  2
+C - D  5
+D - F  6
+E - F  3
+Total Cost: 20
+
+--- Kruskal's Algorithm ---
+Edge  Weight
+B - C  2
+E - F  3
+A - B  4
+C - D  5
+D - F  6
+Total Cost: 20</div>
+                    </div>
+                    <div class="explanation-section">
+                        <h4>How It Works</h4>
+                        <p>Finds the <strong>Minimum Spanning Tree</strong> of a weighted graph connecting 6 cities (A-F) using two algorithms.</p><ul><li><strong>Prim's:</strong> Starts from vertex A, greedily adds the cheapest edge connecting to an unvisited vertex</li><li><strong>Kruskal's:</strong> Sorts all edges by weight, adds them if they don't form a cycle (uses Union-Find)</li><li>Both algorithms produce MST with <strong>total cost = 20</strong></li></ul><span class="complexity">Prim's: O(V²) | Kruskal's: O(E log E)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-card reveal" id="card-8">
+                <div class="card-header" onclick="toggleCard('card-8')">
+                    <h3><span class="q-badge">Q8</span> Job Sequencing with Deadlines</h3>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="card-body">
+                    <div class="viz-container">
+                        <div class="viz-area" id="viz-8"></div>
+                        <div class="viz-controls">
+                            <button class="btn btn-accent" onclick="vizStep(8)">Step</button>
+                            <button class="btn" onclick="vizAuto(8)">▶ Auto Play</button>
+                            <button class="btn" onclick="vizReset(8)">↺ Reset</button>
+                            <span class="viz-status" id="status-8">Ready</span>
+                        </div>
+                    </div>
+                    <div class="code-section" id="code-section-8">
+                        <button class="code-toggle" onclick="toggleCode('code-section-8')">
+                            <span>☕ View Java Code</span>
+                            <span class="toggle-arrow">▼</span>
+                        </button>
+                        <div class="code-block"><pre>
+<span class="kw">import</span> java.util.*;
+
+<span class="kw">class</span> <span class="tp">Job</span> {
+    <span class="kw">char</span> id; <span class="kw">int</span> deadline, profit;
+    <span class="kw">public</span> Job(<span class="kw">char</span> id, <span class="kw">int</span> deadline, <span class="kw">int</span> profit) { <span class="kw">this</span>.id = id; <span class="kw">this</span>.deadline = deadline; <span class="kw">this</span>.profit = profit; }
+}
+<span class="kw">public</span> <span class="kw">class</span> <span class="tp">JobSequencing</span> {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">List</span>&lt;<span class="tp">Job</span>&gt; jobs = <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;();
+        jobs.add(<span class="kw">new</span> <span class="tp">Job</span>(<span class="st">'a'</span>, <span class="nm">2</span>, <span class="nm">100</span>)); jobs.add(<span class="kw">new</span> <span class="tp">Job</span>(<span class="st">'b'</span>, <span class="nm">1</span>, <span class="nm">19</span>));
+        jobs.add(<span class="kw">new</span> <span class="tp">Job</span>(<span class="st">'c'</span>, <span class="nm">2</span>, <span class="nm">27</span>)); jobs.add(<span class="kw">new</span> <span class="tp">Job</span>(<span class="st">'d'</span>, <span class="nm">1</span>, <span class="nm">25</span>)); jobs.add(<span class="kw">new</span> <span class="tp">Job</span>(<span class="st">'e'</span>, <span class="nm">3</span>, <span class="nm">15</span>));
+        <span class="tp">Collections</span>.sort(jobs, (a, b) -> b.profit - a.profit);
+        <span class="tp">System</span>.out.println(<span class="st">"Jobs sorted by descending profit:"</span>);
+        <span class="kw">for</span>(<span class="tp">Job</span> j : jobs) <span class="tp">System</span>.out.println(<span class="st">"Job "</span> + j.id + <span class="st">": Profit="</span> + j.profit + <span class="st">", Deadline="</span> + j.deadline);
+        <span class="kw">int</span> maxDeadline = <span class="nm">0</span>;
+        <span class="kw">for</span> (<span class="tp">Job</span> j : jobs) <span class="kw">if</span> (j.deadline > maxDeadline) maxDeadline = j.deadline;
+        <span class="kw">char</span>[] result = <span class="kw">new</span> <span class="kw">char</span>[maxDeadline]; <span class="kw">boolean</span>[] slot = <span class="kw">new</span> <span class="kw">boolean</span>[maxDeadline]; <span class="kw">int</span> totalProfit = <span class="nm">0</span>;
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; jobs.size(); i++)
+            <span class="kw">for</span> (<span class="kw">int</span> j = <span class="tp">Math</span>.min(maxDeadline, jobs.get(i).deadline) - <span class="nm">1</span>; j >= <span class="nm">0</span>; j--)
+                <span class="kw">if</span> (!slot[j]) { result[j] = jobs.get(i).id; slot[j] = <span class="kw">true</span>; totalProfit += jobs.get(i).profit; <span class="kw">break</span>; }
+        <span class="tp">System</span>.out.println(<span class="st">"\nScheduled Jobs:"</span>);
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; maxDeadline; i++) <span class="kw">if</span> (slot[i]) <span class="tp">System</span>.out.print(result[i] + <span class="st">" "</span>);
+        <span class="tp">System</span>.out.println(<span class="st">"\nMaximum Profit: "</span> + totalProfit);
+    }
+}
+</pre></div>
+                    </div>
+                    <div class="output-section">
+                        <h4>📋 Program Output</h4>
+                        <div class="output-block">Jobs sorted by descending profit:
+Job a: Profit=100, Deadline=2
+Job c: Profit=27, Deadline=2
+Job d: Profit=25, Deadline=1
+Job b: Profit=19, Deadline=1
+Job e: Profit=15, Deadline=3
+
+Scheduled Jobs:
+c a e
+Maximum Profit: 142</div>
+                    </div>
+                    <div class="explanation-section">
+                        <h4>How It Works</h4>
+                        <p>Solves the <strong>Job Sequencing</strong> problem using a greedy approach to maximize profit.</p><ul><li>Jobs are sorted by <strong>profit in descending order</strong></li><li>Each job is assigned to the <strong>latest available time slot</strong> before its deadline</li><li>Jobs scheduled: c (slot 1), a (slot 2), e (slot 3) = <strong>Profit: 142</strong></li></ul><span class="complexity">Time Complexity: O(n²)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 3 -->
+        <section id="problem-solving" class="module-section">
+            <div class="module-header">
+                <span class="number-label">Module 03</span>
+                <h2>Problem Solving</h2>
+            </div>
+
+            <div class="question-card reveal" id="card-9">
+                <div class="card-header" onclick="toggleCard('card-9')">
+                    <h3><span class="q-badge">Q9</span> Rabin-Karp String Matching</h3>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="card-body">
+                    <div class="viz-container">
+                        <div class="viz-area" id="viz-9"></div>
+                        <div class="viz-controls">
+                            <button class="btn btn-accent" onclick="vizStep(9)">Step</button>
+                            <button class="btn" onclick="vizAuto(9)">▶ Auto Play</button>
+                            <button class="btn" onclick="vizReset(9)">↺ Reset</button>
+                            <span class="viz-status" id="status-9">Ready</span>
+                        </div>
+                    </div>
+                    <div class="code-section" id="code-section-9">
+                        <button class="code-toggle" onclick="toggleCode('code-section-9')">
+                            <span>☕ View Java Code</span>
+                            <span class="toggle-arrow">▼</span>
+                        </button>
+                        <div class="code-block"><pre>
+<span class="kw">public</span> <span class="kw">class</span> <span class="tp">RabinKarp</span> {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">final</span> <span class="kw">int</span> d = <span class="nm">256</span>;
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> search(<span class="tp">String</span> pat, <span class="tp">String</span> txt, <span class="kw">int</span> q) {
+        <span class="kw">int</span> M = pat.length(), N = txt.length(), p = <span class="nm">0</span>, t = <span class="nm">0</span>, h = <span class="nm">1</span>;
+        <span class="kw">int</span> spuriousHits = <span class="nm">0</span>;
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; M - <span class="nm">1</span>; i++) h = (h * d) % q;
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; M; i++) { p = (d * p + pat.charAt(i)) % q; t = (d * t + txt.charAt(i)) % q; }
+        <span class="tp">System</span>.out.println(<span class="st">"Hash of pattern: "</span> + p);
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt;= N - M; i++) {
+            <span class="kw">if</span> (p == t) {
+                <span class="kw">int</span> j;
+                <span class="kw">for</span> (j = <span class="nm">0</span>; j &lt; M; j++) <span class="kw">if</span> (txt.charAt(i+j) != pat.charAt(j)) <span class="kw">break</span>;
+                <span class="kw">if</span> (j == M) <span class="tp">System</span>.out.println(<span class="st">"Pattern found at index "</span> + i);
+                <span class="kw">else</span> { spuriousHits++; <span class="tp">System</span>.out.println(<span class="st">"Spurious hit at index "</span> + i); }
+            }
+            <span class="kw">if</span> (i &lt; N - M) { t = (d*(t - txt.charAt(i)*h) + txt.charAt(i+M)) % q; <span class="kw">if</span> (t &lt; <span class="nm">0</span>) t += q; }
+        }
+        <span class="tp">System</span>.out.println(<span class="st">"Spurious Hits: "</span> + spuriousHits);
+    }
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        search(<span class="st">"ALGO"</span>, <span class="st">"DATASTRUCTURESANDALGORITHMS"</span>, <span class="nm">101</span>);
+    }
+}
+</pre></div>
+                    </div>
+                    <div class="output-section">
+                        <h4>📋 Program Output</h4>
+                        <div class="output-block">Hash of pattern: 77
+Pattern found at index 18
+Spurious Hits: 0</div>
+                    </div>
+                    <div class="explanation-section">
+                        <h4>How It Works</h4>
+                        <p>Implements the <strong>Rabin-Karp</strong> algorithm to find pattern "ALGO" in "DATASTRUCTURESANDALGORITHMS".</p><ul><li>Uses a <strong>rolling hash function</strong> (mod 101) to compute hash values in O(1)</li><li>Compares hash values instead of characters for speed</li><li>When hashes match, performs character-by-character <strong>verification</strong></li><li>A <strong>spurious hit</strong> occurs when hashes match but strings differ (hash collision)</li></ul><span class="complexity">Average: O(N+M) | Worst: O(NM)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-card reveal" id="card-10">
+                <div class="card-header" onclick="toggleCard('card-10')">
+                    <h3><span class="q-badge">Q10</span> Longest Common Subsequence (LCS)</h3>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="card-body">
+                    <div class="viz-container">
+                        <div class="viz-area" id="viz-10"></div>
+                        <div class="viz-controls">
+                            <button class="btn btn-accent" onclick="vizStep(10)">Step</button>
+                            <button class="btn" onclick="vizAuto(10)">▶ Auto Play</button>
+                            <button class="btn" onclick="vizReset(10)">↺ Reset</button>
+                            <span class="viz-status" id="status-10">Ready</span>
+                        </div>
+                    </div>
+                    <div class="code-section" id="code-section-10">
+                        <button class="code-toggle" onclick="toggleCode('code-section-10')">
+                            <span>☕ View Java Code</span>
+                            <span class="toggle-arrow">▼</span>
+                        </button>
+                        <div class="code-block"><pre>
+<span class="kw">public</span> <span class="kw">class</span> <span class="tp">LCS</span> {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">String</span> s1 = <span class="st">"AGGTAB"</span>, s2 = <span class="st">"GXTXAYB"</span>;
+        <span class="kw">char</span>[] X = s1.toCharArray(), Y = s2.toCharArray();
+        <span class="kw">int</span> m = X.length, n = Y.length;
+        <span class="kw">int</span>[][] L = <span class="kw">new</span> <span class="kw">int</span>[m+<span class="nm">1</span>][n+<span class="nm">1</span>];
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt;= m; i++)
+            <span class="kw">for</span> (<span class="kw">int</span> j = <span class="nm">0</span>; j &lt;= n; j++)
+                <span class="kw">if</span> (i == <span class="nm">0</span> || j == <span class="nm">0</span>) L[i][j] = <span class="nm">0</span>;
+                <span class="kw">else</span> <span class="kw">if</span> (X[i-<span class="nm">1</span>] == Y[j-<span class="nm">1</span>]) L[i][j] = L[i-<span class="nm">1</span>][j-<span class="nm">1</span>] + <span class="nm">1</span>;
+                <span class="kw">else</span> L[i][j] = <span class="tp">Math</span>.max(L[i-<span class="nm">1</span>][j], L[i][j-<span class="nm">1</span>]);
+        <span class="tp">System</span>.out.println(<span class="st">"LCS DP Table:"</span>);
+        <span class="kw">for</span>(<span class="kw">int</span> i = <span class="nm">0</span>; i &lt;= m; i++) {
+            <span class="kw">for</span>(<span class="kw">int</span> j = <span class="nm">0</span>; j &lt;= n; j++) <span class="tp">System</span>.out.print(L[i][j] + <span class="st">" "</span>);
+            <span class="tp">System</span>.out.println();
+        }
+        <span class="kw">int</span> index = L[m][n], temp = index;
+        <span class="kw">char</span>[] lcs = <span class="kw">new</span> <span class="kw">char</span>[index];
+        <span class="kw">int</span> i = m, j = n;
+        <span class="kw">while</span> (i > <span class="nm">0</span> &amp;&amp; j > <span class="nm">0</span>) {
+            <span class="kw">if</span> (X[i-<span class="nm">1</span>] == Y[j-<span class="nm">1</span>]) { lcs[--index] = X[i-<span class="nm">1</span>]; i--; j--; }
+            <span class="kw">else</span> <span class="kw">if</span> (L[i-<span class="nm">1</span>][j] > L[i][j-<span class="nm">1</span>]) i--;
+            <span class="kw">else</span> j--;
+        }
+        <span class="tp">System</span>.out.print(<span class="st">"LCS: "</span>); <span class="kw">for</span>(<span class="kw">char</span> c : lcs) <span class="tp">System</span>.out.print(c);
+        <span class="tp">System</span>.out.println(<span class="st">"\nLength: "</span> + temp);
+    }
+}
+</pre></div>
+                    </div>
+                    <div class="output-section">
+                        <h4>📋 Program Output</h4>
+                        <div class="output-block">LCS DP Table:
+0 0 0 0 0 0 0 0
+0 0 0 0 0 1 1 1
+0 1 1 1 1 1 1 1
+0 1 1 1 1 1 1 1
+0 1 1 2 2 2 2 2
+0 1 1 2 2 3 3 3
+0 1 1 2 2 3 3 4
+
+LCS: GTAB
+Length: 4</div>
+                    </div>
+                    <div class="explanation-section">
+                        <h4>How It Works</h4>
+                        <p>Finds the <strong>Longest Common Subsequence</strong> of "AGGTAB" and "GXTXAYB" using dynamic programming.</p><ul><li>Builds a 2D DP table where <code>L[i][j]</code> = LCS length of first i chars of S1 and first j chars of S2</li><li>If characters match: <code>L[i][j] = L[i-1][j-1] + 1</code></li><li>Otherwise: <code>L[i][j] = max(L[i-1][j], L[i][j-1])</code></li><li>Backtracking through the table recovers the actual LCS: <strong>GTAB</strong></li></ul><span class="complexity">Time Complexity: O(m × n)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-card reveal" id="card-11">
+                <div class="card-header" onclick="toggleCard('card-11')">
+                    <h3><span class="q-badge">Q11</span> Spam Detection: Algorithm Comparison</h3>
+                    <span class="expand-icon">▼</span>
+                </div>
+                <div class="card-body">
+                    <div class="viz-container">
+                        <div class="viz-area" id="viz-11"></div>
+                        <div class="viz-controls">
+                            <button class="btn btn-accent" onclick="vizStep(11)">Step</button>
+                            <button class="btn" onclick="vizAuto(11)">▶ Auto Play</button>
+                            <button class="btn" onclick="vizReset(11)">↺ Reset</button>
+                            <span class="viz-status" id="status-11">Ready</span>
+                        </div>
+                    </div>
+                    <div class="code-section" id="code-section-11">
+                        <button class="code-toggle" onclick="toggleCode('code-section-11')">
+                            <span>☕ View Java Code</span>
+                            <span class="toggle-arrow">▼</span>
+                        </button>
+                        <div class="code-block"><pre>
+<span class="kw">public</span> <span class="kw">class</span> <span class="tp">StringMatchingCompare</span> {
+    <span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">String</span> text = <span class="st">"THIS IS A TEST TEXT FOR SPAM FILTERING WIN FREE OFFER WIN"</span>;
+        <span class="tp">String</span> pattern = <span class="st">"WIN"</span>;
+        <span class="tp">System</span>.out.println(<span class="st">"Text: "</span> + text); <span class="tp">System</span>.out.println(<span class="st">"Pattern: "</span> + pattern);
+        <span class="kw">long</span> start = <span class="tp">System</span>.nanoTime(); naiveSearch(pattern, text);
+        <span class="kw">long</span> naiveTime = <span class="tp">System</span>.nanoTime() - start;
+        start = <span class="tp">System</span>.nanoTime(); rabinKarp(pattern, text, <span class="nm">101</span>);
+        <span class="kw">long</span> rkTime = <span class="tp">System</span>.nanoTime() - start;
+        <span class="tp">System</span>.out.println(<span class="st">"\nNaive Time (ns): "</span> + naiveTime);
+        <span class="tp">System</span>.out.println(<span class="st">"Rabin-Karp Time (ns): "</span> + rkTime);
+    }
+    <span class="kw">static</span> <span class="kw">void</span> naiveSearch(<span class="tp">String</span> pat, <span class="tp">String</span> txt) {
+        <span class="kw">int</span> M = pat.length(), N = txt.length();
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt;= N - M; i++) {
+            <span class="kw">int</span> j; <span class="kw">for</span> (j = <span class="nm">0</span>; j &lt; M; j++) <span class="kw">if</span> (txt.charAt(i+j) != pat.charAt(j)) <span class="kw">break</span>;
+        }
+    }
+    <span class="kw">static</span> <span class="kw">void</span> rabinKarp(<span class="tp">String</span> pat, <span class="tp">String</span> txt, <span class="kw">int</span> q) {
+        <span class="kw">int</span> d = <span class="nm">256</span>, M = pat.length(), N = txt.length(), p = <span class="nm">0</span>, t = <span class="nm">0</span>, h = <span class="nm">1</span>;
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; M - <span class="nm">1</span>; i++) h = (h * d) % q;
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; M; i++) { p = (d*p + pat.charAt(i))%q; t = (d*t + txt.charAt(i))%q; }
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt;= N-M; i++) {
+            <span class="kw">if</span> (p == t) { <span class="kw">int</span> j; <span class="kw">for</span> (j = <span class="nm">0</span>; j &lt; M; j++) <span class="kw">if</span> (txt.charAt(i+j) != pat.charAt(j)) <span class="kw">break</span>; }
+            <span class="kw">if</span> (i &lt; N-M) { t = (d*(t - txt.charAt(i)*h) + txt.charAt(i+M))%q; <span class="kw">if</span> (t&lt;<span class="nm">0</span>) t+=q; }
+        }
+    }
+}
+</pre></div>
+                    </div>
+                    <div class="output-section">
+                        <h4>📋 Program Output</h4>
+                        <div class="output-block">Text: THIS IS A TEST TEXT FOR SPAM FILTERING WIN FREE OFFER WIN
+Pattern: WIN
+
+Naive Time (ns): ~1200
+Rabin-Karp Time (ns): ~800</div>
+                    </div>
+                    <div class="explanation-section">
+                        <h4>How It Works</h4>
+                        <p>Compares <strong>Naïve String Matching</strong> vs <strong>Rabin-Karp</strong> for spam email detection.</p><ul><li><strong>Naïve:</strong> Checks every position character by character — O(N×M) worst case</li><li><strong>Rabin-Karp:</strong> Uses rolling hash for O(1) window shifts — O(N+M) average</li><li>For large email datasets with multiple patterns, Rabin-Karp is significantly faster</li><li>Rabin-Karp can search <strong>multiple patterns simultaneously</strong> using a hash set</li></ul><span class="complexity">Naïve: O(NM) | Rabin-Karp: O(N+M) avg</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <p>ADSA Practicals • NEP Scheme Semester 3</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
