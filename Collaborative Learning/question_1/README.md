@@ -1,3 +1,15 @@
-# Question 1\n\n**Task:** Construct an AVL Tree by inserting: 50, 20, 70, 10, 30, 60, 80, 25\n\n## Output\n\n```text\nPreorder traversal of constructed AVL tree:
+# Question 1
+
+**Task:** Construct an AVL Tree by inserting: 50, 20, 70, 10, 30, 60, 80, 25
+
+## Output
+
+```text
+Preorder traversal of constructed AVL tree:
 50 20 10 30 25 70 60 80 
-\n```\n\n## Code Explanation\n\nThe code is implemented in `AVLTree.java`. It defines an AVL tree with operations for insertion, left and right rotations to maintain the balance factor. The `height` and `getBalance` methods help to determine if a node is imbalanced. After inserting the given nodes, the program prints the preorder traversal to verify the AVL structure.
+
+```
+
+## Code Explanation
+
+The code is implemented in `AVLTree.java`. It defines an AVL tree with operations for insertion, left and right rotations to maintain the balance factor. The `height` and `getBalance` methods help to determine if a node is imbalanced. After inserting the given nodes, the program prints the preorder traversal to verify the AVL structure.
