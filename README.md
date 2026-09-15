@@ -26,6 +26,21 @@ This folder contains string matching and dynamic programming problems:
 * **Question 2 (Longest Common Subsequence):** Using Dynamic Programming to find the LCS of DNA sequences, highlighting its importance in bioinformatics.
 * **Question 3 (Spam Email Detection):** Comparing the Naïve String Matching algorithm against the Rabin-Karp algorithm for efficient spam filtering on large datasets.
 
+### 4. Experiments (Basic Experiments)
+This folder contains the core basic experiments defined in the lab syllabus:
+* **Experiment 1:** Implementation of Merge Sort
+* **Experiment 2:** Implementation of a hash function
+* **Experiment 3:** Construct a binary tree from user inputs and perform Pre-order, In-order, and Post-order traversals
+* **Experiment 4:** Construct a Binary Tree and perform Traversals and search for the given key
+* **Experiment 5:** Implement Breadth First Search graph traversal
+* **Experiment 6:** Implement the Optimal Storage on Tape algorithm
+* **Experiment 7:** Implement Prim's Algorithm
+* **Experiment 8:** Implement the Longest Common Subsequence (LCS) algorithm
+* **Experiment 9:** Shortest paths from a single source vertex using Dijkstra's algorithm
+* **Experiment 10:** Floyd-Warshall algorithm for computing shortest paths
+* **Experiment 11:** Place N queens on an NxN chessboard using backtracking
+* **Experiment 12:** Implementation of Hamiltonian Cycle
+
 ## How to Run
 
 Each question is enclosed in its own folder (e.g., `question_1`). Inside each folder, you will find:
