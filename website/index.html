@@ -17,6 +17,7 @@
                 <a href="#collaborative">Collaborative Learning</a>
                 <a href="#problem-based">Problem-Based Learning</a>
                 <a href="#problem-solving">Problem Solving</a>
+                <a href="#experiments">Experiments</a>
             </nav>
             <button class="mobile-toggle">☰</button>
         </div>
@@ -1020,6 +1021,944 @@ Rabin-Karp Time (ns): ~800</div>
 
     </main>
 
+
+    <section id="experiments" class="module-section">
+        <div class="module-header reveal">
+            <span class="module-label">Module 04</span>
+            <h2>Basic Experiments</h2>
+        </div>
+
+        <div class="question-card reveal" id="card-12">
+            <div class="card-header" onclick="toggleCard('card-12')">
+                <h3><span class="q-badge">E1</span> Implementation of Merge Sort</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-12"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(12)">Step</button>
+                        <button class="btn" onclick="vizAuto(12)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(12)">↺ Reset</button>
+                        <span class="viz-status" id="status-12">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-12">
+                    <button class="code-toggle" onclick="toggleCode('code-section-12')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> MergeSort {
+    <span class="kw">void</span> merge(<span class="kw">int</span> arr[], <span class="kw">int</span> l, <span class="kw">int</span> m, <span class="kw">int</span> r) {
+        <span class="kw">int</span> n1 = m - l + 1;
+        <span class="kw">int</span> n2 = r - m;
+        <span class="kw">int</span> L[] = <span class="kw">new</span> <span class="kw">int</span>[n1];
+        <span class="kw">int</span> R[] = <span class="kw">new</span> <span class="kw">int</span>[n2];
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; n1; ++i) L[i] = arr[l + i];
+        <span class="kw">for</span> (<span class="kw">int</span> j = 0; j &lt; n2; ++j) R[j] = arr[m + 1 + j];
+        <span class="kw">int</span> i = 0, j = 0, k = l;
+        <span class="kw">while</span> (i &lt; n1 &amp;&amp; j &lt; n2) {
+            <span class="kw">if</span> (L[i] &lt;= R[j]) { arr[k] = L[i]; i++; }
+            <span class="kw">else</span> { arr[k] = R[j]; j++; }
+            k++;
+        }
+        <span class="kw">while</span> (i &lt; n1) { arr[k] = L[i]; i++; k++; }
+        <span class="kw">while</span> (j &lt; n2) { arr[k] = R[j]; j++; k++; }
+    }
+    <span class="kw">void</span> sort(<span class="kw">int</span> arr[], <span class="kw">int</span> l, <span class="kw">int</span> r) {
+        <span class="kw">if</span> (l &lt; r) {
+            <span class="kw">int</span> m = l + (r - l) / 2;
+            sort(arr, l, m);
+            sort(arr, m + 1, r);
+            merge(arr, l, m, r);
+        }
+    }
+    <span class="kw">static</span> <span class="kw">void</span> printArray(<span class="kw">int</span> arr[]) {
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; arr.length; ++i) <span class="tp">System</span>.<span class="tp">out</span>.print(arr[i] + <span class="st">&quot; &quot;</span>);
+        <span class="tp">System</span>.<span class="tp">out</span>.println();
+    }
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span> args[]) {
+        <span class="kw">int</span> arr[] = {12, 11, 13, 5, 6, 7};
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Original array:&quot;</span>);
+        printArray(arr);
+        MergeSort ob = <span class="kw">new</span> MergeSort();
+        ob.sort(arr, 0, arr.length - 1);
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Sorted array:&quot;</span>);
+        printArray(arr);
+    }
+}</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">Original array:
+12 11 13 5 6 7 
+Sorted array:
+5 6 7 11 12 13</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>This code implements the Merge Sort algorithm, a divide-and-conquer approach. It recursively divides the array in half, sorts each half, and merges the sorted halves together.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-13">
+            <div class="card-header" onclick="toggleCard('card-13')">
+                <h3><span class="q-badge">E2</span> Implementation of a hash function</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-13"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(13)">Step</button>
+                        <button class="btn" onclick="vizAuto(13)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(13)">↺ Reset</button>
+                        <span class="viz-status" id="status-13">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-13">
+                    <button class="code-toggle" onclick="toggleCode('code-section-13')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span class="kw">import</span> java.util.<span class="tp">LinkedList</span>;
+<span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> HashFunction {
+    <span class="kw">int</span> capacity;
+    <span class="tp">LinkedList</span>&lt;<span class="tp">Integer</span>&gt;[] table;
+    
+    @SuppressWarnings(<span class="st">&quot;unchecked&quot;</span>)
+    <span <span class="kw">class</span>="kw">public</span> HashFunction(<span class="kw">int</span> capacity) {
+        this.capacity = capacity;
+        table = <span class="kw">new</span> <span class="tp">LinkedList</span>[capacity];
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; capacity; i++) table[i] = <span class="kw">new</span> <span class="tp">LinkedList</span>&lt;&gt;();
+    }
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">void</span> insert(<span class="kw">int</span> key) {
+        <span class="kw">int</span> index = key % capacity;
+        table[index].add(key);
+    }
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">void</span> display() {
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; capacity; i++) {
+            <span class="tp">System</span>.<span class="tp">out</span>.print(<span class="st">&quot;Bucket &quot;</span> + i + <span class="st">&quot;: &quot;</span>);
+            <span class="kw">for</span> (<span class="tp">Integer</span> key : table[i]) <span class="tp">System</span>.<span class="tp">out</span>.print(key + <span class="st">&quot; -&gt; &quot;</span>);
+            <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;null&quot;</span>);
+        }
+    }
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        HashFunction hf = <span class="kw">new</span> HashFunction(7);
+        <span class="kw">int</span>[] keys = {15, 11, 27, 8, 12, 21, 14};
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Inserting keys: 15, 11, 27, 8, 12, 21, 14&quot;</span>);
+        <span class="kw">for</span> (<span class="kw">int</span> key : keys) hf.insert(key);
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Hash Table (Chaining):&quot;</span>);
+        hf.display();
+    }
+}</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">Inserting keys: 15, 11, 27, 8, 12, 21, 14
+Hash Table (Chaining):
+Bucket 0: 21 -&gt; 14 -&gt; null
+Bucket 1: 15 -&gt; 8 -&gt; null
+Bucket 2: null
+Bucket 3: null
+Bucket 4: 11 -&gt; null
+Bucket 5: 12 -&gt; null
+Bucket 6: 27 -&gt; null</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>This code implements a basic hash table using separate chaining for collision resolution. The hash function uses the modulo operator (`key % capacity`) to determine the bucket index for each key.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-14">
+            <div class="card-header" onclick="toggleCard('card-14')">
+                <h3><span class="q-badge">E3</span> Construct a binary tree from user inputs and perform Pre-order, In-order, and Post-order traversals</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-14"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(14)">Step</button>
+                        <button class="btn" onclick="vizAuto(14)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(14)">↺ Reset</button>
+                        <span class="viz-status" id="status-14">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-14">
+                    <button class="code-toggle" onclick="toggleCode('code-section-14')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span class="kw">class</span> <span class="tp">Node</span> {
+    <span class="kw">int</span> data;
+    <span class="tp">Node</span> left, right;
+    <span <span class="kw">class</span>="kw">public</span> <span class="tp">Node</span>(<span class="kw">int</span> item) { data = item; left = right = null; }
+}
+<span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> BinaryTreeTraversals {
+    <span class="tp">Node</span> root;
+    <span class="kw">void</span> printPreorder(<span class="tp">Node</span> node) {
+        <span class="kw">if</span> (node == null) <span class="kw">return</span>;
+        <span class="tp">System</span>.<span class="tp">out</span>.print(node.data + <span class="st">&quot; &quot;</span>);
+        printPreorder(node.left);
+        printPreorder(node.right);
+    }
+    <span class="kw">void</span> printInorder(<span class="tp">Node</span> node) {
+        <span class="kw">if</span> (node == null) <span class="kw">return</span>;
+        printInorder(node.left);
+        <span class="tp">System</span>.<span class="tp">out</span>.print(node.data + <span class="st">&quot; &quot;</span>);
+        printInorder(node.right);
+    }
+    <span class="kw">void</span> printPostorder(<span class="tp">Node</span> node) {
+        <span class="kw">if</span> (node == null) <span class="kw">return</span>;
+        printPostorder(node.left);
+        printPostorder(node.right);
+        <span class="tp">System</span>.<span class="tp">out</span>.print(node.data + <span class="st">&quot; &quot;</span>);
+    }
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        BinaryTreeTraversals tree = <span class="kw">new</span> BinaryTreeTraversals();
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Simulating user input to construct the binary tree...&quot;</span>);
+        tree.root = <span class="kw">new</span> <span class="tp">Node</span>(1);
+        tree.root.left = <span class="kw">new</span> <span class="tp">Node</span>(2);
+        tree.root.right = <span class="kw">new</span> <span class="tp">Node</span>(3);
+        tree.root.left.left = <span class="kw">new</span> <span class="tp">Node</span>(4);
+        tree.root.left.right = <span class="kw">new</span> <span class="tp">Node</span>(5);
+        
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Pre-order traversal:&quot;</span>);
+        tree.printPreorder(tree.root);
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;\nIn-order traversal:&quot;</span>);
+        tree.printInorder(tree.root);
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;\nPost-order traversal:&quot;</span>);
+        tree.printPostorder(tree.root);
+        <span class="tp">System</span>.<span class="tp">out</span>.println();
+    }
+}</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">Simulating user input to construct the binary tree...
+Pre-order traversal:
+1 2 4 5 3 
+In-order traversal:
+4 2 5 1 3 
+Post-order traversal:
+4 5 2 3 1</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>This program constructs a Binary Tree (simulating user inputs) and demonstrates three Depth-First traversals recursively: Pre-order (Root-Left-Right), In-order (Left-Root-Right), and Post-order (Left-Right-Root).</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-15">
+            <div class="card-header" onclick="toggleCard('card-15')">
+                <h3><span class="q-badge">E4</span> Construct a Binary Tree and perform Traversals of the constructed binary tree also search for the given key</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-15"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(15)">Step</button>
+                        <button class="btn" onclick="vizAuto(15)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(15)">↺ Reset</button>
+                        <span class="viz-status" id="status-15">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-15">
+                    <button class="code-toggle" onclick="toggleCode('code-section-15')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span class="kw">class</span> <span class="tp">Node</span> {
+    <span class="kw">int</span> data;
+    <span class="tp">Node</span> left, right;
+    <span <span class="kw">class</span>="kw">public</span> <span class="tp">Node</span>(<span class="kw">int</span> item) { data = item; left = right = null; }
+}
+<span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> BinaryTreeSearch {
+    <span class="tp">Node</span> root;
+    <span class="kw">void</span> printInorder(<span class="tp">Node</span> node) {
+        <span class="kw">if</span> (node == null) <span class="kw">return</span>;
+        printInorder(node.left);
+        <span class="tp">System</span>.<span class="tp">out</span>.print(node.data + <span class="st">&quot; &quot;</span>);
+        printInorder(node.right);
+    }
+    <span class="kw">boolean</span> search(<span class="tp">Node</span> node, <span class="kw">int</span> key) {
+        <span class="kw">if</span> (node == null) <span class="kw">return</span> <span class="kw">false</span>;
+        <span class="kw">if</span> (node.data == key) <span class="kw">return</span> <span class="kw">true</span>;
+        <span class="kw">return</span> search(node.left, key) || search(node.right, key);
+    }
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        BinaryTreeSearch tree = <span class="kw">new</span> BinaryTreeSearch();
+        tree.root = <span class="kw">new</span> <span class="tp">Node</span>(10);
+        tree.root.left = <span class="kw">new</span> <span class="tp">Node</span>(20);
+        tree.root.right = <span class="kw">new</span> <span class="tp">Node</span>(30);
+        tree.root.left.left = <span class="kw">new</span> <span class="tp">Node</span>(40);
+        tree.root.left.right = <span class="kw">new</span> <span class="tp">Node</span>(50);
+        
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;In-order traversal:&quot;</span>);
+        tree.printInorder(tree.root);
+        
+        <span class="kw">int</span> key1 = 30;
+        <span class="kw">int</span> key2 = 60;
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;\n\nSearching <span class="kw">for</span> key &quot;</span> + key1 + <span class="st">&quot;: &quot;</span> + (tree.search(tree.root, key1) ? <span class="st">&quot;Found&quot;</span> : <span class="st">&quot;Not Found&quot;</span>));
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Searching <span class="kw">for</span> key &quot;</span> + key2 + <span class="st">&quot;: &quot;</span> + (tree.search(tree.root, key2) ? <span class="st">&quot;Found&quot;</span> : <span class="st">&quot;Not Found&quot;</span>));
+    }
+}</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">In-order traversal:
+40 20 50 10 30 
+
+Searching for key 30: Found
+Searching for key 60: Not Found</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>This code extends binary tree functionality by adding a recursive search method. It performs an in-order traversal to display elements, then recursively searches the left and right subtrees to check if a specific key exists.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-16">
+            <div class="card-header" onclick="toggleCard('card-16')">
+                <h3><span class="q-badge">E5</span> Implement Breadth First Search graph traversal</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-16"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(16)">Step</button>
+                        <button class="btn" onclick="vizAuto(16)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(16)">↺ Reset</button>
+                        <span class="viz-status" id="status-16">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-16">
+                    <button class="code-toggle" onclick="toggleCode('code-section-16')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span class="kw">import</span> java.util.*;
+<span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> BFS {
+    <span class="kw">private</span> <span class="kw">int</span> V;
+    <span class="kw">private</span> <span class="tp">LinkedList</span>&lt;<span class="tp">Integer</span>&gt; adj[];
+    
+    @SuppressWarnings(<span class="st">&quot;unchecked&quot;</span>)
+    BFS(<span class="kw">int</span> v) {
+        V = v;
+        adj = <span class="kw">new</span> <span class="tp">LinkedList</span>[v];
+        <span class="kw">for</span> (<span class="kw">int</span> i=0; i&lt;v; ++i) adj[i] = <span class="kw">new</span> <span class="tp">LinkedList</span>();
+    }
+    <span class="kw">void</span> addEdge(<span class="kw">int</span> v, <span class="kw">int</span> w) { adj[v].add(w); }
+    
+    <span class="kw">void</span> BFS_traversal(<span class="kw">int</span> s) {
+        <span class="kw">boolean</span> visited[] = <span class="kw">new</span> <span class="kw">boolean</span>[V];
+        <span class="tp">LinkedList</span>&lt;<span class="tp">Integer</span>&gt; queue = <span class="kw">new</span> <span class="tp">LinkedList</span>&lt;<span class="tp">Integer</span>&gt;();
+        visited[s] = <span class="kw">true</span>;
+        queue.add(s);
+        
+        <span class="kw">while</span> (queue.size() != 0) {
+            s = queue.poll();
+            <span class="tp">System</span>.<span class="tp">out</span>.print(s + <span class="st">&quot; &quot;</span>);
+            <span class="tp">Iterator</span>&lt;<span class="tp">Integer</span>&gt; i = adj[s].listIterator();
+            <span class="kw">while</span> (i.hasNext()) {
+                <span class="kw">int</span> n = i.next();
+                <span class="kw">if</span> (!visited[n]) {
+                    visited[n] = <span class="kw">true</span>;
+                    queue.add(n);
+                }
+            }
+        }
+    }
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span> args[]) {
+        BFS g = <span class="kw">new</span> BFS(4);
+        g.addEdge(0, 1);
+        g.addEdge(0, 2);
+        g.addEdge(1, 2);
+        g.addEdge(2, 0);
+        g.addEdge(2, 3);
+        g.addEdge(3, 3);
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Following is Breadth First Traversal (starting from vertex 2):&quot;</span>);
+        g.BFS_traversal(2);
+        <span class="tp">System</span>.<span class="tp">out</span>.println();
+    }
+}</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">Following is Breadth First Traversal (starting from vertex 2):
+2 0 3 1</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>Breadth First Search (BFS) algorithm traverses a graph level by level. It uses a Queue to keep track of adjacent vertices to visit next and a boolean array to ensure no vertex is processed more than once.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-17">
+            <div class="card-header" onclick="toggleCard('card-17')">
+                <h3><span class="q-badge">E6</span> Implement the Optimal Storage on Tape algorithm</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-17"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(17)">Step</button>
+                        <button class="btn" onclick="vizAuto(17)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(17)">↺ Reset</button>
+                        <span class="viz-status" id="status-17">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-17">
+                    <button class="code-toggle" onclick="toggleCode('code-section-17')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span class="kw">import</span> java.util.<span class="tp">Arrays</span>;
+<span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> OptimalStorageOnTape {
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="kw">int</span>[] programs = {5, 10, 3, 2, 8};
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Original Program Lengths: &quot;</span> + <span class="tp">Arrays</span>.toString(programs));
+        
+        <span class="cm">// Sort programs in ascending order to minimize MRT</span>
+        <span class="tp">Arrays</span>.sort(programs);
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Optimal Storage Order: &quot;</span> + <span class="tp">Arrays</span>.toString(programs));
+        
+        <span class="kw">double</span> totalRetrievalTime = 0;
+        <span class="kw">int</span> currentSum = 0;
+        
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; programs.length; i++) {
+            currentSum += programs[i];
+            totalRetrievalTime += currentSum;
+        }
+        
+        <span class="kw">double</span> mrt = totalRetrievalTime / programs.length;
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Total Retrieval Time: &quot;</span> + totalRetrievalTime);
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Mean Retrieval Time (MRT): &quot;</span> + mrt);
+    }
+}</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">Original Program Lengths: [5, 10, 3, 2, 8]
+Optimal Storage Order: [2, 3, 5, 8, 10]
+Total Retrieval Time: 63.0
+Mean Retrieval Time (MRT): 12.6</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>The Optimal Storage on Tape algorithm is a greedy approach. To minimize the Mean Retrieval Time (MRT), the programs must be stored in increasing order of their lengths. Sorting the lengths before computing the cumulative sums guarantees the minimal retrieval time.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-18">
+            <div class="card-header" onclick="toggleCard('card-18')">
+                <h3><span class="q-badge">E7</span> Implement Prim's Algorithm</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-18"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(18)">Step</button>
+                        <button class="btn" onclick="vizAuto(18)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(18)">↺ Reset</button>
+                        <span class="viz-status" id="status-18">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-18">
+                    <button class="code-toggle" onclick="toggleCode('code-section-18')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> PrimsAlgorithm {
+    <span class="kw">private</span> <span class="kw">static</span> <span class="kw">final</span> <span class="kw">int</span> V = 5;
+    <span class="kw">int</span> minKey(<span class="kw">int</span> key[], <span class="tp">Boolean</span> mstSet[]) {
+        <span class="kw">int</span> min = <span class="tp">Integer</span>.MAX_VALUE, min_index = -1;
+        <span class="kw">for</span> (<span class="kw">int</span> v = 0; v &lt; V; v++)
+            <span class="kw">if</span> (mstSet[v] == <span class="kw">false</span> &amp;&amp; key[v] &lt; min) {
+                min = key[v];
+                min_index = v;
+            }
+        <span class="kw">return</span> min_index;
+    }
+    <span class="kw">void</span> printMST(<span class="kw">int</span> parent[], <span class="kw">int</span> graph[][]) {
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Edge \tWeight&quot;</span>);
+        <span class="kw">int</span> total = 0;
+        <span class="kw">for</span> (<span class="kw">int</span> i = 1; i &lt; V; i++) {
+            <span class="tp">System</span>.<span class="tp">out</span>.println(parent[i] + <span class="st">&quot; - &quot;</span> + i + <span class="st">&quot;\t&quot;</span> + graph[i][parent[i]]);
+            total += graph[i][parent[i]];
+        }
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Total Cost: &quot;</span> + total);
+    }
+    <span class="kw">void</span> primMST(<span class="kw">int</span> graph[][]) {
+        <span class="kw">int</span> parent[] = <span class="kw">new</span> <span class="kw">int</span>[V];
+        <span class="kw">int</span> key[] = <span class="kw">new</span> <span class="kw">int</span>[V];
+        <span class="tp">Boolean</span> mstSet[] = <span class="kw">new</span> <span class="tp">Boolean</span>[V];
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; V; i++) {
+            key[i] = <span class="tp">Integer</span>.MAX_VALUE;
+            mstSet[i] = <span class="kw">false</span>;
+        }
+        key[0] = 0;
+        parent[0] = -1;
+        <span class="kw">for</span> (<span class="kw">int</span> count = 0; count &lt; V - 1; count++) {
+            <span class="kw">int</span> u = minKey(key, mstSet);
+            mstSet[u] = <span class="kw">true</span>;
+            <span class="kw">for</span> (<span class="kw">int</span> v = 0; v &lt; V; v++)
+                <span class="kw">if</span> (graph[u][v] != 0 &amp;&amp; mstSet[v] == <span class="kw">false</span> &amp;&amp; graph[u][v] &lt; key[v]) {
+                    parent[v] = u;
+                    key[v] = graph[u][v];
+                }
+        }
+        printMST(parent, graph);
+    }
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        PrimsAlgorithm t = <span class="kw">new</span> PrimsAlgorithm();
+        <span class="kw">int</span> graph[][] = <span class="kw">new</span> <span class="kw">int</span>[][] { { 0, 2, 0, 6, 0 },
+                                      { 2, 0, 3, 8, 5 },
+                                      { 0, 3, 0, 0, 7 },
+                                      { 6, 8, 0, 0, 9 },
+                                      { 0, 5, 7, 9, 0 } };
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Running Prim&#x27;s Minimum Spanning Tree Algorithm:&quot;</span>);
+        t.primMST(graph);
+    }
+}</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">Running Prim&#x27;s Minimum Spanning Tree Algorithm:
+Edge 	Weight
+0 - 1	2
+1 - 2	3
+0 - 3	6
+1 - 4	5
+Total Cost: 16</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>Prim's Algorithm finds a Minimum Spanning Tree (MST) for a weighted undirected graph. It maintains a set of vertices included in the MST and greedily picks the edge with the minimum weight that connects a vertex in the MST to a vertex outside it.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-19">
+            <div class="card-header" onclick="toggleCard('card-19')">
+                <h3><span class="q-badge">E8</span> Implement the Longest Common Subsequence (LCS) algorithm</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-19"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(19)">Step</button>
+                        <button class="btn" onclick="vizAuto(19)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(19)">↺ Reset</button>
+                        <span class="viz-status" id="status-19">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-19">
+                    <button class="code-toggle" onclick="toggleCode('code-section-19')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> LCS {
+    <span class="kw">static</span> <span class="kw">void</span> lcs(<span class="tp">String</span> S1, <span class="tp">String</span> S2, <span class="kw">int</span> m, <span class="kw">int</span> n) {
+        <span class="kw">int</span>[][] LCS_table = <span class="kw">new</span> <span class="kw">int</span>[m + 1][n + 1];
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt;= m; i++) {
+            <span class="kw">for</span> (<span class="kw">int</span> j = 0; j &lt;= n; j++) {
+                <span class="kw">if</span> (i == 0 || j == 0) LCS_table[i][j] = 0;
+                <span class="kw">else</span> <span class="kw">if</span> (S1.charAt(i - 1) == S2.charAt(j - 1))
+                    LCS_table[i][j] = LCS_table[i - 1][j - 1] + 1;
+                <span class="kw">else</span>
+                    LCS_table[i][j] = <span class="tp">Math</span>.max(LCS_table[i - 1][j], LCS_table[i][j - 1]);
+            }
+        }
+        <span class="kw">int</span> index = LCS_table[m][n];
+        <span class="kw">int</span> temp = index;
+        char[] lcs = <span class="kw">new</span> char[index + 1];
+        lcs[index] = &#x27;\0&#x27;;
+        <span class="kw">int</span> i = m, j = n;
+        <span class="kw">while</span> (i &gt; 0 &amp;&amp; j &gt; 0) {
+            <span class="kw">if</span> (S1.charAt(i - 1) == S2.charAt(j - 1)) {
+                lcs[index - 1] = S1.charAt(i - 1);
+                i--; j--; index--;
+            }
+            <span class="kw">else</span> <span class="kw">if</span> (LCS_table[i - 1][j] &gt; LCS_table[i][j - 1]) i--;
+            <span class="kw">else</span> j--;
+        }
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;S1 : &quot;</span> + S1 + <span class="st">&quot;\nS2 : &quot;</span> + S2);
+        <span class="tp">System</span>.<span class="tp">out</span>.print(<span class="st">&quot;LCS: &quot;</span>);
+        <span class="kw">for</span> (<span class="kw">int</span> k = 0; k &lt; temp; k++) <span class="tp">System</span>.<span class="tp">out</span>.print(lcs[k]);
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;\nLength: &quot;</span> + temp);
+    }
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">String</span> S1 = <span class="st">&quot;ACADB&quot;</span>;
+        <span class="tp">String</span> S2 = <span class="st">&quot;CBDA&quot;</span>;
+        <span class="kw">int</span> m = S1.length();
+        <span class="kw">int</span> n = S2.length();
+        lcs(S1, S2, m, n);
+    }
+}</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">S1 : ACADB
+S2 : CBDA
+LCS: CB
+Length: 2</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>The Longest Common Subsequence (LCS) algorithm uses dynamic programming. It builds a 2D array to store the lengths of longest common subsequences of sub-problems. It then backtracks from the bottom-right corner to print the exact matching subsequence.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-20">
+            <div class="card-header" onclick="toggleCard('card-20')">
+                <h3><span class="q-badge">E9</span> Dijkstra's algorithm</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-20"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(20)">Step</button>
+                        <button class="btn" onclick="vizAuto(20)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(20)">↺ Reset</button>
+                        <span class="viz-status" id="status-20">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-20">
+                    <button class="code-toggle" onclick="toggleCode('code-section-20')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> DijkstraAlgorithm {
+    <span class="kw">static</span> <span class="kw">final</span> <span class="kw">int</span> V = 9;
+    <span class="kw">int</span> minDistance(<span class="kw">int</span> dist[], <span class="tp">Boolean</span> sptSet[]) {
+        <span class="kw">int</span> min = <span class="tp">Integer</span>.MAX_VALUE, min_index = -1;
+        <span class="kw">for</span> (<span class="kw">int</span> v = 0; v &lt; V; v++)
+            <span class="kw">if</span> (sptSet[v] == <span class="kw">false</span> &amp;&amp; dist[v] &lt;= min) {
+                min = dist[v];
+                min_index = v;
+            }
+        <span class="kw">return</span> min_index;
+    }
+    <span class="kw">void</span> printSolution(<span class="kw">int</span> dist[], <span class="kw">int</span> n) {
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Vertex   Distance from Source&quot;</span>);
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; V; i++)
+            <span class="tp">System</span>.<span class="tp">out</span>.println(i + <span class="st">&quot; \t\t &quot;</span> + dist[i]);
+    }
+    <span class="kw">void</span> dijkstra(<span class="kw">int</span> graph[][], <span class="kw">int</span> src) {
+        <span class="kw">int</span> dist[] = <span class="kw">new</span> <span class="kw">int</span>[V];
+        <span class="tp">Boolean</span> sptSet[] = <span class="kw">new</span> <span class="tp">Boolean</span>[V];
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; V; i++) {
+            dist[i] = <span class="tp">Integer</span>.MAX_VALUE;
+            sptSet[i] = <span class="kw">false</span>;
+        }
+        dist[src] = 0;
+        <span class="kw">for</span> (<span class="kw">int</span> count = 0; count &lt; V - 1; count++) {
+            <span class="kw">int</span> u = minDistance(dist, sptSet);
+            sptSet[u] = <span class="kw">true</span>;
+            <span class="kw">for</span> (<span class="kw">int</span> v = 0; v &lt; V; v++)
+                <span class="kw">if</span> (!sptSet[v] &amp;&amp; graph[u][v] != 0 &amp;&amp; dist[u] != <span class="tp">Integer</span>.MAX_VALUE &amp;&amp; dist[u] + graph[u][v] &lt; dist[v])
+                    dist[v] = dist[u] + graph[u][v];
+        }
+        printSolution(dist, V);
+    }
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="kw">int</span> graph[][] = <span class="kw">new</span> <span class="kw">int</span>[][]{ { 0, 4, 0, 0, 0, 0, 0, 8, 0 },
+                                     { 4, 0, 8, 0, 0, 0, 0, 11, 0 },
+                                     { 0, 8, 0, 7, 0, 4, 0, 0, 2 },
+                                     { 0, 0, 7, 0, 9, 14, 0, 0, 0 },
+                                     { 0, 0, 0, 9, 0, 10, 0, 0, 0 },
+                                     { 0, 0, 4, 14, 10, 0, 2, 0, 0 },
+                                     { 0, 0, 0, 0, 0, 2, 0, 1, 6 },
+                                     { 8, 11, 0, 0, 0, 0, 1, 0, 7 },
+                                     { 0, 0, 2, 0, 0, 0, 6, 7, 0 } };
+        DijkstraAlgorithm t = <span class="kw">new</span> DijkstraAlgorithm();
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Running Dijkstra&#x27;s Algorithm from Source 0:&quot;</span>);
+        t.dijkstra(graph, 0);
+    }
+}</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">Running Dijkstra&#x27;s Algorithm from Source 0:
+Vertex   Distance from Source
+0 		 0
+1 		 4
+2 		 12
+3 		 19
+4 		 21
+5 		 11
+6 		 9
+7 		 8
+8 		 14</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>Dijkstra's Algorithm finds the shortest path from a single source vertex to all other vertices in a weighted graph without negative weights. It uses a greedy approach, constantly relaxing the distance of vertices connected to the closest unvisited node.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-21">
+            <div class="card-header" onclick="toggleCard('card-21')">
+                <h3><span class="q-badge">E10</span> Floyd-Warshall algorithm</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-21"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(21)">Step</button>
+                        <button class="btn" onclick="vizAuto(21)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(21)">↺ Reset</button>
+                        <span class="viz-status" id="status-21">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-21">
+                    <button class="code-toggle" onclick="toggleCode('code-section-21')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> FloydWarshall {
+    <span class="kw">final</span> <span class="kw">static</span> <span class="kw">int</span> INF = 99999, V = 4;
+    <span class="kw">void</span> floydWarshall(<span class="kw">int</span> graph[][]) {
+        <span class="kw">int</span> dist[][] = <span class="kw">new</span> <span class="kw">int</span>[V][V];
+        <span class="kw">int</span> i, j, k;
+        <span class="kw">for</span> (i = 0; i &lt; V; i++)
+            <span class="kw">for</span> (j = 0; j &lt; V; j++)
+                dist[i][j] = graph[i][j];
+        
+        <span class="kw">for</span> (k = 0; k &lt; V; k++) {
+            <span class="kw">for</span> (i = 0; i &lt; V; i++) {
+                <span class="kw">for</span> (j = 0; j &lt; V; j++) {
+                    <span class="kw">if</span> (dist[i][k] + dist[k][j] &lt; dist[i][j])
+                        dist[i][j] = dist[i][k] + dist[k][j];
+                }
+            }
+        }
+        printSolution(dist);
+    }
+    <span class="kw">void</span> printSolution(<span class="kw">int</span> dist[][]) {
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;The following matrix shows the shortest distances between every pair of vertices:&quot;</span>);
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; V; ++i) {
+            <span class="kw">for</span> (<span class="kw">int</span> j = 0; j &lt; V; ++j) {
+                <span class="kw">if</span> (dist[i][j] == INF)
+                    <span class="tp">System</span>.<span class="tp">out</span>.print(<span class="st">&quot;INF &quot;</span>);
+                <span class="kw">else</span>
+                    <span class="tp">System</span>.<span class="tp">out</span>.print(dist[i][j] + <span class="st">&quot;   &quot;</span>);
+            }
+            <span class="tp">System</span>.<span class="tp">out</span>.println();
+        }
+    }
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="kw">int</span> graph[][] = { { 0, 5, INF, 10 },
+                          { INF, 0, 3, INF },
+                          { INF, INF, 0, 1 },
+                          { INF, INF, INF, 0 } };
+        FloydWarshall a = <span class="kw">new</span> FloydWarshall();
+        a.floydWarshall(graph);
+    }
+}</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">The following matrix shows the shortest distances between every pair of vertices:
+0   5   8   9   
+INF 0   3   4   
+INF INF 0   1   
+INF INF INF 0</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>The Floyd-Warshall algorithm computes shortest paths between every pair of vertices in a directed weighted graph. It uses dynamic programming to iteratively improve the estimated shortest path between two vertices by checking if a path through an intermediate vertex is shorter.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-22">
+            <div class="card-header" onclick="toggleCard('card-22')">
+                <h3><span class="q-badge">E11</span> N-queens on an NxN chessboard</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-22"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(22)">Step</button>
+                        <button class="btn" onclick="vizAuto(22)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(22)">↺ Reset</button>
+                        <span class="viz-status" id="status-22">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-22">
+                    <button class="code-toggle" onclick="toggleCode('code-section-22')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> NQueens {
+    <span class="kw">final</span> <span class="kw">int</span> N = 4;
+    <span class="kw">void</span> printSolution(<span class="kw">int</span> board[][]) {
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; N; i++) {
+            <span class="kw">for</span> (<span class="kw">int</span> j = 0; j &lt; N; j++)
+                <span class="tp">System</span>.<span class="tp">out</span>.print(<span class="st">&quot; &quot;</span> + (board[i][j] == 1 ? <span class="st">&quot;Q&quot;</span> : <span class="st">&quot;.&quot;</span>) + <span class="st">&quot; &quot;</span>);
+            <span class="tp">System</span>.<span class="tp">out</span>.println();
+        }
+    }
+    <span class="kw">boolean</span> isSafe(<span class="kw">int</span> board[][], <span class="kw">int</span> row, <span class="kw">int</span> col) {
+        <span class="kw">int</span> i, j;
+        <span class="kw">for</span> (i = 0; i &lt; col; i++)
+            <span class="kw">if</span> (board[row][i] == 1) <span class="kw">return</span> <span class="kw">false</span>;
+        <span class="kw">for</span> (i = row, j = col; i &gt;= 0 &amp;&amp; j &gt;= 0; i--, j--)
+            <span class="kw">if</span> (board[i][j] == 1) <span class="kw">return</span> <span class="kw">false</span>;
+        <span class="kw">for</span> (i = row, j = col; j &gt;= 0 &amp;&amp; i &lt; N; i++, j--)
+            <span class="kw">if</span> (board[i][j] == 1) <span class="kw">return</span> <span class="kw">false</span>;
+        <span class="kw">return</span> <span class="kw">true</span>;
+    }
+    <span class="kw">boolean</span> solveNQUtil(<span class="kw">int</span> board[][], <span class="kw">int</span> col) {
+        <span class="kw">if</span> (col &gt;= N) <span class="kw">return</span> <span class="kw">true</span>;
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; N; i++) {
+            <span class="kw">if</span> (isSafe(board, i, col)) {
+                board[i][col] = 1;
+                <span class="kw">if</span> (solveNQUtil(board, col + 1)) <span class="kw">return</span> <span class="kw">true</span>;
+                board[i][col] = 0; <span class="cm">// backtrack</span>
+            }
+        }
+        <span class="kw">return</span> <span class="kw">false</span>;
+    }
+    <span class="kw">boolean</span> solveNQ() {
+        <span class="kw">int</span> board[][] = { { 0, 0, 0, 0 },
+                          { 0, 0, 0, 0 },
+                          { 0, 0, 0, 0 },
+                          { 0, 0, 0, 0 } };
+        <span class="kw">if</span> (!solveNQUtil(board, 0)) {
+            <span class="tp">System</span>.<span class="tp">out</span>.print(<span class="st">&quot;Solution does not exist&quot;</span>);
+            <span class="kw">return</span> <span class="kw">false</span>;
+        }
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;One valid configuration <span class="kw">for</span> &quot;</span> + N + <span class="st">&quot;x&quot;</span> + N + <span class="st">&quot; board:&quot;</span>);
+        printSolution(board);
+        <span class="kw">return</span> <span class="kw">true</span>;
+    }
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span> args[]) {
+        NQueens Queen = <span class="kw">new</span> NQueens();
+        Queen.solveNQ();
+    }
+}</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">One valid configuration for 4x4 board:
+ .  .  Q  . 
+ Q  .  .  . 
+ .  .  .  Q 
+ .  Q  .  .</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>The N-Queens problem asks to place N queens on an NxN chessboard so that no two queens attack each other. This implementation uses Backtracking. It places a queen column by column, checking for safety. If a placement leads to a dead end, it backtracks to try a different row.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-23">
+            <div class="card-header" onclick="toggleCard('card-23')">
+                <h3><span class="q-badge">E12</span> Implementation of Hamiltonian Cycle</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-23"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(23)">Step</button>
+                        <button class="btn" onclick="vizAuto(23)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(23)">↺ Reset</button>
+                        <span class="viz-status" id="status-23">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-23">
+                    <button class="code-toggle" onclick="toggleCode('code-section-23')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> HamiltonianCycle {
+    <span class="kw">final</span> <span class="kw">int</span> V = 5;
+    <span class="kw">int</span> path[];
+    <span class="kw">boolean</span> isSafe(<span class="kw">int</span> v, <span class="kw">int</span> graph[][], <span class="kw">int</span> path[], <span class="kw">int</span> pos) {
+        <span class="kw">if</span> (graph[path[pos - 1]][v] == 0) <span class="kw">return</span> <span class="kw">false</span>;
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; pos; i++)
+            <span class="kw">if</span> (path[i] == v) <span class="kw">return</span> <span class="kw">false</span>;
+        <span class="kw">return</span> <span class="kw">true</span>;
+    }
+    <span class="kw">boolean</span> hamCycleUtil(<span class="kw">int</span> graph[][], <span class="kw">int</span> path[], <span class="kw">int</span> pos) {
+        <span class="kw">if</span> (pos == V) {
+            <span class="kw">if</span> (graph[path[pos - 1]][path[0]] == 1) <span class="kw">return</span> <span class="kw">true</span>;
+            <span class="kw">else</span> <span class="kw">return</span> <span class="kw">false</span>;
+        }
+        <span class="kw">for</span> (<span class="kw">int</span> v = 1; v &lt; V; v++) {
+            <span class="kw">if</span> (isSafe(v, graph, path, pos)) {
+                path[pos] = v;
+                <span class="kw">if</span> (hamCycleUtil(graph, path, pos + 1)) <span class="kw">return</span> <span class="kw">true</span>;
+                path[pos] = -1; <span class="cm">// backtrack</span>
+            }
+        }
+        <span class="kw">return</span> <span class="kw">false</span>;
+    }
+    <span class="kw">int</span> hamCycle(<span class="kw">int</span> graph[][]) {
+        path = <span class="kw">new</span> <span class="kw">int</span>[V];
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; V; i++) path[i] = -1;
+        path[0] = 0;
+        <span class="kw">if</span> (!hamCycleUtil(graph, path, 1)) {
+            <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;\nSolution does not exist&quot;</span>);
+            <span class="kw">return</span> 0;
+        }
+        printSolution(path);
+        <span class="kw">return</span> 1;
+    }
+    <span class="kw">void</span> printSolution(<span class="kw">int</span> path[]) {
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Solution Exists: Following is one Hamiltonian Cycle&quot;</span>);
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; V; i++) <span class="tp">System</span>.<span class="tp">out</span>.print(<span class="st">&quot; &quot;</span> + path[i] + <span class="st">&quot; &quot;</span>);
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot; &quot;</span> + path[0] + <span class="st">&quot; &quot;</span>);
+    }
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span> args[]) {
+        HamiltonianCycle hamiltonian = <span class="kw">new</span> HamiltonianCycle();
+        <span class="kw">int</span> graph1[][] = {
+            {0, 1, 0, 1, 0},
+            {1, 0, 1, 1, 1},
+            {0, 1, 0, 0, 1},
+            {1, 1, 0, 0, 1},
+            {0, 1, 1, 1, 0},
+        };
+        hamiltonian.hamCycle(graph1);
+    }
+}</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">Solution Exists: Following is one Hamiltonian Cycle
+ 0  1  2  4  3  0</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>A Hamiltonian Cycle is a closed loop in a graph that visits every vertex exactly once. This solution uses Backtracking. It builds the path vertex by vertex, ensuring that there is an edge between consecutive vertices, and finally checks if the last vertex connects back to the start.</p>
+                </div>
+            </div>
+        </div>
+
+    </section>
     <footer class="site-footer">
         <p>ADSA Practicals • NEP Scheme Semester 3</p>
     </footer>

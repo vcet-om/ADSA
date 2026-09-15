@@ -1225,12 +1225,175 @@ visualizations[11] = {
     }
 };
 
+
+// ==========================================
+// Module 4: Basic Experiments (12 to 23)
+// ==========================================
+
+function createTextViz(id, steps) {
+    return {
+        stepIdx: 0,
+        autoTimer: null,
+        init: function() {
+            const container = document.getElementById('viz-' + id);
+            if (container) {
+                container.innerHTML = '<div id="v' + id + '-content" style="font-family: var(--font-mono); padding: 15px; background: #161b22; border-radius: 5px; border: 1px solid #30363d; min-height: 100px;"></div>';
+                this.reset();
+            }
+        },
+        reset: function() {
+            this.stepIdx = 0;
+            const c = document.getElementById('v' + id + '-content');
+            if(c) c.innerHTML = '';
+            document.getElementById('status-' + id).textContent = "Ready.";
+        },
+        step: function() {
+            if (this.stepIdx < steps.length) {
+                const c = document.getElementById('v' + id + '-content');
+                const d = document.createElement('div');
+                d.textContent = '> ' + steps[this.stepIdx];
+                d.style.margin = '5px 0';
+                d.style.color = '#00d4aa';
+                c.appendChild(d);
+                document.getElementById('status-' + id).textContent = `Step ${this.stepIdx + 1} of ${steps.length}`;
+                this.stepIdx++;
+            } else {
+                if (this.autoTimer) clearInterval(this.autoTimer);
+                document.getElementById('status-' + id).textContent = "Complete.";
+            }
+        }
+    };
+}
+
+visualizations[12] = createTextViz(12, [
+    "Original array: [12, 11, 13, 5, 6, 7]",
+    "Split: [12, 11, 13] and [5, 6, 7]",
+    "Split: [12], [11, 13] and [5], [6, 7]",
+    "Merge: [11, 12, 13]",
+    "Merge: [5, 6, 7]",
+    "Final Merge: [5, 6, 7, 11, 12, 13]"
+]);
+
+visualizations[13] = createTextViz(13, [
+    "Inserting 15 (15%7=1) -> Bucket 1: 15",
+    "Inserting 11 (11%7=4) -> Bucket 4: 11",
+    "Inserting 27 (27%7=6) -> Bucket 6: 27",
+    "Inserting 8  (8%7=1)  -> Bucket 1: 15 -> 8",
+    "Inserting 12 (12%7=5) -> Bucket 5: 12",
+    "Inserting 21 (21%7=0) -> Bucket 0: 21",
+    "Inserting 14 (14%7=0) -> Bucket 0: 21 -> 14"
+]);
+
+visualizations[14] = createTextViz(14, [
+    "Constructing tree: 1(2(4,5),3)",
+    "Pre-order: Root -> Left -> Right",
+    "Result: 1, 2, 4, 5, 3",
+    "In-order: Left -> Root -> Right",
+    "Result: 4, 2, 5, 1, 3",
+    "Post-order: Left -> Right -> Root",
+    "Result: 4, 5, 2, 3, 1"
+]);
+
+visualizations[15] = createTextViz(15, [
+    "Tree: 10(20(40,50),30)",
+    "In-order traversal: 40, 20, 50, 10, 30",
+    "Searching for 30...",
+    "Check 10 (No) -> Check Right -> 30 (Yes!). Found.",
+    "Searching for 60...",
+    "Check all nodes -> Not Found."
+]);
+
+visualizations[16] = createTextViz(16, [
+    "Start at vertex 2. Queue: [2], Visited: {2}",
+    "Dequeue 2. Visit neighbors 0, 3.",
+    "Queue: [0, 3], Visited: {2, 0, 3}",
+    "Dequeue 0. Visit neighbor 1.",
+    "Queue: [3, 1], Visited: {2, 0, 3, 1}",
+    "Dequeue 3. No unvisited neighbors.",
+    "Dequeue 1. No unvisited neighbors. Done."
+]);
+
+visualizations[17] = createTextViz(17, [
+    "Programs: [5, 10, 3, 2, 8]",
+    "Sorting to minimize MRT...",
+    "Sorted Order: [2, 3, 5, 8, 10]",
+    "Summing cumulative retrieval times...",
+    "2 + (2+3) + (5+5) + (10+8) + (18+10)",
+    "Total = 2 + 5 + 10 + 18 + 28 = 63",
+    "Mean Retrieval Time (MRT) = 63 / 5 = 12.6"
+]);
+
+visualizations[18] = createTextViz(18, [
+    "Initialize MST set and Key values to INF.",
+    "Pick vertex 0. Update neighbors 1(2), 3(6)",
+    "Pick vertex 1. Add edge 0-1 (w:2). Update neighbors.",
+    "Pick vertex 2. Add edge 1-2 (w:3).",
+    "Pick vertex 4. Add edge 1-4 (w:5).",
+    "Pick vertex 3. Add edge 0-3 (w:6).",
+    "Total Cost = 16."
+]);
+
+visualizations[19] = createTextViz(19, [
+    "Strings: S1 = ACADB, S2 = CBDA",
+    "Building DP Table...",
+    "Match 'C' (S1[1], S2[0]) -> LCS length 1",
+    "Match 'A' (S1[2], S2[3]) -> LCS length 2",
+    "Match 'D' (S1[3], S2[2]) -> LCS length 2",
+    "Match 'B' (S1[4], S2[1]) -> LCS length 3",
+    "Backtracking table...",
+    "LCS is 'CB'"
+]);
+
+visualizations[20] = createTextViz(20, [
+    "Dijkstra from Source 0.",
+    "Distances: [0, INF, INF, INF, INF, INF, INF, INF, INF]",
+    "Relax neighbors of 0 -> 1(4), 7(8)",
+    "Pick 1. Relax neighbors -> 2(12)",
+    "Pick 7. Relax neighbors -> 6(9), 8(15)",
+    "Pick 6. Relax neighbors -> 5(11)",
+    "Pick 5. Relax neighbors -> 2(15), 3(25), 4(21)",
+    "Final distances computed."
+]);
+
+visualizations[21] = createTextViz(21, [
+    "Floyd-Warshall all-pairs shortest paths.",
+    "Initial distance matrix (k=0)",
+    "k=1: Path through vertex 0",
+    "k=2: Path through vertex 1",
+    "k=3: Path through vertex 2",
+    "k=4: Path through vertex 3",
+    "Matrix updated with minimal path weights."
+]);
+
+visualizations[22] = createTextViz(22, [
+    "N-Queens Backtracking (4x4)",
+    "Place Q at (0,0)",
+    "Place Q at (1,2)",
+    "Row 2: no safe spot! Backtrack.",
+    "Move Q to (0,1)",
+    "Place Q at (1,3)",
+    "Place Q at (2,0)",
+    "Place Q at (3,2)",
+    "Valid configuration found!"
+]);
+
+visualizations[23] = createTextViz(23, [
+    "Hamiltonian Cycle Backtracking (5 vertices)",
+    "Start at 0.",
+    "Path: 0 -> 1",
+    "Path: 0 -> 1 -> 2",
+    "Path: 0 -> 1 -> 2 -> 4",
+    "Path: 0 -> 1 -> 2 -> 4 -> 3",
+    "Check edge 3 -> 0. Valid!",
+    "Cycle found: 0 1 2 4 3 0"
+]);
+
 // ==========================================
 // Initialization
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Initialize all visualizations
-    for (let i = 1; i <= 11; i++) {
+    for (let i = 1; i <= 23; i++) {
         if (visualizations[i] && visualizations[i].init) {
             visualizations[i].init();
         }
