@@ -51,6 +51,77 @@ function vizReset(n) {
     }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Custom Input Panel — injected into each viz that supports it
+// Call injectCustomInput(n, placeholder, hint, callback) inside each viz's init
+// ─────────────────────────────────────────────────────────────────────────────
+function injectCustomInput(n, placeholder, hint, applyFn) {
+    const controls = document.querySelector(`#card-${n} .viz-controls`);
+    if (!controls || document.getElementById(`custom-panel-${n}`)) return;
+
+    const panel = document.createElement('div');
+    panel.id = `custom-panel-${n}`;
+    panel.style.cssText = `
+        display: flex; align-items: center; gap: 8px; margin-top: 10px;
+        flex-wrap: wrap; width: 100%; padding: 10px 12px;
+        background: #161b22; border: 1px solid #30363d;
+        border-radius: 8px;
+    `;
+
+    const label = document.createElement('span');
+    label.textContent = '✏️ Custom:';
+    label.style.cssText = 'color:#8b949e; font-size:13px; white-space:nowrap;';
+
+    const input = document.createElement('input');
+    input.id = `custom-input-${n}`;
+    input.type = 'text';
+    input.placeholder = placeholder;
+    input.title = hint;
+    input.style.cssText = `
+        flex: 1; min-width: 160px; padding: 7px 12px;
+        background: #0d1117; border: 1px solid #30363d; border-radius: 6px;
+        color: #c9d1d9; font-family: var(--font-mono, monospace); font-size: 13px;
+        outline: none; transition: border-color .2s;
+    `;
+    input.addEventListener('focus', () => input.style.borderColor = '#00d4aa');
+    input.addEventListener('blur',  () => input.style.borderColor = '#30363d');
+
+    const applyBtn = document.createElement('button');
+    applyBtn.textContent = '▶ Apply';
+    applyBtn.style.cssText = `
+        padding: 7px 16px; background: #00d4aa; color: #0d1117;
+        border: none; border-radius: 6px; font-weight: 700; cursor: pointer;
+        font-size: 13px; transition: opacity .2s;
+    `;
+    applyBtn.onmouseover = () => applyBtn.style.opacity = '.8';
+    applyBtn.onmouseout  = () => applyBtn.style.opacity = '1';
+
+    const hintEl = document.createElement('span');
+    hintEl.textContent = `ℹ ${hint}`;
+    hintEl.style.cssText = 'color:#8b949e; font-size:11px; width:100%; margin-top:2px;';
+
+    const errEl = document.createElement('span');
+    errEl.id = `custom-err-${n}`;
+    errEl.style.cssText = 'color:#f85149; font-size:12px; width:100%; display:none;';
+
+    applyBtn.onclick = () => {
+        errEl.style.display = 'none';
+        const raw = input.value.trim();
+        if (!raw) { errEl.textContent = 'Input cannot be empty.'; errEl.style.display = 'block'; return; }
+        const result = applyFn(raw);
+        if (result !== true) { errEl.textContent = result || 'Invalid input.'; errEl.style.display = 'block'; }
+    };
+
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') applyBtn.click(); });
+
+    panel.appendChild(label);
+    panel.appendChild(input);
+    panel.appendChild(applyBtn);
+    panel.appendChild(hintEl);
+    panel.appendChild(errEl);
+    controls.after(panel);
+}
+
 const visualizations = {};
 
 // ==========================================
@@ -134,6 +205,20 @@ visualizations[1] = {
         this.resize();
         window.addEventListener('resize', () => this.resize());
         this.reset();
+        injectCustomInput(1,
+            'e.g. 50, 20, 70, 10, 30',
+            'Enter comma-separated numbers to build your own AVL Tree',
+            (raw) => {
+                const nums = raw.split(',').map(s => parseInt(s.trim(), 10));
+                if (nums.some(isNaN) || nums.length < 2) return 'Enter at least 2 valid integers separated by commas.';
+                if (nums.length > 12) return 'Max 12 numbers allowed for readability.';
+                if (visualizations[1].autoTimer) { clearInterval(visualizations[1].autoTimer); visualizations[1].autoTimer = null; }
+                visualizations[1].keys = nums;
+                visualizations[1].reset();
+                document.getElementById('status-1').textContent = `Custom keys loaded: ${nums.join(', ')}`;
+                return true;
+            }
+        );
     },
     resize: function() {
         const container = document.getElementById('viz-1');
@@ -977,12 +1062,36 @@ visualizations[9] = {
     stepIdx: 0,
     autoTimer: null,
     init: function() {
+        this._rebuildUI();
+        this.reset();
+        injectCustomInput(9,
+            'Text: HELLOWORLD  Pattern: WORLD',
+            'Format: "Text: YOUR_TEXT  Pattern: PATTERN" (uppercase letters only)',
+            (raw) => {
+                const tPart = raw.match(/Text:\s*([A-Z0-9]+)/i);
+                const pPart = raw.match(/Pattern:\s*([A-Z0-9]+)/i);
+                if (!tPart || !pPart) return 'Use format: "Text: YOURTEXT  Pattern: PATTERN"';
+                const t = tPart[1].toUpperCase();
+                const p = pPart[1].toUpperCase();
+                if (p.length > t.length) return 'Pattern cannot be longer than text.';
+                if (p.length < 1) return 'Pattern must have at least 1 character.';
+                if (t.length > 40) return 'Text too long (max 40 chars for visibility).';
+                if (visualizations[9].autoTimer) { clearInterval(visualizations[9].autoTimer); visualizations[9].autoTimer = null; }
+                visualizations[9].text = t;
+                visualizations[9].pattern = p;
+                visualizations[9]._rebuildUI();
+                visualizations[9].reset();
+                document.getElementById('status-9').textContent = `Loaded — Text: "${t}", Pattern: "${p}"`;
+                return true;
+            }
+        );
+    },
+    _rebuildUI: function() {
         const container = document.getElementById('viz-9');
         container.innerHTML = `
             <div id="v9-text" class="text-display" style="display:flex; justify-content:center; gap:2px; flex-wrap:wrap; margin-bottom: 20px;"></div>
-            <div style="text-align:center;">Pattern: <b style="color:#00d4aa;">ALGO</b> (hash=77)</div>
+            <div style="text-align:center;">Pattern: <b style="color:#00d4aa;">${this.pattern}</b></div>
         `;
-        this.reset();
     },
     reset: function() {
         this.stepIdx = 0;
@@ -990,25 +1099,29 @@ visualizations[9] = {
         document.getElementById('status-9').textContent = "Ready.";
     },
     step: function() {
-        const maxIdx = this.text.length - this.pattern.length;
+        const pLen = this.pattern.length;
+        const maxIdx = this.text.length - pLen;
         if (this.stepIdx <= maxIdx) {
-            const sub = this.text.substr(this.stepIdx, 4);
-            let h = (this.stepIdx === 18) ? 77 : (30 + this.stepIdx * 5) % 100; // Fake hash for visuals
-            if (this.stepIdx === 18) {
-                document.getElementById('status-9').textContent = `MATCH FOUND at index ${this.stepIdx}!`;
+            const sub = this.text.substr(this.stepIdx, pLen);
+            const isMatch = sub === this.pattern;
+            const h = (this.stepIdx * 31 + pLen * 7) % 97; // simple rolling hash sim
+            if (isMatch) {
+                document.getElementById('status-9').textContent = `✅ MATCH FOUND at index ${this.stepIdx}! "${sub}" == "${this.pattern}"`;
             } else {
-                document.getElementById('status-9').textContent = `Position ${this.stepIdx}: hash=${h}, pattern_hash=77`;
+                document.getElementById('status-9').textContent = `Position ${this.stepIdx}: "${sub}" hash=${h} — no match`;
             }
             this.render();
             this.stepIdx++;
         } else {
             if (this.autoTimer) clearInterval(this.autoTimer);
-            document.getElementById('status-9').textContent = "Complete.";
+            document.getElementById('status-9').textContent = "Search complete.";
         }
     },
     render: function() {
         const tc = document.getElementById('v9-text');
+        if (!tc) return;
         tc.innerHTML = '';
+        const pLen = this.pattern.length;
         for (let i = 0; i < this.text.length; i++) {
             const d = document.createElement('div');
             d.className = 'text-char';
@@ -1020,17 +1133,15 @@ visualizations[9] = {
             d.style.justifyContent = 'center';
             d.style.border = '1px solid #30363d';
             d.style.background = '#21262d';
+            d.style.fontSize = '12px';
 
             if (this.stepIdx > 0) {
                 const curIdx = this.stepIdx - 1;
-                if (i >= curIdx && i < curIdx + 4) {
+                const isMatch = this.text.substr(curIdx, pLen) === this.pattern;
+                if (i >= curIdx && i < curIdx + pLen) {
                     d.classList.add('window');
-                    d.style.border = '2px solid #d29922';
-                    if (curIdx === 18) {
-                        d.style.background = '#00d4aa';
-                        d.style.color = '#0d1117';
-                        d.style.border = '2px solid #00d4aa';
-                    }
+                    d.style.border = isMatch ? '2px solid #00d4aa' : '2px solid #d29922';
+                    if (isMatch) { d.style.background = '#00d4aa'; d.style.color = '#0d1117'; }
                 }
             }
             tc.appendChild(d);
@@ -1044,22 +1155,50 @@ visualizations[9] = {
 visualizations[10] = {
     s1: "AGGTAB",
     s2: "GXTXAYB",
-    dp: [
-        [0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,1,1,1],
-        [0,1,1,1,1,1,1,1],
-        [0,1,1,1,1,1,1,1],
-        [0,1,1,2,2,2,2,2],
-        [0,1,1,2,2,3,3,3],
-        [0,1,1,2,2,3,3,4]
-    ],
+    dp: [],
     r: 1, c: 1,
-    mode: 'fill', // fill or trace
+    lcsLen: 0,
+    lcsStr: '',
+    mode: 'fill',
     autoTimer: null,
+    _computeDP: function() {
+        const s1 = this.s1, s2 = this.s2;
+        const m = s1.length, n = s2.length;
+        this.dp = Array.from({length: m+1}, () => Array(n+1).fill(0));
+        for (let i = 1; i <= m; i++)
+            for (let j = 1; j <= n; j++)
+                this.dp[i][j] = s1[i-1] === s2[j-1] ? this.dp[i-1][j-1]+1 : Math.max(this.dp[i-1][j], this.dp[i][j-1]);
+        this.lcsLen = this.dp[m][n];
+        // backtrack to find LCS string
+        let lcs = '', i = m, j = n;
+        while (i > 0 && j > 0) {
+            if (s1[i-1] === s2[j-1]) { lcs = s1[i-1] + lcs; i--; j--; }
+            else if (this.dp[i-1][j] > this.dp[i][j-1]) i--;
+            else j--;
+        }
+        this.lcsStr = lcs;
+    },
     init: function() {
         const container = document.getElementById('viz-10');
-        container.innerHTML = '<table id="v10-table" class="dp-table" style="margin: 0 auto; border-collapse: collapse;"></table>';
+        container.innerHTML = '<div style="overflow-x:auto;"><table id="v10-table" class="dp-table" style="margin: 0 auto; border-collapse: collapse;"></table></div>';
+        this._computeDP();
         this.reset();
+        injectCustomInput(10,
+            'e.g. AGGTAB, GXTXAYB',
+            'Enter two comma-separated strings to compute their LCS',
+            (raw) => {
+                const parts = raw.split(',').map(s => s.trim().toUpperCase());
+                if (parts.length !== 2 || !parts[0] || !parts[1]) return 'Enter exactly two strings separated by a comma.';
+                if (parts[0].length > 10 || parts[1].length > 10) return 'Max 10 characters each for readability.';
+                if (visualizations[10].autoTimer) { clearInterval(visualizations[10].autoTimer); visualizations[10].autoTimer = null; }
+                visualizations[10].s1 = parts[0];
+                visualizations[10].s2 = parts[1];
+                visualizations[10]._computeDP();
+                visualizations[10].reset();
+                document.getElementById('status-10').textContent = `Loaded — "${parts[0]}" vs "${parts[1]}"`;
+                return true;
+            }
+        );
     },
     reset: function() {
         this.r = 1; this.c = 1;
@@ -1068,97 +1207,65 @@ visualizations[10] = {
         document.getElementById('status-10').textContent = "Ready.";
     },
     step: function() {
+        const m = this.s1.length, n = this.s2.length;
         if (this.mode === 'fill') {
             document.getElementById('status-10').textContent = `Filling L[${this.r}][${this.c}] = ${this.dp[this.r][this.c]}`;
             this.c++;
-            if (this.c > 7) {
-                this.c = 1;
-                this.r++;
-            }
-            if (this.r > 6) {
-                this.mode = 'trace';
-            }
+            if (this.c > n) { this.c = 1; this.r++; }
+            if (this.r > m) { this.mode = 'trace'; }
             this.render();
         } else if (this.mode === 'trace') {
-            document.getElementById('status-10').textContent = "LCS found: GTAB (length 4)";
+            document.getElementById('status-10').textContent = `✅ LCS found: "${this.lcsStr}" (length ${this.lcsLen})`;
             if (this.autoTimer) clearInterval(this.autoTimer);
             this.render();
         }
     },
     render: function() {
         const tbl = document.getElementById('v10-table');
+        if (!tbl) return;
         tbl.innerHTML = '';
-        const h1 = ["", "", "G", "X", "T", "X", "A", "Y", "B"];
-        const h2 = ["", "A", "G", "G", "T", "A", "B"];
-        
-        for (let i = 0; i <= 7; i++) { // header is row 0, data is 1..7 (but s1 length is 6 so data is 7 rows)
-            // Wait, s1 length is 6, so rows are 0..6 (7 rows). + header = 8 rows
-            // Wait, h2 length is 7: "", A, G, G, T, A, B.
-            // DP table is 7 rows (0 to 6), 8 cols (0 to 7).
-            // Total table rows: header + 7 = 8.
-            if (i > 7) break; 
-        }
+        const s1 = this.s1, s2 = this.s2;
+        const m = s1.length, n = s2.length;
 
-        // Draw header
+        // Header row: "" + "" + each char of s2
         let tr = document.createElement('tr');
-        h1.forEach(thText => {
+        ["", "", ...s2.split('')].forEach(ch => {
             const th = document.createElement('th');
-            th.textContent = thText;
-            th.style.padding = '8px 12px';
-            th.style.border = '1px solid #30363d';
-            th.style.background = '#161b22';
+            th.textContent = ch;
+            th.style.cssText = 'padding:8px 12px; border:1px solid #30363d; background:#161b22; color:#00d4aa;';
             tr.appendChild(th);
         });
         tbl.appendChild(tr);
 
-        // Draw data rows
-        for (let i = 0; i < 7; i++) {
+        // Data rows: row 0 is all-zero, rows 1..m are data
+        for (let i = 0; i <= m; i++) {
             tr = document.createElement('tr');
-            const th = document.createElement('th');
-            th.textContent = h2[i];
-            th.style.padding = '8px 12px';
-            th.style.border = '1px solid #30363d';
-            th.style.background = '#161b22';
-            tr.appendChild(th);
+            const rowLabel = document.createElement('th');
+            rowLabel.textContent = i === 0 ? '' : s1[i-1];
+            rowLabel.style.cssText = 'padding:8px 12px; border:1px solid #30363d; background:#161b22; color:#00d4aa;';
+            tr.appendChild(rowLabel);
 
-            for (let j = 0; j < 8; j++) {
+            for (let j = 0; j <= n; j++) {
                 const td = document.createElement('td');
-                td.style.padding = '8px 12px';
-                td.style.border = '1px solid #30363d';
-                td.style.textAlign = 'center';
-
-                if (i === 0 || j === 0) {
-                    td.textContent = 0;
-                    td.style.color = '#8b949e';
-                } else if (this.mode === 'fill' && (i < this.r || (i === this.r && j < this.c))) {
+                td.style.cssText = 'padding:8px 12px; border:1px solid #30363d; text-align:center;';
+                const filled = (i < this.r) || (i === this.r && j < this.c);
+                if (filled || i === 0 || j === 0) {
                     td.textContent = this.dp[i][j];
-                    if (i === this.r && j === this.c - 1) {
-                        td.classList.add('current');
-                        td.style.background = '#d29922';
-                        td.style.color = '#0d1117';
+                    if (i === this.r && j === this.c - 1 && this.mode === 'fill') {
+                        td.style.background = '#d29922'; td.style.color = '#0d1117'; td.style.fontWeight = 'bold';
                     } else {
-                        td.classList.add('filled');
-                        td.style.color = '#c9d1d9';
+                        td.style.color = (i === 0 || j === 0) ? '#8b949e' : '#c9d1d9';
                     }
-                } else if (this.mode === 'trace') {
-                    td.textContent = this.dp[i][j];
-                    // Hardcode trace path for visual: (6,7)->(6,6)->(5,5)->(4,4)->(3,4)->(2,3)->(1,2) wait
-                    // Just simple path visual
-                    const path = ['6,7','6,6','5,5','4,4','3,4','2,3','1,2'];
-                    if (path.includes(`${i},${j}`)) {
-                        td.classList.add('path');
-                        td.style.background = '#00d4aa';
-                        td.style.color = '#0d1117';
+                    if (this.mode === 'trace' && this.dp[i][j] > 0) {
+                        td.style.background = '#00d4aa'; td.style.color = '#0d1117';
                     }
-                } else {
-                    td.textContent = '';
                 }
-
                 tr.appendChild(td);
             }
             tbl.appendChild(tr);
         }
     }
+
 };
 
 // ==========================================
@@ -1244,7 +1351,56 @@ visualizations[12] = {
     ],
     stepIdx: 0,
     autoTimer: null,
-    init: function() { this.reset(); },
+    _generateStates: function(arr) {
+        const states = [arr.map(x => [x])]; // start: each as its own group
+        // Build merge stages manually for display
+        function mergeSort(a) {
+            if (a.length <= 1) return a;
+            const mid = Math.floor(a.length / 2);
+            return [...mergeSort(a.slice(0, mid)), ...mergeSort(a.slice(mid))].sort((x,y)=>x-y);
+        }
+        // Produce visual split states
+        const all = [arr.slice()];
+        // Simple split visualization for up to 8 elements
+        if (arr.length > 1) {
+            const mid = Math.floor(arr.length / 2);
+            all.push([arr.slice(0, mid), arr.slice(mid)]);
+            if (arr.length > 2) {
+                const left = arr.slice(0, mid), right = arr.slice(mid);
+                const lMid = Math.floor(left.length / 2);
+                const rMid = Math.floor(right.length / 2);
+                const splitLevel = [];
+                if (left.length > 1) { splitLevel.push(left.slice(0, lMid), left.slice(lMid)); } else splitLevel.push(left);
+                if (right.length > 1) { splitLevel.push(right.slice(0, rMid), right.slice(rMid)); } else splitLevel.push(right);
+                all.push(splitLevel);
+            }
+            // Merge stages
+            const sorted = [...arr].sort((a,b)=>a-b);
+            const mid2 = Math.floor(arr.length / 2);
+            const leftSorted = arr.slice(0, mid2).sort((a,b)=>a-b);
+            const rightSorted = arr.slice(mid2).sort((a,b)=>a-b);
+            all.push([leftSorted, rightSorted]);
+            all.push([sorted]);
+        }
+        return all;
+    },
+    init: function() {
+        injectCustomInput(12,
+            'e.g. 12, 11, 13, 5, 6, 7',
+            'Enter comma-separated numbers to watch Merge Sort in action',
+            (raw) => {
+                const nums = raw.split(',').map(s => parseFloat(s.trim()));
+                if (nums.some(isNaN) || nums.length < 2) return 'Enter at least 2 valid numbers separated by commas.';
+                if (nums.length > 8) return 'Max 8 numbers allowed for readability.';
+                if (visualizations[12].autoTimer) { clearInterval(visualizations[12].autoTimer); visualizations[12].autoTimer = null; }
+                visualizations[12].states = visualizations[12]._generateStates(nums);
+                visualizations[12].reset();
+                document.getElementById('status-12').textContent = `Custom array loaded: [${nums.join(', ')}]`;
+                return true;
+            }
+        );
+        this.reset();
+    },
     reset: function() {
         this.stepIdx = 0;
         document.getElementById('status-12').textContent = "Ready.";
