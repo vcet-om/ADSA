@@ -1958,7 +1958,898 @@ INF INF INF 0</pre></div>
             </div>
         </div>
 
-    </section>
+    
+        <div class="question-card reveal" id="card-24">
+            <div class="card-header" onclick="toggleCard('card-24')">
+                <h3><span class="q-badge">E13</span> Red-Black Tree Insertion</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-24"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(24)">Step</button>
+                        <button class="btn" onclick="vizAuto(24)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(24)">↺ Reset</button>
+                        <span class="viz-status" id="status-24">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-24">
+                    <button class="code-toggle" onclick="toggleCode('code-section-24')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> RedBlackTree {
+    <span class="kw">enum</span> <span class="tp">Color</span> { RED, BLACK }
+    <span class="kw">class</span> <span class="tp">Node</span> {
+        <span class="kw">int</span> data;
+        <span class="tp">Node</span> left, right, parent;
+        <span class="tp">Color</span> color;
+        <span class="tp">Node</span>(<span class="kw">int</span> data) { this.data = data; this.color = <span class="tp">Color</span>.RED; }
+    }
+    <span class="tp">Node</span> root;
+
+    <span class="kw">void</span> leftRotate(<span class="tp">Node</span> x) {
+        <span class="tp">Node</span> y = x.right;
+        x.right = y.left;
+        <span class="kw">if</span> (y.left != null) y.left.parent = x;
+        y.parent = x.parent;
+        <span class="kw">if</span> (x.parent == null) root = y;
+        <span class="kw">else</span> <span class="kw">if</span> (x == x.parent.left) x.parent.left = y;
+        <span class="kw">else</span> x.parent.right = y;
+        y.left = x;
+        x.parent = y;
+    }
+
+    <span class="kw">void</span> rightRotate(<span class="tp">Node</span> x) {
+        <span class="tp">Node</span> y = x.left;
+        x.left = y.right;
+        <span class="kw">if</span> (y.right != null) y.right.parent = x;
+        y.parent = x.parent;
+        <span class="kw">if</span> (x.parent == null) root = y;
+        <span class="kw">else</span> <span class="kw">if</span> (x == x.parent.right) x.parent.right = y;
+        <span class="kw">else</span> x.parent.left = y;
+        y.right = x;
+        x.parent = y;
+    }
+
+    <span class="kw">void</span> insertFixup(<span class="tp">Node</span> k) {
+        <span class="tp">Node</span> u;
+        <span class="kw"><span class="kw">while</span></span> (k.parent != null &amp;&amp; k.parent.color == <span class="tp">Color</span>.RED) {
+            <span class="kw">if</span> (k.parent == k.parent.parent.right) {
+                u = k.parent.parent.left;
+                <span class="kw">if</span> (u != null &amp;&amp; u.color == <span class="tp">Color</span>.RED) {
+                    u.color = <span class="tp">Color</span>.BLACK;
+                    k.parent.color = <span class="tp">Color</span>.BLACK;
+                    k.parent.parent.color = <span class="tp">Color</span>.RED;
+                    k = k.parent.parent;
+                } <span class="kw">else</span> {
+                    <span class="kw">if</span> (k == k.parent.left) {
+                        k = k.parent;
+                        rightRotate(k);
+                    }
+                    k.parent.color = <span class="tp">Color</span>.BLACK;
+                    k.parent.parent.color = <span class="tp">Color</span>.RED;
+                    leftRotate(k.parent.parent);
+                }
+            } <span class="kw">else</span> {
+                u = k.parent.parent.right;
+                <span class="kw">if</span> (u != null &amp;&amp; u.color == <span class="tp">Color</span>.RED) {
+                    u.color = <span class="tp">Color</span>.BLACK;
+                    k.parent.color = <span class="tp">Color</span>.BLACK;
+                    k.parent.parent.color = <span class="tp">Color</span>.RED;
+                    k = k.parent.parent;
+                } <span class="kw">else</span> {
+                    <span class="kw">if</span> (k == k.parent.right) {
+                        k = k.parent;
+                        leftRotate(k);
+                    }
+                    k.parent.color = <span class="tp">Color</span>.BLACK;
+                    k.parent.parent.color = <span class="tp">Color</span>.RED;
+                    rightRotate(k.parent.parent);
+                }
+            }
+            <span class="kw">if</span> (k == root) <span class="kw">break</span>;
+        }
+        root.color = <span class="tp">Color</span>.BLACK;
+    }
+
+    <span class="kw">void</span> insert(<span class="kw">int</span> key) {
+        <span class="tp">Node</span> node = <span class="kw">new</span> <span class="tp">Node</span>(key);
+        <span class="tp">Node</span> y = null;
+        <span class="tp">Node</span> x = this.root;
+
+        <span class="kw"><span class="kw">while</span></span> (x != null) {
+            y = x;
+            <span class="kw">if</span> (node.data &lt; x.data) x = x.left;
+            <span class="kw">else</span> x = x.right;
+        }
+
+        node.parent = y;
+        <span class="kw">if</span> (y == null) root = node;
+        <span class="kw">else</span> <span class="kw">if</span> (node.data &lt; y.data) y.left = node;
+        <span class="kw">else</span> y.right = node;
+
+        <span class="kw">if</span> (node.parent == null) { node.color = <span class="tp">Color</span>.BLACK; <span class="kw">return</span>; }
+        <span class="kw">if</span> (node.parent.parent == null) <span class="kw">return</span>;
+        insertFixup(node);
+    }
+
+    <span class="kw">void</span> inOrder(<span class="tp">Node</span> node) {
+        <span class="kw">if</span> (node != null) {
+            inOrder(node.left);
+            <span class="tp">System</span>.<span class="tp">out</span>.print(node.data + <span class="st">&quot;(&quot;</span> + (node.color == <span class="tp">Color</span>.RED ? <span class="st">&quot;R&quot;</span> : <span class="st">&quot;B&quot;</span>) + <span class="st">&quot;) &quot;</span>);
+            inOrder(node.right);
+        }
+    }
+
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        RedBlackTree rbt = <span class="kw">new</span> RedBlackTree();
+        <span class="kw">int</span>[] keys = {10, 18, 7, 15, 16, 30, 25, 40};
+        <span class="kw">for</span> (<span class="kw">int</span> key : keys) {
+            rbt.insert(key);
+            <span class="tp">System</span>.<span class="tp">out</span>.print(<span class="st">&quot;Inserted &quot;</span> + key + <span class="st">&quot;: &quot;</span>);
+            rbt.inOrder(rbt.root);
+            <span class="tp">System</span>.<span class="tp">out</span>.println();
+        }
+    }
+}
+</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">Inserted 10: 10(B) 
+Inserted 18: 10(B) 18(R) 
+Inserted 7: 7(R) 10(B) 18(R) 
+Inserted 15: 7(B) 10(B) 15(R) 18(B) 
+Inserted 16: 7(B) 10(B) 15(R) 16(B) 18(R) 
+Inserted 30: 7(B) 10(B) 15(B) 16(R) 18(B) 30(R) 
+Inserted 25: 7(B) 10(B) 15(B) 16(R) 18(R) 25(B) 30(R) 
+Inserted 40: 7(B) 10(R) 15(B) 16(B) 18(B) 25(R) 30(B) 40(R)</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>A Red-Black Tree is a self-balancing binary search tree. Each node has an extra bit for color (Red or Black) used to ensure the tree remains approximately balanced during insertions and deletions. The balancing is maintained through operations like recoloring and rotations.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-25">
+            <div class="card-header" onclick="toggleCard('card-25')">
+                <h3><span class="q-badge">E14</span> Trie Data Structure</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-25"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(25)">Step</button>
+                        <button class="btn" onclick="vizAuto(25)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(25)">↺ Reset</button>
+                        <span class="viz-status" id="status-25">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-25">
+                    <button class="code-toggle" onclick="toggleCode('code-section-25')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span class="kw">class</span> <span class="tp">TrieNode</span> {
+    <span class="tp">TrieNode</span>[] children = <span class="kw">new</span> <span class="tp">TrieNode</span>[26];
+    <span class="kw">boolean</span> isEndOfWord;
+}
+
+<span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> Trie {
+    <span class="tp">TrieNode</span> root;
+
+    <span <span class="kw">class</span>="kw">public</span> Trie() {
+        root = <span class="kw">new</span> <span class="tp">TrieNode</span>();
+    }
+
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">void</span> insert(<span class="tp">String</span> word) {
+        <span class="tp">TrieNode</span> curr = root;
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; word.length(); i++) {
+            <span class="kw">int</span> index = word.charAt(i) - &#x27;a&#x27;;
+            <span class="kw">if</span> (curr.children[index] == null) {
+                curr.children[index] = <span class="kw">new</span> <span class="tp">TrieNode</span>();
+            }
+            curr = curr.children[index];
+        }
+        curr.isEndOfWord = <span class="kw">true</span>;
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Inserted: &quot;</span> + word);
+    }
+
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">boolean</span> search(<span class="tp">String</span> word) {
+        <span class="tp">TrieNode</span> curr = root;
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; word.length(); i++) {
+            <span class="kw">int</span> index = word.charAt(i) - &#x27;a&#x27;;
+            <span class="kw">if</span> (curr.children[index] == null) <span class="kw">return</span> <span class="kw">false</span>;
+            curr = curr.children[index];
+        }
+        <span class="kw">return</span> curr != null &amp;&amp; curr.isEndOfWord;
+    }
+
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        Trie trie = <span class="kw">new</span> Trie();
+        <span class="tp">String</span>[] words = {<span class="st">&quot;apple&quot;</span>, <span class="st">&quot;app&quot;</span>, <span class="st">&quot;banana&quot;</span>, <span class="st">&quot;bat&quot;</span>};
+        <span class="kw">for</span> (<span class="tp">String</span> word : words) trie.insert(word);
+        
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Search &#x27;apple&#x27;: &quot;</span> + trie.search(<span class="st">&quot;apple&quot;</span>));
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Search &#x27;app&#x27;: &quot;</span> + trie.search(<span class="st">&quot;app&quot;</span>));
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Search &#x27;batman&#x27;: &quot;</span> + trie.search(<span class="st">&quot;batman&quot;</span>));
+    }
+}
+</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">Inserted: apple
+Inserted: app
+Inserted: banana
+Inserted: bat
+Search &#x27;apple&#x27;: true
+Search &#x27;app&#x27;: true
+Search &#x27;batman&#x27;: false</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>A Trie (or prefix tree) is a tree-like data structure used to store a dynamic set of strings where keys are usually strings. It is highly efficient for string searching operations like auto-complete and spell-checking.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-26">
+            <div class="card-header" onclick="toggleCard('card-26')">
+                <h3><span class="q-badge">E15</span> Fractional Knapsack Problem</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-26"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(26)">Step</button>
+                        <button class="btn" onclick="vizAuto(26)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(26)">↺ Reset</button>
+                        <span class="viz-status" id="status-26">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-26">
+                    <button class="code-toggle" onclick="toggleCode('code-section-26')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span class="kw">import</span> java.util.<span class="tp">Arrays</span>;
+<span class="kw">import</span> java.util.<span class="tp">Comparator</span>;
+
+<span class="kw">class</span> <span class="tp">Item</span> {
+    <span class="kw">int</span> value, weight;
+    <span class="tp">Item</span>(<span class="kw">int</span> value, <span class="kw">int</span> weight) { this.value = value; this.weight = weight; }
+}
+
+<span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> FractionalKnapsack {
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">double</span> getMaxValue(<span class="tp">Item</span>[] items, <span class="kw">int</span> capacity) {
+        <span class="tp">Arrays</span>.sort(items, <span class="kw">new</span> <span class="tp">Comparator</span>&lt;<span class="tp">Item</span>&gt;() {
+            @Override
+            <span <span class="kw">class</span>="kw">public</span> <span class="kw">int</span> compare(<span class="tp">Item</span> i1, <span class="tp">Item</span> i2) {
+                <span class="kw">double</span> cpr1 = (<span class="kw">double</span>) i1.value / i1.weight;
+                <span class="kw">double</span> cpr2 = (<span class="kw">double</span>) i2.value / i2.weight;
+                <span class="kw">return</span> <span class="tp">Double</span>.compare(cpr2, cpr1);
+            }
+        });
+
+        <span class="kw">double</span> totalValue = 0d;
+        <span class="kw">for</span> (<span class="tp">Item</span> i : items) {
+            <span class="kw">if</span> (capacity - i.weight &gt;= 0) {
+                capacity -= i.weight;
+                totalValue += i.value;
+                <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Taking full item (V:&quot;</span> + i.value + <span class="st">&quot;, W:&quot;</span> + i.weight + <span class="st">&quot;)&quot;</span>);
+            } <span class="kw">else</span> {
+                <span class="kw">double</span> fraction = ((<span class="kw">double</span>) capacity / i.weight);
+                totalValue += (i.value * fraction);
+                <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Taking fraction &quot;</span> + <span class="tp">String</span>.format(<span class="st">&quot;%.2f&quot;</span>, fraction) + <span class="st">&quot; of item (V:&quot;</span> + i.value + <span class="st">&quot;, W:&quot;</span> + i.weight + <span class="st">&quot;)&quot;</span>);
+                <span class="kw">break</span>;
+            }
+        }
+        <span class="kw">return</span> totalValue;
+    }
+
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">Item</span>[] items = { <span class="kw">new</span> <span class="tp">Item</span>(60, 10), <span class="kw">new</span> <span class="tp">Item</span>(100, 20), <span class="kw">new</span> <span class="tp">Item</span>(120, 30) };
+        <span class="kw">int</span> capacity = 50;
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Knapsack Capacity: &quot;</span> + capacity);
+        <span class="kw">double</span> maxValue = getMaxValue(items, capacity);
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Maximum value we can obtain = &quot;</span> + maxValue);
+    }
+}
+</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">Knapsack Capacity: 50
+Taking full item (V:60, W:10)
+Taking full item (V:100, W:20)
+Taking fraction 0.67 of item (V:120, W:30)
+Maximum value we can obtain = 240.0</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>The Fractional Knapsack problem uses a greedy approach. It sorts items by their value-to-weight ratio in descending order and greedily picks items. If an item cannot be fully picked, a fraction of it is taken to maximize total value.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-27">
+            <div class="card-header" onclick="toggleCard('card-27')">
+                <h3><span class="q-badge">E16</span> Sum of Subsets Problem</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-27"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(27)">Step</button>
+                        <button class="btn" onclick="vizAuto(27)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(27)">↺ Reset</button>
+                        <span class="viz-status" id="status-27">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-27">
+                    <button class="code-toggle" onclick="toggleCode('code-section-27')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> SumOfSubsets {
+    <span class="kw">static</span> <span class="kw">void</span> subsetSum(<span class="kw">int</span>[] set, <span class="kw">int</span>[] subset, <span class="kw">int</span> subsetSize, <span class="kw">int</span> total, <span class="kw">int</span> nodeCount, <span class="kw">int</span> target) {
+        <span class="kw">if</span> (total == target) {
+            <span class="tp">System</span>.<span class="tp">out</span>.print(<span class="st">&quot;Subset found: [ &quot;</span>);
+            <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; subsetSize; i++) <span class="tp">System</span>.<span class="tp">out</span>.print(subset[i] + <span class="st">&quot; &quot;</span>);
+            <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;]&quot;</span>);
+            <span class="kw">return</span>;
+        }
+        <span class="kw">for</span> (<span class="kw">int</span> i = nodeCount; i &lt; set.length; i++) {
+            subset[subsetSize] = set[i];
+            subsetSum(set, subset, subsetSize + 1, total + set[i], i + 1, target);
+        }
+    }
+
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="kw">int</span>[] set = {10, 7, 5, 18, 12, 20, 15};
+        <span class="kw">int</span>[] subset = <span class="kw">new</span> <span class="kw">int</span>[set.length];
+        <span class="kw">int</span> target = 35;
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Set: {10, 7, 5, 18, 12, 20, 15}, Target: &quot;</span> + target);
+        subsetSum(set, subset, 0, 0, 0, target);
+    }
+}
+</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">Set: {10, 7, 5, 18, 12, 20, 15}, Target: 35
+Subset found: [ 10 7 18 ]
+Subset found: [ 10 5 20 ]
+Subset found: [ 5 18 12 ]
+Subset found: [ 20 15 ]</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>The Sum of Subsets problem uses backtracking to find all subsets of a given set of integers that sum to a specific target value. It explores the state space tree, discarding branches that exceed the target sum.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-28">
+            <div class="card-header" onclick="toggleCard('card-28')">
+                <h3><span class="q-badge">E17</span> Graph Coloring Problem</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-28"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(28)">Step</button>
+                        <button class="btn" onclick="vizAuto(28)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(28)">↺ Reset</button>
+                        <span class="viz-status" id="status-28">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-28">
+                    <button class="code-toggle" onclick="toggleCode('code-section-28')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span class="kw">import</span> java.util.<span class="tp">Arrays</span>;
+
+<span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> GraphColoring {
+    <span class="kw">final</span> <span class="kw">int</span> V = 4;
+    <span class="kw">int</span>[] color;
+
+    <span class="kw">boolean</span> isSafe(<span class="kw">int</span> v, <span class="kw">int</span>[][] graph, <span class="kw">int</span>[] color, <span class="kw">int</span> c) {
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; V; i++) {
+            <span class="kw">if</span> (graph[v][i] == 1 &amp;&amp; c == color[i]) <span class="kw">return</span> <span class="kw">false</span>;
+        }
+        <span class="kw">return</span> <span class="kw">true</span>;
+    }
+
+    <span class="kw">boolean</span> graphColoringUtil(<span class="kw">int</span>[][] graph, <span class="kw">int</span> m, <span class="kw">int</span>[] color, <span class="kw">int</span> v) {
+        <span class="kw">if</span> (v == V) <span class="kw">return</span> <span class="kw">true</span>;
+        <span class="kw">for</span> (<span class="kw">int</span> c = 1; c &lt;= m; c++) {
+            <span class="kw">if</span> (isSafe(v, graph, color, c)) {
+                color[v] = c;
+                <span class="kw">if</span> (graphColoringUtil(graph, m, color, v + 1)) <span class="kw">return</span> <span class="kw">true</span>;
+                color[v] = 0; <span class="cm">// backtrack</span>
+            }
+        }
+        <span class="kw">return</span> <span class="kw">false</span>;
+    }
+
+    <span class="kw">boolean</span> graphColoring(<span class="kw">int</span>[][] graph, <span class="kw">int</span> m) {
+        color = <span class="kw">new</span> <span class="kw">int</span>[V];
+        <span class="tp">Arrays</span>.fill(color, 0);
+        <span class="kw">if</span> (!graphColoringUtil(graph, m, color, 0)) {
+            <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Solution does not exist&quot;</span>);
+            <span class="kw">return</span> <span class="kw">false</span>;
+        }
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Solution exists. Assigned Colors:&quot;</span>);
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; V; i++) <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Vertex &quot;</span> + i + <span class="st">&quot; -&gt; <span class="tp">Color</span> &quot;</span> + color[i]);
+        <span class="kw">return</span> <span class="kw">true</span>;
+    }
+
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        GraphColoring gc = <span class="kw">new</span> GraphColoring();
+        <span class="kw">int</span>[][] graph = {
+            {0, 1, 1, 1},
+            {1, 0, 1, 0},
+            {1, 1, 0, 1},
+            {1, 0, 1, 0}
+        };
+        <span class="kw">int</span> m = 3; <span class="cm">// Number of colors</span>
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;<span class="tp">Graph</span> with 4 vertices, max colors: &quot;</span> + m);
+        gc.graphColoring(graph, m);
+    }
+}
+</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">Graph with 4 vertices, max colors: 3
+Solution exists. Assigned Colors:
+Vertex 0 -&gt; Color 1
+Vertex 1 -&gt; Color 2
+Vertex 2 -&gt; Color 3
+Vertex 3 -&gt; Color 2</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>Graph Coloring involves assigning colors to the vertices of a graph such that no two adjacent vertices have the same color, using at most 'm' colors. It employs backtracking to explore all possible color assignments safely.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-29">
+            <div class="card-header" onclick="toggleCard('card-29')">
+                <h3><span class="q-badge">E18</span> Ford-Fulkerson Method (Max Flow)</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-29"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(29)">Step</button>
+                        <button class="btn" onclick="vizAuto(29)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(29)">↺ Reset</button>
+                        <span class="viz-status" id="status-29">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-29">
+                    <button class="code-toggle" onclick="toggleCode('code-section-29')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span class="kw">import</span> java.util.<span class="tp">LinkedList</span>;
+
+<span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> FordFulkerson {
+    <span class="kw">static</span> <span class="kw">final</span> <span class="kw">int</span> V = 6;
+
+    <span class="kw">boolean</span> bfs(<span class="kw">int</span>[][] rGraph, <span class="kw">int</span> s, <span class="kw">int</span> t, <span class="kw">int</span>[] parent) {
+        <span class="kw">boolean</span>[] visited = <span class="kw">new</span> <span class="kw">boolean</span>[V];
+        <span class="tp">LinkedList</span>&lt;<span class="tp">Integer</span>&gt; queue = <span class="kw">new</span> <span class="tp">LinkedList</span>&lt;&gt;();
+        queue.add(s);
+        visited[s] = <span class="kw">true</span>;
+        parent[s] = -1;
+
+        <span class="kw"><span class="kw">while</span></span> (queue.size() != 0) {
+            <span class="kw">int</span> u = queue.poll();
+            <span class="kw">for</span> (<span class="kw">int</span> v = 0; v &lt; V; v++) {
+                <span class="kw">if</span> (!visited[v] &amp;&amp; rGraph[u][v] &gt; 0) {
+                    <span class="kw">if</span> (v == t) { parent[v] = u; <span class="kw">return</span> <span class="kw">true</span>; }
+                    queue.add(v);
+                    parent[v] = u;
+                    visited[v] = <span class="kw">true</span>;
+                }
+            }
+        }
+        <span class="kw">return</span> <span class="kw">false</span>;
+    }
+
+    <span class="kw">int</span> fordFulkerson(<span class="kw">int</span>[][] graph, <span class="kw">int</span> s, <span class="kw">int</span> t) {
+        <span class="kw">int</span> u, v;
+        <span class="kw">int</span>[][] rGraph = <span class="kw">new</span> <span class="kw">int</span>[V][V];
+        <span class="kw">for</span> (u = 0; u &lt; V; u++)
+            <span class="kw">for</span> (v = 0; v &lt; V; v++)
+                rGraph[u][v] = graph[u][v];
+
+        <span class="kw">int</span>[] parent = <span class="kw">new</span> <span class="kw">int</span>[V];
+        <span class="kw">int</span> max_flow = 0;
+
+        <span class="kw"><span class="kw">while</span></span> (bfs(rGraph, s, t, parent)) {
+            <span class="kw">int</span> path_flow = <span class="tp">Integer</span>.MAX_VALUE;
+            <span class="kw">for</span> (v = t; v != s; v = parent[v]) {
+                u = parent[v];
+                path_flow = <span class="tp">Math</span>.min(path_flow, rGraph[u][v]);
+            }
+            <span class="kw">for</span> (v = t; v != s; v = parent[v]) {
+                u = parent[v];
+                rGraph[u][v] -= path_flow;
+                rGraph[v][u] += path_flow;
+            }
+            max_flow += path_flow;
+            <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Augmenting path flow: &quot;</span> + path_flow);
+        }
+        <span class="kw">return</span> max_flow;
+    }
+
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="kw">int</span>[][] graph = <span class="kw">new</span> <span class="kw">int</span>[][] {
+            {0, 16, 13, 0, 0, 0},
+            {0, 0, 10, 12, 0, 0},
+            {0, 4, 0, 0, 14, 0},
+            {0, 0, 9, 0, 0, 20},
+            {0, 0, 0, 7, 0, 4},
+            {0, 0, 0, 0, 0, 0}
+        };
+        FordFulkerson ff = <span class="kw">new</span> FordFulkerson();
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;The maximum possible flow is &quot;</span> + ff.fordFulkerson(graph, 0, 5));
+    }
+}
+</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">Augmenting path flow: 12
+Augmenting path flow: 4
+Augmenting path flow: 7
+The maximum possible flow is 23</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>The Ford-Fulkerson method calculates the maximum flow in a flow network. It uses BFS (Edmonds-Karp implementation) to find augmenting paths in a residual graph and iteratively adds the path flow to the total max flow until no more paths exist.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-30">
+            <div class="card-header" onclick="toggleCard('card-30')">
+                <h3><span class="q-badge">E19</span> Bellman-Ford Algorithm</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-30"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(30)">Step</button>
+                        <button class="btn" onclick="vizAuto(30)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(30)">↺ Reset</button>
+                        <span class="viz-status" id="status-30">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-30">
+                    <button class="code-toggle" onclick="toggleCode('code-section-30')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span class="kw">class</span> <span class="tp">Graph</span> {
+    <span class="kw">class</span> <span class="tp">Edge</span> {
+        <span class="kw">int</span> src, dest, weight;
+        <span class="tp">Edge</span>() { src = dest = weight = 0; }
+    }
+    <span class="kw">int</span> V, E;
+    <span class="tp">Edge</span>[] edge;
+    <span class="tp">Graph</span>(<span class="kw">int</span> v, <span class="kw">int</span> e) {
+        V = v; E = e;
+        edge = <span class="kw">new</span> <span class="tp">Edge</span>[e];
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; e; ++i) edge[i] = <span class="kw">new</span> <span class="tp">Edge</span>();
+    }
+    <span class="kw">void</span> BellmanFordAlgo(<span class="tp">Graph</span> graph, <span class="kw">int</span> src) {
+        <span class="kw">int</span> V = graph.V, E = graph.E;
+        <span class="kw">int</span>[] dist = <span class="kw">new</span> <span class="kw">int</span>[V];
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; V; ++i) dist[i] = <span class="tp">Integer</span>.MAX_VALUE;
+        dist[src] = 0;
+
+        <span class="kw">for</span> (<span class="kw">int</span> i = 1; i &lt; V; ++i) {
+            <span class="kw">for</span> (<span class="kw">int</span> j = 0; j &lt; E; ++j) {
+                <span class="kw">int</span> u = graph.edge[j].src;
+                <span class="kw">int</span> v = graph.edge[j].dest;
+                <span class="kw">int</span> weight = graph.edge[j].weight;
+                <span class="kw">if</span> (dist[u] != <span class="tp">Integer</span>.MAX_VALUE &amp;&amp; dist[u] + weight &lt; dist[v])
+                    dist[v] = dist[u] + weight;
+            }
+        }
+
+        <span class="kw">for</span> (<span class="kw">int</span> j = 0; j &lt; E; ++j) {
+            <span class="kw">int</span> u = graph.edge[j].src;
+            <span class="kw">int</span> v = graph.edge[j].dest;
+            <span class="kw">int</span> weight = graph.edge[j].weight;
+            <span class="kw">if</span> (dist[u] != <span class="tp">Integer</span>.MAX_VALUE &amp;&amp; dist[u] + weight &lt; dist[v]) {
+                <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;<span class="tp">Graph</span> contains negative weight cycle&quot;</span>);
+                <span class="kw">return</span>;
+            }
+        }
+        printArr(dist, V);
+    }
+    <span class="kw">void</span> printArr(<span class="kw">int</span>[] dist, <span class="kw">int</span> V) {
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Vertex Distance from Source&quot;</span>);
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; V; ++i)
+            <span class="tp">System</span>.<span class="tp">out</span>.println(i + <span class="st">&quot;		&quot;</span> + dist[i]);
+    }
+}
+
+<span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> BellmanFord {
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="kw">int</span> V = 5, E = 8;
+        <span class="tp">Graph</span> graph = <span class="kw">new</span> <span class="tp">Graph</span>(V, E);
+        graph.edge[0].src = 0; graph.edge[0].dest = 1; graph.edge[0].weight = -1;
+        graph.edge[1].src = 0; graph.edge[1].dest = 2; graph.edge[1].weight = 4;
+        graph.edge[2].src = 1; graph.edge[2].dest = 2; graph.edge[2].weight = 3;
+        graph.edge[3].src = 1; graph.edge[3].dest = 3; graph.edge[3].weight = 2;
+        graph.edge[4].src = 1; graph.edge[4].dest = 4; graph.edge[4].weight = 2;
+        graph.edge[5].src = 3; graph.edge[5].dest = 2; graph.edge[5].weight = 5;
+        graph.edge[6].src = 3; graph.edge[6].dest = 1; graph.edge[6].weight = 1;
+        graph.edge[7].src = 4; graph.edge[7].dest = 3; graph.edge[7].weight = -3;
+
+        graph.BellmanFordAlgo(graph, 0);
+    }
+}
+</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">Vertex Distance from Source
+0		0
+1		-1
+2		2
+3		-2
+4		1</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>The Bellman-Ford algorithm finds the shortest path from a single source vertex to all other vertices in a weighted digraph. Unlike Dijkstra's, it can handle negative weight edges and detects negative weight cycles by relaxing all edges V-1 times.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-31">
+            <div class="card-header" onclick="toggleCard('card-31')">
+                <h3><span class="q-badge">E20</span> 0/1 Knapsack Problem</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-31"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(31)">Step</button>
+                        <button class="btn" onclick="vizAuto(31)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(31)">↺ Reset</button>
+                        <span class="viz-status" id="status-31">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-31">
+                    <button class="code-toggle" onclick="toggleCode('code-section-31')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> Knapsack01 {
+    <span class="kw">static</span> <span class="kw">int</span> max(<span class="kw">int</span> a, <span class="kw">int</span> b) { <span class="kw">return</span> (a &gt; b) ? a : b; }
+
+    <span class="kw">static</span> <span class="kw">int</span> knapSack(<span class="kw">int</span> W, <span class="kw">int</span>[] wt, <span class="kw">int</span>[] val, <span class="kw">int</span> n) {
+        <span class="kw">int</span>[][] K = <span class="kw">new</span> <span class="kw">int</span>[n + 1][W + 1];
+
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt;= n; i++) {
+            <span class="kw">for</span> (<span class="kw">int</span> w = 0; w &lt;= W; w++) {
+                <span class="kw">if</span> (i == 0 || w == 0) K[i][w] = 0;
+                <span class="kw">else</span> <span class="kw">if</span> (wt[i - 1] &lt;= w)
+                    K[i][w] = max(val[i - 1] + K[i - 1][w - wt[i - 1]], K[i - 1][w]);
+                <span class="kw">else</span>
+                    K[i][w] = K[i - 1][w];
+            }
+        }
+        <span class="kw">return</span> K[n][W];
+    }
+
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="kw">int</span>[] val = { 60, 100, 120 };
+        <span class="kw">int</span>[] wt = { 10, 20, 30 };
+        <span class="kw">int</span> W = 50;
+        <span class="kw">int</span> n = val.length;
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Knapsack Capacity: &quot;</span> + W);
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Maximum value: &quot;</span> + knapSack(W, wt, val, n));
+    }
+}
+</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">Knapsack Capacity: 50
+Maximum value: 220</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>The 0/1 Knapsack problem uses Dynamic Programming. An item can either be taken entirely or left (0/1 property). It builds a 2D array bottom-up, maximizing the total value for every sub-capacity without exceeding the weight limit.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-32">
+            <div class="card-header" onclick="toggleCard('card-32')">
+                <h3><span class="q-badge">E21</span> Travelling Salesman Problem</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-32"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(32)">Step</button>
+                        <button class="btn" onclick="vizAuto(32)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(32)">↺ Reset</button>
+                        <span class="viz-status" id="status-32">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-32">
+                    <button class="code-toggle" onclick="toggleCode('code-section-32')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> TSP {
+    <span class="kw">static</span> <span class="kw">int</span> n = 4;
+    <span class="kw">static</span> <span class="kw">int</span>[][] dist = {
+        {0, 10, 15, 20},
+        {10, 0, 35, 25},
+        {15, 35, 0, 30},
+        {20, 25, 30, 0}
+    };
+    <span class="kw">static</span> <span class="kw">int</span> VISITED_ALL = (1 &lt;&lt; n) - 1;
+    <span class="kw">static</span> <span class="kw">int</span>[][] memo = <span class="kw">new</span> <span class="kw">int</span>[n][1 &lt;&lt; n];
+
+    <span class="kw">static</span> <span class="kw">int</span> tsp(<span class="kw">int</span> mask, <span class="kw">int</span> pos) {
+        <span class="kw">if</span> (mask == VISITED_ALL) <span class="kw">return</span> dist[pos][0];
+        <span class="kw">if</span> (memo[pos][mask] != 0) <span class="kw">return</span> memo[pos][mask];
+
+        <span class="kw">int</span> ans = <span class="tp">Integer</span>.MAX_VALUE;
+        <span class="kw">for</span> (<span class="kw">int</span> city = 0; city &lt; n; city++) {
+            <span class="kw">if</span> ((mask &amp; (1 &lt;&lt; city)) == 0) {
+                <span class="kw">int</span> newAns = dist[pos][city] + tsp(mask | (1 &lt;&lt; city), city);
+                ans = <span class="tp">Math</span>.min(ans, newAns);
+            }
+        }
+        <span class="kw">return</span> memo[pos][mask] = ans;
+    }
+
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; n; i++)
+            <span class="kw">for</span> (<span class="kw">int</span> j = 0; j &lt; (1 &lt;&lt; n); j++)
+                memo[i][j] = 0;
+                
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;TSP <span class="tp">Graph</span> distance matrix:&quot;</span>);
+        <span class="kw">for</span>(<span class="kw">int</span>[] row : dist) {
+            <span class="kw">for</span>(<span class="kw">int</span> val : row) <span class="tp">System</span>.<span class="tp">out</span>.print(val + <span class="st">&quot; &quot;</span>);
+            <span class="tp">System</span>.<span class="tp">out</span>.println();
+        }
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Minimum weight Hamiltonian Cycle (TSP): &quot;</span> + tsp(1, 0));
+    }
+}
+</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">TSP Graph distance matrix:
+0 10 15 20 
+10 0 35 25 
+15 35 0 30 
+20 25 30 0 
+Minimum weight Hamiltonian Cycle (TSP): 80</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>The Travelling Salesman Problem (TSP) finds the shortest possible route that visits every city exactly once and returns to the origin. This implementation uses Dynamic Programming with Bitmasking to efficiently solve the overlapping subproblems.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-card reveal" id="card-33">
+            <div class="card-header" onclick="toggleCard('card-33')">
+                <h3><span class="q-badge">E22</span> Knuth-Morris-Pratt (KMP) Algorithm</h3>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="card-body">
+                <div class="viz-container">
+                    <div class="viz-area" id="viz-33"></div>
+                    <div class="viz-controls">
+                        <button class="btn btn-accent" onclick="vizStep(33)">Step</button>
+                        <button class="btn" onclick="vizAuto(33)">▶ Auto Play</button>
+                        <button class="btn" onclick="vizReset(33)">↺ Reset</button>
+                        <span class="viz-status" id="status-33">Ready</span>
+                    </div>
+                </div>
+                <div class="code-section" id="code-section-33">
+                    <button class="code-toggle" onclick="toggleCode('code-section-33')">
+                        <span>☕ View Java Code</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="code-block"><pre><span <span class="kw">class</span>="kw">public</span> <span class="kw">class</span> KMPAlgorithm {
+    <span class="kw">void</span> KMPSearch(<span class="tp">String</span> pat, <span class="tp">String</span> txt) {
+        <span class="kw">int</span> M = pat.length();
+        <span class="kw">int</span> N = txt.length();
+        <span class="kw">int</span>[] lps = <span class="kw">new</span> <span class="kw">int</span>[M];
+        <span class="kw">int</span> j = 0; <span class="cm">// index <span class="kw">for</span> pat[]</span>
+
+        computeLPSArray(pat, M, lps);
+
+        <span class="kw">int</span> i = 0; <span class="cm">// index <span class="kw">for</span> txt[]</span>
+        <span class="kw"><span class="kw">while</span></span> (i &lt; N) {
+            <span class="kw">if</span> (pat.charAt(j) == txt.charAt(i)) { j++; i++; }
+            <span class="kw">if</span> (j == M) {
+                <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Found pattern at index &quot;</span> + (i - j));
+                j = lps[j - 1];
+            } <span class="kw">else</span> <span class="kw">if</span> (i &lt; N &amp;&amp; pat.charAt(j) != txt.charAt(i)) {
+                <span class="kw">if</span> (j != 0) j = lps[j - 1];
+                <span class="kw">else</span> i = i + 1;
+            }
+        }
+    }
+
+    <span class="kw">void</span> computeLPSArray(<span class="tp">String</span> pat, <span class="kw">int</span> M, <span class="kw">int</span>[] lps) {
+        <span class="kw">int</span> len = 0;
+        <span class="kw">int</span> i = 1;
+        lps[0] = 0;
+
+        <span class="kw"><span class="kw">while</span></span> (i &lt; M) {
+            <span class="kw">if</span> (pat.charAt(i) == pat.charAt(len)) {
+                len++;
+                lps[i] = len;
+                i++;
+            } <span class="kw">else</span> {
+                <span class="kw">if</span> (len != 0) {
+                    len = lps[len - 1];
+                } <span class="kw">else</span> {
+                    lps[i] = len;
+                    i++;
+                }
+            }
+        }
+    }
+
+    <span <span class="kw">class</span>="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> main(<span class="tp">String</span>[] args) {
+        <span class="tp">String</span> txt = <span class="st">&quot;ABABDABACDABABCABAB&quot;</span>;
+        <span class="tp">String</span> pat = <span class="st">&quot;ABABCABAB&quot;</span>;
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Text: &quot;</span> + txt);
+        <span class="tp">System</span>.<span class="tp">out</span>.println(<span class="st">&quot;Pattern: &quot;</span> + pat);
+        <span class="kw">new</span> KMPAlgorithm().KMPSearch(pat, txt);
+    }
+}
+</pre></div>
+                </div>
+                <div class="output-section">
+                    <h4>📋 Program Output</h4>
+                    <div class="output-block"><pre style="margin:0; font-family:var(--font-mono);">Text: ABABDABACDABABCABAB
+Pattern: ABABCABAB
+Found pattern at index 10</pre></div>
+                </div>
+                <div class="explanation-section">
+                    <h4>How It Works</h4>
+                    <p>The Knuth-Morris-Pratt (KMP) string matching algorithm searches for occurrences of a pattern within a text. It uses a Longest Proper Prefix which is also Suffix (LPS) array to avoid redundant character comparisons, achieving linear time complexity O(N+M).</p>
+                </div>
+            </div>
+        </div>
+</section>
     <footer class="site-footer">
         <p>ADSA Practicals • NEP Scheme Semester 3</p>
     </footer>

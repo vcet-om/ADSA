@@ -40,6 +40,16 @@ This folder contains the core basic experiments defined in the lab syllabus:
 * **Experiment 10:** Floyd-Warshall algorithm for computing shortest paths
 * **Experiment 11:** Place N queens on an NxN chessboard using backtracking
 * **Experiment 12:** Implementation of Hamiltonian Cycle
+* **Experiment 13:** Red-Black Tree Insertion
+* **Experiment 14:** Trie Data Structure
+* **Experiment 15:** Fractional Knapsack Problem (Greedy)
+* **Experiment 16:** Sum of Subsets Problem (Backtracking)
+* **Experiment 17:** Graph Coloring Problem (Backtracking)
+* **Experiment 18:** Ford-Fulkerson Method (Max Flow)
+* **Experiment 19:** Bellman-Ford Algorithm (Dynamic Programming)
+* **Experiment 20:** 0/1 Knapsack Problem (Dynamic Programming)
+* **Experiment 21:** Travelling Salesman Problem (Dynamic Programming)
+* **Experiment 22:** Knuth-Morris-Pratt (KMP) String Matching Algorithm
 
 ## How to Run
 

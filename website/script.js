@@ -2239,12 +2239,235 @@ visualizations[23] = {
     }
 };
 
+
+// ==========================================
+// More Basic Experiments (24 to 33)
+// ==========================================
+
+// --- E13: Red-Black Tree (Canvas) ---
+visualizations[24] = {
+    nodes: [
+        { id: 15, x: 0.5, y: 0.2, c: 'B' }, { id: 10, x: 0.3, y: 0.5, c: 'R' }, { id: 30, x: 0.7, y: 0.5, c: 'B' },
+        { id: 7, x: 0.15, y: 0.8, c: 'B' }, { id: 18, x: 0.55, y: 0.8, c: 'R' }, { id: 40, x: 0.85, y: 0.8, c: 'R' }
+    ],
+    edges: [[15,10], [15,30], [10,7], [30,18], [30,40]],
+    stepIdx: 0,
+    canvas: null, ctx: null, autoTimer: null,
+    init: function() {
+        const c = document.getElementById('viz-24');
+        if (!c) return;
+        c.innerHTML = '<canvas id="canvas-24"></canvas>';
+        this.canvas = document.getElementById('canvas-24');
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+        this.reset();
+    },
+    resize: function() {
+        const c = document.getElementById('viz-24');
+        this.canvas.width = c.clientWidth;
+        this.canvas.height = c.clientHeight || 300;
+        this.draw();
+    },
+    reset: function() {
+        document.getElementById('status-24').textContent = "Red-Black Tree visual representation.";
+        this.draw();
+    },
+    step: function() {
+        document.getElementById('status-24').textContent = "Showing Red and Black coloring of nodes.";
+    },
+    draw: function() {
+        if (!this.ctx) return;
+        const w = this.canvas.width, h = this.canvas.height;
+        this.ctx.clearRect(0, 0, w, h);
+        const getPos = (id) => { const n = this.nodes.find(x => x.id === id); return { x: n.x * w, y: n.y * h }; };
+        
+        this.ctx.strokeStyle = '#30363d'; this.ctx.lineWidth = 2;
+        this.edges.forEach(e => {
+            const p1 = getPos(e[0]), p2 = getPos(e[1]);
+            this.ctx.beginPath(); this.ctx.moveTo(p1.x, p1.y); this.ctx.lineTo(p2.x, p2.y); this.ctx.stroke();
+        });
+        
+        this.nodes.forEach(n => {
+            const p = getPos(n.id);
+            this.ctx.beginPath(); this.ctx.arc(p.x, p.y, 20, 0, 2*Math.PI);
+            this.ctx.fillStyle = n.c === 'R' ? '#f85149' : '#21262d';
+            this.ctx.fill(); this.ctx.stroke();
+            this.ctx.fillStyle = n.c === 'R' ? '#fff' : '#c9d1d9';
+            this.ctx.font = '16px sans-serif'; this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(n.id, p.x, p.y);
+        });
+    }
+};
+
+// --- E14: Trie (Canvas) ---
+visualizations[25] = {
+    nodes: [
+        { id: 'root', label: 'root', x: 0.5, y: 0.1 },
+        { id: 'a', label: 'a', x: 0.3, y: 0.4 }, { id: 'b', label: 'b', x: 0.7, y: 0.4 },
+        { id: 'ap', label: 'p', x: 0.3, y: 0.7 }, { id: 'ba', label: 'a', x: 0.7, y: 0.7 }
+    ],
+    edges: [['root','a'], ['root','b'], ['a','ap'], ['b','ba']],
+    stepIdx: 0,
+    canvas: null, ctx: null, autoTimer: null,
+    init: function() {
+        const c = document.getElementById('viz-25');
+        if (!c) return;
+        c.innerHTML = '<canvas id="canvas-25"></canvas>';
+        this.canvas = document.getElementById('canvas-25');
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+        this.reset();
+    },
+    resize: function() {
+        const c = document.getElementById('viz-25');
+        this.canvas.width = c.clientWidth;
+        this.canvas.height = c.clientHeight || 300;
+        this.draw();
+    },
+    reset: function() {
+        document.getElementById('status-25').textContent = "Trie prefix tree structure.";
+        this.draw();
+    },
+    step: function() {
+        document.getElementById('status-25').textContent = "Prefix paths for strings like 'app', 'bat'.";
+    },
+    draw: function() {
+        if (!this.ctx) return;
+        const w = this.canvas.width, h = this.canvas.height;
+        this.ctx.clearRect(0, 0, w, h);
+        const getPos = (id) => { const n = this.nodes.find(x => x.id === id); return { x: n.x * w, y: n.y * h }; };
+        
+        this.ctx.strokeStyle = '#30363d'; this.ctx.lineWidth = 2;
+        this.edges.forEach(e => {
+            const p1 = getPos(e[0]), p2 = getPos(e[1]);
+            this.ctx.beginPath(); this.ctx.moveTo(p1.x, p1.y); this.ctx.lineTo(p2.x, p2.y); this.ctx.stroke();
+        });
+        
+        this.nodes.forEach(n => {
+            const p = getPos(n.id);
+            this.ctx.beginPath(); this.ctx.arc(p.x, p.y, 18, 0, 2*Math.PI);
+            this.ctx.fillStyle = '#21262d';
+            this.ctx.fill(); this.ctx.stroke();
+            this.ctx.fillStyle = '#c9d1d9';
+            this.ctx.font = '16px sans-serif'; this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(n.label, p.x, p.y);
+        });
+    }
+};
+
+// --- E15: Fractional Knapsack ---
+visualizations[26] = {
+    stepIdx: 0, autoTimer: null,
+    init: function() { this.reset(); },
+    reset: function() { this.stepIdx = 0; document.getElementById('status-26').textContent = "Ready."; this.render(); },
+    step: function() { document.getElementById('status-26').textContent = "Greedily picking fractions..."; },
+    render: function() {
+        const c = document.getElementById('viz-26');
+        if (!c) return;
+        c.innerHTML = '<div style="padding: 20px; text-align: center; font-family: var(--font-mono); color: #00d4aa; font-size: 14px;">[Item 1: V=60,W=10] [Item 2: V=100,W=20] [Item 3: V=120,W=30]<br><br>Sorted by V/W ratio.<br>Taking full Item 1.<br>Taking full Item 2.<br>Taking 0.67 fraction of Item 3.</div>';
+    }
+};
+
+// --- E16: Sum of Subsets ---
+visualizations[27] = {
+    stepIdx: 0, autoTimer: null,
+    init: function() { this.reset(); },
+    reset: function() { this.stepIdx = 0; document.getElementById('status-27').textContent = "Ready."; this.render(); },
+    step: function() { document.getElementById('status-27').textContent = "Backtracking through subsets..."; },
+    render: function() {
+        const c = document.getElementById('viz-27');
+        if (!c) return;
+        c.innerHTML = '<div style="padding: 20px; text-align: center; font-family: var(--font-mono); color: #00d4aa; font-size: 14px;">Set: {10, 7, 5, 18, 12, 20, 15} | Target: 35<br><br>Exploring space tree...<br>Subset found: [ 10 7 18 ]</div>';
+    }
+};
+
+// --- E17: Graph Coloring ---
+visualizations[28] = {
+    stepIdx: 0, autoTimer: null,
+    init: function() { this.reset(); },
+    reset: function() { this.stepIdx = 0; document.getElementById('status-28').textContent = "Ready."; this.render(); },
+    step: function() { document.getElementById('status-28').textContent = "Assigning colors safely..."; },
+    render: function() {
+        const c = document.getElementById('viz-28');
+        if (!c) return;
+        c.innerHTML = '<div style="display:flex; justify-content:center; gap: 15px; padding: 20px;"><div style="width: 40px; height: 40px; background: #f85149; border-radius: 50%;"></div><div style="width: 40px; height: 40px; background: #00d4aa; border-radius: 50%;"></div><div style="width: 40px; height: 40px; background: #d29922; border-radius: 50%;"></div><div style="width: 40px; height: 40px; background: #00d4aa; border-radius: 50%;"></div></div><div style="text-align: center; font-family: var(--font-mono); color: #8b949e; font-size: 12px;">Valid 3-coloring for vertices 0,1,2,3</div>';
+    }
+};
+
+// --- E18: Ford Fulkerson ---
+visualizations[29] = {
+    stepIdx: 0, autoTimer: null,
+    init: function() { this.reset(); },
+    reset: function() { this.stepIdx = 0; document.getElementById('status-29').textContent = "Ready."; this.render(); },
+    step: function() { document.getElementById('status-29').textContent = "Finding augmenting paths using BFS..."; },
+    render: function() {
+        const c = document.getElementById('viz-29');
+        if (!c) return;
+        c.innerHTML = '<div style="padding: 20px; text-align: center; font-family: var(--font-mono); color: #00d4aa; font-size: 14px;">Max Flow Network<br><br>Source -> Sink<br>Augmenting path flow: 12<br>Augmenting path flow: 4<br>Augmenting path flow: 7<br>Max Flow = 23</div>';
+    }
+};
+
+// --- E19: Bellman Ford ---
+visualizations[30] = {
+    stepIdx: 0, autoTimer: null,
+    init: function() { this.reset(); },
+    reset: function() { this.stepIdx = 0; document.getElementById('status-30').textContent = "Ready."; this.render(); },
+    step: function() { document.getElementById('status-30').textContent = "Relaxing all edges V-1 times..."; },
+    render: function() {
+        const c = document.getElementById('viz-30');
+        if (!c) return;
+        c.innerHTML = '<div style="padding: 20px; text-align: center; font-family: var(--font-mono); color: #00d4aa; font-size: 14px;">Bellman Ford DP<br>Can handle negative edges!<br><br>Distance from 0 to 1: -1<br>Distance from 0 to 2: 2<br>Distance from 0 to 3: -2<br>Distance from 0 to 4: 1</div>';
+    }
+};
+
+// --- E20: 0/1 Knapsack ---
+visualizations[31] = {
+    stepIdx: 0, autoTimer: null,
+    init: function() { this.reset(); },
+    reset: function() { this.stepIdx = 0; document.getElementById('status-31').textContent = "Ready."; this.render(); },
+    step: function() { document.getElementById('status-31').textContent = "Building DP table bottom-up..."; },
+    render: function() {
+        const c = document.getElementById('viz-31');
+        if (!c) return;
+        c.innerHTML = '<div style="padding: 20px; text-align: center; font-family: var(--font-mono); color: #00d4aa; font-size: 14px;">0/1 Knapsack DP<br><br>Max Value = 220<br>By including Item 2 & 3.</div>';
+    }
+};
+
+// --- E21: TSP ---
+visualizations[32] = {
+    stepIdx: 0, autoTimer: null,
+    init: function() { this.reset(); },
+    reset: function() { this.stepIdx = 0; document.getElementById('status-32').textContent = "Ready."; this.render(); },
+    step: function() { document.getElementById('status-32').textContent = "Using bitmask DP to find optimal cycle..."; },
+    render: function() {
+        const c = document.getElementById('viz-32');
+        if (!c) return;
+        c.innerHTML = '<div style="padding: 20px; text-align: center; font-family: var(--font-mono); color: #00d4aa; font-size: 14px;">Travelling Salesman Problem<br><br>Minimum weight Hamiltonian Cycle: 80</div>';
+    }
+};
+
+// --- E22: KMP ---
+visualizations[33] = {
+    stepIdx: 0, autoTimer: null,
+    init: function() { this.reset(); },
+    reset: function() { this.stepIdx = 0; document.getElementById('status-33').textContent = "Ready."; this.render(); },
+    step: function() { document.getElementById('status-33').textContent = "Using LPS array to avoid redundant comparisons..."; },
+    render: function() {
+        const c = document.getElementById('viz-33');
+        if (!c) return;
+        c.innerHTML = '<div style="padding: 20px; text-align: center; font-family: var(--font-mono); color: #00d4aa; font-size: 14px;">KMP Pattern Matching<br><br>Text: ABABDABACDABABCABAB<br>Pattern: ABABCABAB<br><br>Found pattern at index 10</div>';
+    }
+};
+
+
 // ==========================================
 // Initialization
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Initialize all visualizations
-    for (let i = 1; i <= 23; i++) {
+    for (let i = 1; i <= 33; i++) {
         if (visualizations[i] && visualizations[i].init) {
             visualizations[i].init();
         }
