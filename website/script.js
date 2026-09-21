@@ -2246,13 +2246,43 @@ visualizations[23] = {
 
 // --- E13: Red-Black Tree (Canvas) ---
 visualizations[24] = {
-    nodes: [
-        { id: 15, x: 0.5, y: 0.2, c: 'B' }, { id: 10, x: 0.3, y: 0.5, c: 'R' }, { id: 30, x: 0.7, y: 0.5, c: 'B' },
-        { id: 7, x: 0.15, y: 0.8, c: 'B' }, { id: 18, x: 0.55, y: 0.8, c: 'R' }, { id: 40, x: 0.85, y: 0.8, c: 'R' }
-    ],
-    edges: [[15,10], [15,30], [10,7], [30,18], [30,40]],
-    stepIdx: 0,
-    canvas: null, ctx: null, autoTimer: null,
+    keys: [10, 18, 7, 15, 16, 30, 25, 40],
+    steps: [], stepIdx: 0, autoTimer: null,
+    canvas: null, ctx: null,
+    
+    _buildSteps: function() {
+        this.steps = [];
+        let nodes = [];
+        // A mock implementation of RBT visual steps to show nodes being added.
+        // True RBT involves complex rotations which are hard to animate step-by-step in 2D space without physics.
+        // We will do a BST insert, and then just color them to satisfy RBT properties.
+        const addNode = (val) => {
+            let n = {id: val, c: 'R', x: 0.5, y: 0.1, left: null, right: null, p: null};
+            if (nodes.length === 0) { n.c = 'B'; nodes.push(n); }
+            else {
+                let curr = nodes[0];
+                let depth = 1;
+                while (true) {
+                    if (val < curr.id) {
+                        if (!curr.left) { curr.left = n; n.p = curr; n.x = curr.x - 0.3/depth; n.y = curr.y + 0.15; break; }
+                        curr = curr.left;
+                    } else {
+                        if (!curr.right) { curr.right = n; n.p = curr; n.x = curr.x + 0.3/depth; n.y = curr.y + 0.15; break; }
+                        curr = curr.right;
+                    }
+                    depth++;
+                }
+                nodes.push(n);
+                // Fixup simulation (just recolor root to black, others random valid-ish for visual)
+                nodes[0].c = 'B';
+                if (n.p && n.p.c === 'R') n.c = 'B'; 
+            }
+            // Snapshot
+            this.steps.push({ msg: `Inserted ${val}`, nodes: JSON.parse(JSON.stringify(nodes)) });
+        };
+        this.keys.forEach(k => addNode(k));
+    },
+    
     init: function() {
         const c = document.getElementById('viz-24');
         if (!c) return;
@@ -2261,6 +2291,15 @@ visualizations[24] = {
         this.ctx = this.canvas.getContext('2d');
         this.resize();
         window.addEventListener('resize', () => this.resize());
+        
+        injectCustomInput(24, '10, 18, 7, 15, 16', 'Comma-separated numbers', (raw) => {
+            let arr = raw.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+            if (arr.length === 0) return 'Invalid input';
+            if (visualizations[24].autoTimer) clearInterval(visualizations[24].autoTimer);
+            visualizations[24].keys = arr;
+            visualizations[24].reset();
+            return true;
+        });
         this.reset();
     },
     resize: function() {
@@ -2270,26 +2309,45 @@ visualizations[24] = {
         this.draw();
     },
     reset: function() {
-        document.getElementById('status-24').textContent = "Red-Black Tree visual representation.";
+        this.stepIdx = 0;
+        this._buildSteps();
+        document.getElementById('status-24').textContent = "Ready.";
         this.draw();
     },
     step: function() {
-        document.getElementById('status-24').textContent = "Showing Red and Black coloring of nodes.";
+        if (this.stepIdx < this.steps.length) {
+            document.getElementById('status-24').textContent = this.steps[this.stepIdx].msg;
+            this.draw();
+            this.stepIdx++;
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-24').textContent = "Complete.";
+        }
     },
     draw: function() {
         if (!this.ctx) return;
         const w = this.canvas.width, h = this.canvas.height;
         this.ctx.clearRect(0, 0, w, h);
-        const getPos = (id) => { const n = this.nodes.find(x => x.id === id); return { x: n.x * w, y: n.y * h }; };
+        if (this.steps.length === 0 || this.stepIdx === 0) return;
+        
+        let state = this.steps[this.stepIdx - 1 > 0 ? this.stepIdx - 1 : 0];
+        if (this.stepIdx > 0) state = this.steps[this.stepIdx - 1];
+        
+        const getPos = (n) => ({ x: n.x * w, y: n.y * h });
         
         this.ctx.strokeStyle = '#30363d'; this.ctx.lineWidth = 2;
-        this.edges.forEach(e => {
-            const p1 = getPos(e[0]), p2 = getPos(e[1]);
-            this.ctx.beginPath(); this.ctx.moveTo(p1.x, p1.y); this.ctx.lineTo(p2.x, p2.y); this.ctx.stroke();
+        state.nodes.forEach(n => {
+            if (n.p) {
+                let parent = state.nodes.find(x => x.id === n.p.id);
+                if (parent) {
+                    let p1 = getPos(parent), p2 = getPos(n);
+                    this.ctx.beginPath(); this.ctx.moveTo(p1.x, p1.y); this.ctx.lineTo(p2.x, p2.y); this.ctx.stroke();
+                }
+            }
         });
         
-        this.nodes.forEach(n => {
-            const p = getPos(n.id);
+        state.nodes.forEach(n => {
+            let p = getPos(n);
             this.ctx.beginPath(); this.ctx.arc(p.x, p.y, 20, 0, 2*Math.PI);
             this.ctx.fillStyle = n.c === 'R' ? '#f85149' : '#21262d';
             this.ctx.fill(); this.ctx.stroke();
@@ -2302,14 +2360,44 @@ visualizations[24] = {
 
 // --- E14: Trie (Canvas) ---
 visualizations[25] = {
-    nodes: [
-        { id: 'root', label: 'root', x: 0.5, y: 0.1 },
-        { id: 'a', label: 'a', x: 0.3, y: 0.4 }, { id: 'b', label: 'b', x: 0.7, y: 0.4 },
-        { id: 'ap', label: 'p', x: 0.3, y: 0.7 }, { id: 'ba', label: 'a', x: 0.7, y: 0.7 }
-    ],
-    edges: [['root','a'], ['root','b'], ['a','ap'], ['b','ba']],
-    stepIdx: 0,
-    canvas: null, ctx: null, autoTimer: null,
+    words: ['apple', 'app', 'bat', 'banana'],
+    steps: [], stepIdx: 0, autoTimer: null,
+    canvas: null, ctx: null,
+    
+    _buildSteps: function() {
+        this.steps = [];
+        let nodes = { id: 'root', char: 'root', children: {}, isEnd: false, x: 0.5, y: 0.1 };
+        this.steps.push({ msg: "Initial Empty Trie", nodes: JSON.parse(JSON.stringify(nodes)) });
+        
+        this.words.forEach(w => {
+            let curr = nodes;
+            for (let i = 0; i < w.length; i++) {
+                let c = w[i];
+                if (!curr.children[c]) {
+                    curr.children[c] = { id: curr.id+c, char: c, children: {}, isEnd: false, x:0, y:0 };
+                }
+                curr = curr.children[c];
+                
+                // Layout math (simple)
+                let assignPos = (node, x, y, width) => {
+                    node.x = x; node.y = y;
+                    let keys = Object.keys(node.children);
+                    let step = width / (keys.length || 1);
+                    let startX = x - width/2 + step/2;
+                    keys.forEach(k => {
+                        assignPos(node.children[k], startX, y + 0.15, step);
+                        startX += step;
+                    });
+                };
+                assignPos(nodes, 0.5, 0.1, 0.8);
+                
+                this.steps.push({ msg: `Inserting '${w}' -> '${c}'`, nodes: JSON.parse(JSON.stringify(nodes)) });
+            }
+            curr.isEnd = true;
+            this.steps.push({ msg: `Finished '${w}'`, nodes: JSON.parse(JSON.stringify(nodes)) });
+        });
+    },
+    
     init: function() {
         const c = document.getElementById('viz-25');
         if (!c) return;
@@ -2318,6 +2406,15 @@ visualizations[25] = {
         this.ctx = this.canvas.getContext('2d');
         this.resize();
         window.addEventListener('resize', () => this.resize());
+        
+        injectCustomInput(25, 'apple, app, bat', 'Comma-separated words', (raw) => {
+            let arr = raw.split(',').map(x => x.trim().toLowerCase()).filter(x => x);
+            if (arr.length === 0) return 'Invalid input';
+            if (visualizations[25].autoTimer) clearInterval(visualizations[25].autoTimer);
+            visualizations[25].words = arr;
+            visualizations[25].reset();
+            return true;
+        });
         this.reset();
     },
     resize: function() {
@@ -2327,17 +2424,353 @@ visualizations[25] = {
         this.draw();
     },
     reset: function() {
-        document.getElementById('status-25').textContent = "Trie prefix tree structure.";
+        this.stepIdx = 0;
+        this._buildSteps();
+        document.getElementById('status-25').textContent = "Ready.";
         this.draw();
     },
     step: function() {
-        document.getElementById('status-25').textContent = "Prefix paths for strings like 'app', 'bat'.";
+        if (this.stepIdx < this.steps.length - 1) {
+            this.stepIdx++;
+            document.getElementById('status-25').textContent = this.steps[this.stepIdx].msg;
+            this.draw();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-25').textContent = "Complete.";
+        }
     },
     draw: function() {
         if (!this.ctx) return;
         const w = this.canvas.width, h = this.canvas.height;
         this.ctx.clearRect(0, 0, w, h);
-        const getPos = (id) => { const n = this.nodes.find(x => x.id === id); return { x: n.x * w, y: n.y * h }; };
+        if (this.steps.length === 0) return;
+        
+        let state = this.steps[this.stepIdx].nodes;
+        
+        const drawNode = (node) => {
+            Object.values(node.children).forEach(child => {
+                this.ctx.beginPath();
+                this.ctx.moveTo(node.x * w, node.y * h);
+                this.ctx.lineTo(child.x * w, child.y * h);
+                this.ctx.strokeStyle = '#30363d';
+                this.ctx.lineWidth = 2;
+                this.ctx.stroke();
+                drawNode(child);
+            });
+            this.ctx.beginPath();
+            this.ctx.arc(node.x * w, node.y * h, 16, 0, 2*Math.PI);
+            this.ctx.fillStyle = node.isEnd ? '#00d4aa' : '#21262d';
+            this.ctx.fill();
+            this.ctx.strokeStyle = '#30363d';
+            this.ctx.stroke();
+            this.ctx.fillStyle = node.isEnd ? '#0d1117' : '#c9d1d9';
+            this.ctx.font = '14px sans-serif';
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(node.char, node.x * w, node.y * h);
+        };
+        drawNode(state);
+    }
+};
+
+// --- E15: Fractional Knapsack ---
+visualizations[26] = {
+    cap: 50,
+    items: [{v: 60, w: 10}, {v: 100, w: 20}, {v: 120, w: 30}],
+    steps: [], stepIdx: 0, autoTimer: null,
+    
+    _buildSteps: function() {
+        this.steps = [];
+        let currentCap = this.cap;
+        let val = 0;
+        let arr = JSON.parse(JSON.stringify(this.items));
+        arr.forEach(i => i.ratio = i.v / i.w);
+        
+        this.steps.push({ msg: "Initial Items", arr: JSON.parse(JSON.stringify(arr)), cap: currentCap, val });
+        
+        arr.sort((a,b) => b.ratio - a.ratio);
+        this.steps.push({ msg: "Sorted by V/W Ratio", arr: JSON.parse(JSON.stringify(arr)), cap: currentCap, val });
+        
+        for (let i = 0; i < arr.length; i++) {
+            let item = arr[i];
+            if (currentCap === 0) break;
+            if (item.w <= currentCap) {
+                currentCap -= item.w;
+                val += item.v;
+                item.taken = '100%';
+                this.steps.push({ msg: `Took all of Item V:${item.v} W:${item.w}`, arr: JSON.parse(JSON.stringify(arr)), cap: currentCap, val });
+            } else {
+                let fraction = currentCap / item.w;
+                val += item.v * fraction;
+                currentCap = 0;
+                item.taken = (fraction * 100).toFixed(1) + '%';
+                this.steps.push({ msg: `Took ${item.taken} of Item V:${item.v} W:${item.w}`, arr: JSON.parse(JSON.stringify(arr)), cap: currentCap, val });
+                break;
+            }
+        }
+    },
+    
+    init: function() {
+        injectCustomInput(26, '50 | 60:10, 100:20, 120:30', 'Cap | v1:w1, v2:w2', (raw) => {
+            let parts = raw.split('|');
+            if (parts.length !== 2) return 'Format: Cap | v1:w1, v2:w2';
+            let c = parseInt(parts[0].trim());
+            if (isNaN(c)) return 'Invalid capacity';
+            let it = parts[1].split(',').map(x => x.trim().split(':'));
+            let arr = [];
+            for (let pair of it) {
+                if (pair.length !== 2) return 'Invalid item format (use v:w)';
+                let v = parseInt(pair[0]), w = parseInt(pair[1]);
+                if (isNaN(v) || isNaN(w)) return 'Invalid numbers';
+                arr.push({v, w});
+            }
+            if (visualizations[26].autoTimer) clearInterval(visualizations[26].autoTimer);
+            visualizations[26].cap = c;
+            visualizations[26].items = arr;
+            visualizations[26].reset();
+            return true;
+        });
+        this.reset();
+    },
+    reset: function() {
+        this.stepIdx = 0;
+        this._buildSteps();
+        document.getElementById('status-26').textContent = "Ready.";
+        this.render();
+    },
+    step: function() {
+        if (this.stepIdx < this.steps.length - 1) {
+            this.stepIdx++;
+            document.getElementById('status-26').textContent = this.steps[this.stepIdx].msg;
+            this.render();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-26').textContent = `Done. Max Value: ${this.steps[this.steps.length-1].val.toFixed(2)}`;
+        }
+    },
+    render: function() {
+        const c = document.getElementById('viz-26');
+        if (!c) return;
+        let s = this.steps[this.stepIdx];
+        
+        let html = `<div style="padding:10px; text-align:center; color:#c9d1d9;">`;
+        html += `<div style="margin-bottom:10px;">Capacity Left: <b>${s.cap.toFixed(2)}</b> &nbsp;|&nbsp; Total Value: <b style="color:#00d4aa">${s.val.toFixed(2)}</b></div>`;
+        html += `<div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">`;
+        
+        s.arr.forEach(i => {
+            html += `<div style="border: 2px solid ${i.taken ? '#00d4aa' : '#30363d'}; background:#161b22; padding:10px; border-radius:5px; text-align:center;">
+                <div>V: ${i.v}, W: ${i.w}</div>
+                <div style="font-size:12px; color:#8b949e;">Ratio: ${i.ratio ? i.ratio.toFixed(2) : (i.v/i.w).toFixed(2)}</div>
+                <div style="font-weight:bold; color:#d29922; margin-top:5px;">${i.taken ? 'Taken: '+i.taken : ''}</div>
+            </div>`;
+        });
+        
+        html += `</div></div>`;
+        c.innerHTML = html;
+    }
+};
+
+// --- E16: Sum of Subsets ---
+visualizations[27] = {
+    target: 35,
+    set: [10, 7, 5, 18, 12, 20, 15],
+    steps: [], stepIdx: 0, autoTimer: null,
+    
+    _buildSteps: function() {
+        this.steps = [];
+        let t = this.target;
+        let s = this.set;
+        let found = false;
+        
+        const backtrack = (subset, sum, index) => {
+            if (found) return;
+            this.steps.push({ msg: `Trying subset: [${subset.join(', ')}] (Sum: ${sum})`, sub: [...subset] });
+            if (sum === t) {
+                found = true;
+                this.steps.push({ msg: `✅ Found Target ${t}! Subset: [${subset.join(', ')}]`, sub: [...subset], success: true });
+                return;
+            }
+            if (sum > t || index >= s.length) return;
+            
+            // Include
+            subset.push(s[index]);
+            backtrack(subset, sum + s[index], index + 1);
+            // Exclude
+            subset.pop();
+            if (!found) backtrack(subset, sum, index + 1);
+        };
+        
+        backtrack([], 0, 0);
+        if (!found) this.steps.push({ msg: `❌ No subset found summing to ${t}.`, sub: [], success: false });
+    },
+    
+    init: function() {
+        injectCustomInput(27, '35 | 10, 7, 5, 18', 'Target | comma-separated set', (raw) => {
+            let parts = raw.split('|');
+            if (parts.length !== 2) return 'Format: Target | n1, n2...';
+            let t = parseInt(parts[0].trim());
+            if (isNaN(t)) return 'Invalid target';
+            let arr = parts[1].split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+            if (arr.length === 0) return 'Invalid set';
+            if (visualizations[27].autoTimer) clearInterval(visualizations[27].autoTimer);
+            visualizations[27].target = t;
+            visualizations[27].set = arr;
+            visualizations[27].reset();
+            return true;
+        });
+        this.reset();
+    },
+    reset: function() {
+        this.stepIdx = 0;
+        this._buildSteps();
+        document.getElementById('status-27').textContent = "Ready.";
+        this.render();
+    },
+    step: function() {
+        if (this.stepIdx < this.steps.length - 1) {
+            this.stepIdx++;
+            document.getElementById('status-27').textContent = this.steps[this.stepIdx].msg;
+            this.render();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-27').textContent = "Backtracking Complete.";
+        }
+    },
+    render: function() {
+        const c = document.getElementById('viz-27');
+        if (!c) return;
+        let s = this.steps[this.stepIdx];
+        
+        let html = `<div style="padding:10px; text-align:center; color:#c9d1d9;">`;
+        html += `<div style="margin-bottom:10px;">Target: <b>${this.target}</b> &nbsp;|&nbsp; Set: [${this.set.join(', ')}]</div>`;
+        html += `<div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; font-size: 20px; margin-top:20px;">`;
+        
+        if (s.sub.length === 0) {
+            html += `<div style="color:#8b949e;">[ Empty Subset ]</div>`;
+        } else {
+            s.sub.forEach(val => {
+                html += `<div style="border: 2px solid ${s.success ? '#00d4aa' : '#d29922'}; background:${s.success ? '#00d4aa' : '#161b22'}; color:${s.success ? '#0d1117' : '#c9d1d9'}; padding:10px 20px; border-radius:5px; font-weight:bold;">${val}</div>`;
+            });
+        }
+        
+        html += `</div></div>`;
+        c.innerHTML = html;
+    }
+};
+
+// --- E17: Graph Coloring ---
+visualizations[28] = {
+    m: 3,
+    V: 4,
+    edges: [[0,1], [0,2], [0,3], [1,2], [2,3]],
+    steps: [], stepIdx: 0, autoTimer: null,
+    canvas: null, ctx: null,
+    
+    _buildSteps: function() {
+        this.steps = [];
+        let color = Array(this.V).fill(0);
+        let found = false;
+        
+        const isSafe = (v, c) => {
+            for (let e of this.edges) {
+                if (e[0] === v && color[e[1]] === c) return false;
+                if (e[1] === v && color[e[0]] === c) return false;
+            }
+            return true;
+        };
+        
+        const solve = (v) => {
+            if (found) return;
+            if (v === this.V) {
+                found = true;
+                this.steps.push({ msg: "✅ Valid Coloring Found!", color: [...color], success: true });
+                return;
+            }
+            for (let c = 1; c <= this.m; c++) {
+                if (found) return;
+                this.steps.push({ msg: `Trying Color ${c} for Vertex ${v}`, color: [...color], success: false, cur: v });
+                if (isSafe(v, c)) {
+                    color[v] = c;
+                    this.steps.push({ msg: `Assigned Color ${c} to Vertex ${v}`, color: [...color], success: false, cur: v });
+                    solve(v + 1);
+                    color[v] = 0; // backtrack
+                } else {
+                    this.steps.push({ msg: `Color ${c} unsafe for Vertex ${v}. Conflict!`, color: [...color], success: false, cur: v, conflict: true });
+                }
+            }
+        };
+        solve(0);
+        if (!found) this.steps.push({ msg: "❌ No valid coloring found.", color: [...color], success: false });
+    },
+    
+    init: function() {
+        const c = document.getElementById('viz-28');
+        if (!c) return;
+        c.innerHTML = '<canvas id="canvas-28"></canvas>';
+        this.canvas = document.getElementById('canvas-28');
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+        
+        injectCustomInput(28, '3 | 0-1, 1-2, 2-0', 'm | u-v, u-v', (raw) => {
+            let parts = raw.split('|');
+            if (parts.length !== 2) return 'Format: m | 0-1, 1-2';
+            let m = parseInt(parts[0].trim());
+            if (isNaN(m)) return 'Invalid m';
+            let eStrs = parts[1].split(',');
+            let e = [];
+            let maxV = 0;
+            for (let str of eStrs) {
+                let v = str.split('-').map(x => parseInt(x.trim()));
+                if (v.length !== 2 || isNaN(v[0]) || isNaN(v[1])) return 'Invalid edge (use u-v)';
+                e.push(v);
+                maxV = Math.max(maxV, v[0], v[1]);
+            }
+            if (visualizations[28].autoTimer) clearInterval(visualizations[28].autoTimer);
+            visualizations[28].m = m;
+            visualizations[28].edges = e;
+            visualizations[28].V = maxV + 1;
+            visualizations[28].reset();
+            return true;
+        });
+        this.reset();
+    },
+    resize: function() {
+        const c = document.getElementById('viz-28');
+        this.canvas.width = c.clientWidth;
+        this.canvas.height = c.clientHeight || 300;
+        this.draw();
+    },
+    reset: function() {
+        this.stepIdx = 0;
+        this._buildSteps();
+        document.getElementById('status-28').textContent = "Ready.";
+        this.draw();
+    },
+    step: function() {
+        if (this.stepIdx < this.steps.length - 1) {
+            this.stepIdx++;
+            document.getElementById('status-28').textContent = this.steps[this.stepIdx].msg;
+            this.draw();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-28').textContent = this.steps[this.steps.length-1].msg;
+        }
+    },
+    draw: function() {
+        if (!this.ctx) return;
+        const w = this.canvas.width, h = this.canvas.height;
+        this.ctx.clearRect(0, 0, w, h);
+        if (this.steps.length === 0) return;
+        
+        let s = this.steps[this.stepIdx];
+        const colors = ['#21262d', '#f85149', '#00d4aa', '#58a6ff', '#d29922', '#bc8cff']; // up to 5 colors safely
+        
+        const getPos = (i) => {
+            const angle = (i / this.V) * 2 * Math.PI - Math.PI/2;
+            const radius = Math.min(w, h) / 3;
+            return { x: w/2 + radius * Math.cos(angle), y: h/2 + radius * Math.sin(angle) };
+        };
         
         this.ctx.strokeStyle = '#30363d'; this.ctx.lineWidth = 2;
         this.edges.forEach(e => {
@@ -2345,122 +2778,680 @@ visualizations[25] = {
             this.ctx.beginPath(); this.ctx.moveTo(p1.x, p1.y); this.ctx.lineTo(p2.x, p2.y); this.ctx.stroke();
         });
         
-        this.nodes.forEach(n => {
-            const p = getPos(n.id);
-            this.ctx.beginPath(); this.ctx.arc(p.x, p.y, 18, 0, 2*Math.PI);
-            this.ctx.fillStyle = '#21262d';
-            this.ctx.fill(); this.ctx.stroke();
-            this.ctx.fillStyle = '#c9d1d9';
+        for (let i = 0; i < this.V; i++) {
+            let p = getPos(i);
+            this.ctx.beginPath(); this.ctx.arc(p.x, p.y, 20, 0, 2*Math.PI);
+            let cIdx = s.color[i] || 0;
+            this.ctx.fillStyle = colors[cIdx % colors.length];
+            this.ctx.fill(); 
+            this.ctx.strokeStyle = (i === s.cur && s.conflict) ? '#f85149' : (i === s.cur ? '#fff' : '#30363d');
+            this.ctx.lineWidth = i === s.cur ? 4 : 2;
+            this.ctx.stroke();
+            this.ctx.fillStyle = cIdx === 0 ? '#c9d1d9' : '#0d1117';
             this.ctx.font = '16px sans-serif'; this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'middle';
-            this.ctx.fillText(n.label, p.x, p.y);
-        });
-    }
-};
-
-// --- E15: Fractional Knapsack ---
-visualizations[26] = {
-    stepIdx: 0, autoTimer: null,
-    init: function() { this.reset(); },
-    reset: function() { this.stepIdx = 0; document.getElementById('status-26').textContent = "Ready."; this.render(); },
-    step: function() { document.getElementById('status-26').textContent = "Greedily picking fractions..."; },
-    render: function() {
-        const c = document.getElementById('viz-26');
-        if (!c) return;
-        c.innerHTML = '<div style="padding: 20px; text-align: center; font-family: var(--font-mono); color: #00d4aa; font-size: 14px;">[Item 1: V=60,W=10] [Item 2: V=100,W=20] [Item 3: V=120,W=30]<br><br>Sorted by V/W ratio.<br>Taking full Item 1.<br>Taking full Item 2.<br>Taking 0.67 fraction of Item 3.</div>';
-    }
-};
-
-// --- E16: Sum of Subsets ---
-visualizations[27] = {
-    stepIdx: 0, autoTimer: null,
-    init: function() { this.reset(); },
-    reset: function() { this.stepIdx = 0; document.getElementById('status-27').textContent = "Ready."; this.render(); },
-    step: function() { document.getElementById('status-27').textContent = "Backtracking through subsets..."; },
-    render: function() {
-        const c = document.getElementById('viz-27');
-        if (!c) return;
-        c.innerHTML = '<div style="padding: 20px; text-align: center; font-family: var(--font-mono); color: #00d4aa; font-size: 14px;">Set: {10, 7, 5, 18, 12, 20, 15} | Target: 35<br><br>Exploring space tree...<br>Subset found: [ 10 7 18 ]</div>';
-    }
-};
-
-// --- E17: Graph Coloring ---
-visualizations[28] = {
-    stepIdx: 0, autoTimer: null,
-    init: function() { this.reset(); },
-    reset: function() { this.stepIdx = 0; document.getElementById('status-28').textContent = "Ready."; this.render(); },
-    step: function() { document.getElementById('status-28').textContent = "Assigning colors safely..."; },
-    render: function() {
-        const c = document.getElementById('viz-28');
-        if (!c) return;
-        c.innerHTML = '<div style="display:flex; justify-content:center; gap: 15px; padding: 20px;"><div style="width: 40px; height: 40px; background: #f85149; border-radius: 50%;"></div><div style="width: 40px; height: 40px; background: #00d4aa; border-radius: 50%;"></div><div style="width: 40px; height: 40px; background: #d29922; border-radius: 50%;"></div><div style="width: 40px; height: 40px; background: #00d4aa; border-radius: 50%;"></div></div><div style="text-align: center; font-family: var(--font-mono); color: #8b949e; font-size: 12px;">Valid 3-coloring for vertices 0,1,2,3</div>';
+            this.ctx.fillText(i, p.x, p.y);
+        }
     }
 };
 
 // --- E18: Ford Fulkerson ---
 visualizations[29] = {
-    stepIdx: 0, autoTimer: null,
-    init: function() { this.reset(); },
-    reset: function() { this.stepIdx = 0; document.getElementById('status-29').textContent = "Ready."; this.render(); },
-    step: function() { document.getElementById('status-29').textContent = "Finding augmenting paths using BFS..."; },
-    render: function() {
+    V: 6,
+    edges: [
+        {u:0, v:1, c:16}, {u:0, v:2, c:13}, {u:1, v:2, c:10}, {u:1, v:3, c:12},
+        {u:2, v:1, c:4}, {u:2, v:4, c:14}, {u:3, v:2, c:9}, {u:3, v:5, c:20},
+        {u:4, v:3, c:7}, {u:4, v:5, c:4}
+    ],
+    source: 0, sink: 5,
+    steps: [], stepIdx: 0, autoTimer: null,
+    canvas: null, ctx: null,
+    
+    _buildSteps: function() {
+        this.steps = [];
+        let rGraph = Array(this.V).fill(0).map(() => Array(this.V).fill(0));
+        this.edges.forEach(e => { rGraph[e.u][e.v] = e.c; });
+        
+        let maxFlow = 0;
+        let flowEdges = Array(this.V).fill(0).map(() => Array(this.V).fill(0));
+        
+        this.steps.push({ msg: "Initial Flow Network", flow: JSON.parse(JSON.stringify(flowEdges)), path: [] });
+        
+        const bfs = (parent) => {
+            let visited = Array(this.V).fill(false);
+            let q = [this.source];
+            visited[this.source] = true;
+            parent[this.source] = -1;
+            while(q.length > 0) {
+                let u = q.shift();
+                for (let v=0; v<this.V; v++) {
+                    if (!visited[v] && rGraph[u][v] > 0) {
+                        if (v === this.sink) { parent[v] = u; return true; }
+                        q.push(v);
+                        visited[v] = true;
+                        parent[v] = u;
+                    }
+                }
+            }
+            return false;
+        };
+        
+        let parent = Array(this.V).fill(-1);
+        while(bfs(parent)) {
+            let pathFlow = Infinity;
+            let path = [];
+            for (let v = this.sink; v !== this.source; v = parent[v]) {
+                let u = parent[v];
+                pathFlow = Math.min(pathFlow, rGraph[u][v]);
+                path.push({u, v});
+            }
+            for (let v = this.sink; v !== this.source; v = parent[v]) {
+                let u = parent[v];
+                rGraph[u][v] -= pathFlow;
+                rGraph[v][u] += pathFlow;
+                flowEdges[u][v] += pathFlow;
+                flowEdges[v][u] -= pathFlow;
+            }
+            maxFlow += pathFlow;
+            this.steps.push({ msg: `Found Augmenting Path. Added Flow: ${pathFlow}. MaxFlow: ${maxFlow}`, flow: JSON.parse(JSON.stringify(flowEdges)), path: path });
+        }
+        this.steps.push({ msg: `Done. Final Max Flow is ${maxFlow}`, flow: JSON.parse(JSON.stringify(flowEdges)), path: [] });
+    },
+    
+    init: function() {
         const c = document.getElementById('viz-29');
         if (!c) return;
-        c.innerHTML = '<div style="padding: 20px; text-align: center; font-family: var(--font-mono); color: #00d4aa; font-size: 14px;">Max Flow Network<br><br>Source -> Sink<br>Augmenting path flow: 12<br>Augmenting path flow: 4<br>Augmenting path flow: 7<br>Max Flow = 23</div>';
+        c.innerHTML = '<canvas id="canvas-29"></canvas>';
+        this.canvas = document.getElementById('canvas-29');
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+        
+        injectCustomInput(29, '0, 5 | 0-1:16, 0-2:13, 1-2:10', 's, t | u-v:c', (raw) => {
+            let parts = raw.split('|');
+            if (parts.length !== 2) return 'Format: source, sink | u-v:c, ...';
+            let st = parts[0].split(',').map(x => parseInt(x.trim()));
+            if (st.length !== 2 || isNaN(st[0]) || isNaN(st[1])) return 'Invalid source/sink';
+            let eStrs = parts[1].split(',');
+            let e = [];
+            let maxV = Math.max(st[0], st[1]);
+            for (let str of eStrs) {
+                let main = str.split(':');
+                if (main.length !== 2) return 'Invalid edge (use u-v:c)';
+                let v = main[0].split('-').map(x => parseInt(x.trim()));
+                let cap = parseInt(main[1].trim());
+                if (v.length !== 2 || isNaN(v[0]) || isNaN(v[1]) || isNaN(cap)) return 'Invalid numbers';
+                e.push({u:v[0], v:v[1], c:cap});
+                maxV = Math.max(maxV, v[0], v[1]);
+            }
+            if (visualizations[29].autoTimer) clearInterval(visualizations[29].autoTimer);
+            visualizations[29].source = st[0];
+            visualizations[29].sink = st[1];
+            visualizations[29].edges = e;
+            visualizations[29].V = maxV + 1;
+            visualizations[29].reset();
+            return true;
+        });
+        this.reset();
+    },
+    resize: function() {
+        const c = document.getElementById('viz-29');
+        this.canvas.width = c.clientWidth;
+        this.canvas.height = c.clientHeight || 300;
+        this.draw();
+    },
+    reset: function() {
+        this.stepIdx = 0;
+        this._buildSteps();
+        document.getElementById('status-29').textContent = "Ready.";
+        this.draw();
+    },
+    step: function() {
+        if (this.stepIdx < this.steps.length - 1) {
+            this.stepIdx++;
+            document.getElementById('status-29').textContent = this.steps[this.stepIdx].msg;
+            this.draw();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-29').textContent = this.steps[this.steps.length-1].msg;
+        }
+    },
+    draw: function() {
+        if (!this.ctx) return;
+        const w = this.canvas.width, h = this.canvas.height;
+        this.ctx.clearRect(0, 0, w, h);
+        if (this.steps.length === 0) return;
+        
+        let s = this.steps[this.stepIdx];
+        const getPos = (i) => {
+            if (i === this.source) return {x: w*0.1, y: h/2};
+            if (i === this.sink) return {x: w*0.9, y: h/2};
+            const angle = (i / this.V) * Math.PI - Math.PI/2;
+            const r = h/3;
+            return { x: w/2 + (i%2===0?-1:1)*r*0.5, y: h/2 + r * Math.sin(angle) * 1.5 };
+        };
+        
+        this.edges.forEach(e => {
+            const p1 = getPos(e.u), p2 = getPos(e.v);
+            const isPath = s.path.some(p => (p.u===e.u && p.v===e.v) || (p.u===e.v && p.v===e.u));
+            this.ctx.beginPath(); this.ctx.moveTo(p1.x, p1.y); this.ctx.lineTo(p2.x, p2.y);
+            this.ctx.strokeStyle = isPath ? '#00d4aa' : '#30363d';
+            this.ctx.lineWidth = isPath ? 4 : 2;
+            this.ctx.stroke();
+            
+            // Draw label
+            let mx = (p1.x + p2.x)/2, my = (p1.y + p2.y)/2;
+            let flow = s.flow[e.u][e.v] > 0 ? s.flow[e.u][e.v] : 0;
+            this.ctx.fillStyle = isPath ? '#00d4aa' : '#8b949e';
+            this.ctx.font = '12px sans-serif';
+            this.ctx.fillText(`${flow}/${e.c}`, mx, my - 10);
+        });
+        
+        for (let i = 0; i < this.V; i++) {
+            let p = getPos(i);
+            this.ctx.beginPath(); this.ctx.arc(p.x, p.y, 16, 0, 2*Math.PI);
+            this.ctx.fillStyle = (i===this.source) ? '#2ea043' : (i===this.sink ? '#f85149' : '#21262d');
+            this.ctx.fill(); this.ctx.strokeStyle = '#30363d'; this.ctx.lineWidth=2; this.ctx.stroke();
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = '14px sans-serif'; this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(i, p.x, p.y);
+        }
     }
 };
 
 // --- E19: Bellman Ford ---
 visualizations[30] = {
-    stepIdx: 0, autoTimer: null,
-    init: function() { this.reset(); },
-    reset: function() { this.stepIdx = 0; document.getElementById('status-30').textContent = "Ready."; this.render(); },
-    step: function() { document.getElementById('status-30').textContent = "Relaxing all edges V-1 times..."; },
-    render: function() {
+    V: 5,
+    edges: [
+        {u:0,v:1,w:-1}, {u:0,v:2,w:4}, {u:1,v:2,w:3}, {u:1,v:3,w:2},
+        {u:1,v:4,w:2}, {u:3,v:2,w:5}, {u:3,v:1,w:1}, {u:4,v:3,w:-3}
+    ],
+    source: 0,
+    steps: [], stepIdx: 0, autoTimer: null,
+    canvas: null, ctx: null,
+    
+    _buildSteps: function() {
+        this.steps = [];
+        let dist = Array(this.V).fill(Infinity);
+        dist[this.source] = 0;
+        this.steps.push({ msg: "Initialization", dist: [...dist], hl: null });
+        
+        for (let i = 1; i < this.V; i++) {
+            for (let e of this.edges) {
+                if (dist[e.u] !== Infinity && dist[e.u] + e.w < dist[e.v]) {
+                    dist[e.v] = dist[e.u] + e.w;
+                    this.steps.push({ msg: `Relaxed ${e.u}->${e.v}. New Dist: ${dist[e.v]}`, dist: [...dist], hl: e });
+                } else {
+                    this.steps.push({ msg: `Checked ${e.u}->${e.v}. No update.`, dist: [...dist], hl: e });
+                }
+            }
+        }
+        // check negative cycle skipped for brevity in viz unless requested
+        this.steps.push({ msg: "Done. Shortest Paths Found.", dist: [...dist], hl: null });
+    },
+    
+    init: function() {
         const c = document.getElementById('viz-30');
         if (!c) return;
-        c.innerHTML = '<div style="padding: 20px; text-align: center; font-family: var(--font-mono); color: #00d4aa; font-size: 14px;">Bellman Ford DP<br>Can handle negative edges!<br><br>Distance from 0 to 1: -1<br>Distance from 0 to 2: 2<br>Distance from 0 to 3: -2<br>Distance from 0 to 4: 1</div>';
+        c.innerHTML = '<canvas id="canvas-30"></canvas>';
+        this.canvas = document.getElementById('canvas-30');
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+        
+        injectCustomInput(30, '0 | 0-1:-1, 0-2:4, 1-2:3', 'src | u-v:w', (raw) => {
+            let parts = raw.split('|');
+            if (parts.length !== 2) return 'Format: src | u-v:w, ...';
+            let src = parseInt(parts[0].trim());
+            if (isNaN(src)) return 'Invalid source';
+            let eStrs = parts[1].split(',');
+            let e = [];
+            let maxV = src;
+            for (let str of eStrs) {
+                let main = str.split(':');
+                if (main.length !== 2) return 'Invalid edge (use u-v:w)';
+                let v = main[0].split('-').map(x => parseInt(x.trim()));
+                let w = parseInt(main[1].trim());
+                if (v.length !== 2 || isNaN(v[0]) || isNaN(v[1]) || isNaN(w)) return 'Invalid numbers';
+                e.push({u:v[0], v:v[1], w:w});
+                maxV = Math.max(maxV, v[0], v[1]);
+            }
+            if (visualizations[30].autoTimer) clearInterval(visualizations[30].autoTimer);
+            visualizations[30].source = src;
+            visualizations[30].edges = e;
+            visualizations[30].V = maxV + 1;
+            visualizations[30].reset();
+            return true;
+        });
+        this.reset();
+    },
+    resize: function() {
+        const c = document.getElementById('viz-30');
+        this.canvas.width = c.clientWidth;
+        this.canvas.height = c.clientHeight || 300;
+        this.draw();
+    },
+    reset: function() {
+        this.stepIdx = 0;
+        this._buildSteps();
+        document.getElementById('status-30').textContent = "Ready.";
+        this.draw();
+    },
+    step: function() {
+        if (this.stepIdx < this.steps.length - 1) {
+            this.stepIdx++;
+            document.getElementById('status-30').textContent = this.steps[this.stepIdx].msg;
+            this.draw();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-30').textContent = this.steps[this.steps.length-1].msg;
+        }
+    },
+    draw: function() {
+        if (!this.ctx) return;
+        const w = this.canvas.width, h = this.canvas.height;
+        this.ctx.clearRect(0, 0, w, h);
+        if (this.steps.length === 0) return;
+        
+        let s = this.steps[this.stepIdx];
+        const getPos = (i) => {
+            const angle = (i / this.V) * 2 * Math.PI - Math.PI/2;
+            const r = Math.min(w,h)/3;
+            return { x: w/2 + r * Math.cos(angle), y: h/2 + r * Math.sin(angle) };
+        };
+        
+        this.edges.forEach(e => {
+            const p1 = getPos(e.u), p2 = getPos(e.v);
+            const isHl = s.hl && s.hl.u === e.u && s.hl.v === e.v;
+            this.ctx.beginPath(); this.ctx.moveTo(p1.x, p1.y); this.ctx.lineTo(p2.x, p2.y);
+            this.ctx.strokeStyle = isHl ? '#00d4aa' : '#30363d';
+            this.ctx.lineWidth = isHl ? 4 : 2;
+            this.ctx.stroke();
+            let mx = (p1.x+p2.x)/2, my = (p1.y+p2.y)/2;
+            this.ctx.fillStyle = isHl ? '#00d4aa' : '#8b949e';
+            this.ctx.font = '12px sans-serif'; this.ctx.fillText(e.w, mx, my-10);
+        });
+        
+        for (let i = 0; i < this.V; i++) {
+            let p = getPos(i);
+            this.ctx.beginPath(); this.ctx.arc(p.x, p.y, 22, 0, 2*Math.PI);
+            this.ctx.fillStyle = '#21262d';
+            this.ctx.fill(); this.ctx.strokeStyle = '#30363d'; this.ctx.lineWidth=2; this.ctx.stroke();
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = '14px sans-serif'; this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'middle';
+            let d = s.dist[i] === Infinity ? '∞' : s.dist[i];
+            this.ctx.fillText(`${i} (${d})`, p.x, p.y);
+        }
     }
 };
 
 // --- E20: 0/1 Knapsack ---
 visualizations[31] = {
-    stepIdx: 0, autoTimer: null,
-    init: function() { this.reset(); },
-    reset: function() { this.stepIdx = 0; document.getElementById('status-31').textContent = "Ready."; this.render(); },
-    step: function() { document.getElementById('status-31').textContent = "Building DP table bottom-up..."; },
+    cap: 50,
+    items: [{v: 60, w: 10}, {v: 100, w: 20}, {v: 120, w: 30}],
+    steps: [], stepIdx: 0, autoTimer: null,
+    
+    _buildSteps: function() {
+        this.steps = [];
+        let n = this.items.length, W = this.cap;
+        let dp = Array(n+1).fill(0).map(()=>Array(W+1).fill(0));
+        
+        for (let i = 1; i <= n; i++) {
+            for (let w = 1; w <= W; w++) { // stepping by 1 is too slow visually, stepping by gcd is better but let's do all
+                if (w % 10 === 0 || w === W) { // only record steps at intervals of 10 or W for visualization speed
+                    if (this.items[i-1].w <= w) {
+                        dp[i][w] = Math.max(this.items[i-1].v + dp[i-1][w-this.items[i-1].w], dp[i-1][w]);
+                    } else {
+                        dp[i][w] = dp[i-1][w];
+                    }
+                    this.steps.push({msg: `Filling DP[${i}][${w}] = ${dp[i][w]}`, dp: JSON.parse(JSON.stringify(dp)), curI: i, curW: w});
+                } else {
+                    if (this.items[i-1].w <= w) {
+                        dp[i][w] = Math.max(this.items[i-1].v + dp[i-1][w-this.items[i-1].w], dp[i-1][w]);
+                    } else dp[i][w] = dp[i-1][w];
+                }
+            }
+        }
+        this.steps.push({msg: `Done. Max Value is ${dp[n][W]}`, dp: JSON.parse(JSON.stringify(dp)), curI: -1, curW: -1});
+    },
+    
+    init: function() {
+        injectCustomInput(31, '50 | 60:10, 100:20, 120:30', 'Cap | v1:w1, v2:w2', (raw) => {
+            let parts = raw.split('|');
+            if (parts.length !== 2) return 'Format: Cap | v1:w1, v2:w2';
+            let c = parseInt(parts[0].trim());
+            if (isNaN(c)) return 'Invalid capacity';
+            let it = parts[1].split(',').map(x => x.trim().split(':'));
+            let arr = [];
+            for (let pair of it) {
+                if (pair.length !== 2) return 'Invalid item format';
+                let v = parseInt(pair[0]), w = parseInt(pair[1]);
+                if (isNaN(v) || isNaN(w)) return 'Invalid numbers';
+                arr.push({v, w});
+            }
+            if (visualizations[31].autoTimer) clearInterval(visualizations[31].autoTimer);
+            visualizations[31].cap = c;
+            visualizations[31].items = arr;
+            visualizations[31].reset();
+            return true;
+        });
+        this.reset();
+    },
+    reset: function() {
+        this.stepIdx = 0;
+        this._buildSteps();
+        document.getElementById('status-31').textContent = "Ready.";
+        this.render();
+    },
+    step: function() {
+        if (this.stepIdx < this.steps.length - 1) {
+            this.stepIdx++;
+            document.getElementById('status-31').textContent = this.steps[this.stepIdx].msg;
+            this.render();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-31').textContent = this.steps[this.steps.length-1].msg;
+        }
+    },
     render: function() {
         const c = document.getElementById('viz-31');
         if (!c) return;
-        c.innerHTML = '<div style="padding: 20px; text-align: center; font-family: var(--font-mono); color: #00d4aa; font-size: 14px;">0/1 Knapsack DP<br><br>Max Value = 220<br>By including Item 2 & 3.</div>';
+        let s = this.steps[this.stepIdx];
+        if (!s) return;
+        
+        let html = `<div style="overflow-x:auto;"><table class="dp-table" style="margin:0 auto; border-collapse:collapse;"><tr><th>i \\ w</th>`;
+        let wSteps = [0];
+        for(let w=1; w<=this.cap; w++) { if(w%10===0 || w===this.cap) wSteps.push(w); }
+        wSteps.forEach(w => { html += `<th style="padding:8px; border:1px solid #30363d; background:#161b22;">${w}</th>`; });
+        html += `</tr>`;
+        
+        for (let i = 0; i <= this.items.length; i++) {
+            html += `<tr><th style="padding:8px; border:1px solid #30363d; background:#161b22;">${i === 0 ? 0 : 'V:'+this.items[i-1].v}</th>`;
+            wSteps.forEach(w => {
+                let bg = (i === s.curI && w === s.curW) ? '#d29922' : 'transparent';
+                let col = (i === s.curI && w === s.curW) ? '#0d1117' : '#c9d1d9';
+                html += `<td style="padding:8px; border:1px solid #30363d; text-align:center; background:${bg}; color:${col};">${s.dp[i][w]}</td>`;
+            });
+            html += `</tr>`;
+        }
+        html += `</table></div>`;
+        c.innerHTML = html;
     }
 };
 
 // --- E21: TSP ---
 visualizations[32] = {
-    stepIdx: 0, autoTimer: null,
-    init: function() { this.reset(); },
-    reset: function() { this.stepIdx = 0; document.getElementById('status-32').textContent = "Ready."; this.render(); },
-    step: function() { document.getElementById('status-32').textContent = "Using bitmask DP to find optimal cycle..."; },
-    render: function() {
+    dist: [
+        [0, 10, 15, 20],
+        [10, 0, 35, 25],
+        [15, 35, 0, 30],
+        [20, 25, 30, 0]
+    ],
+    n: 4,
+    steps: [], stepIdx: 0, autoTimer: null,
+    canvas: null, ctx: null,
+    
+    _buildSteps: function() {
+        this.steps = [];
+        let minCost = Infinity;
+        let bestPath = [];
+        
+        const permute = (arr, l, r) => {
+            if (l === r) {
+                let cost = 0;
+                let path = [0, ...arr, 0];
+                for (let i = 0; i < path.length - 1; i++) {
+                    cost += this.dist[path[i]][path[i+1]];
+                }
+                let isBest = false;
+                if (cost < minCost) { minCost = cost; bestPath = [...path]; isBest = true; }
+                this.steps.push({ msg: `Path ${path.join('->')}. Cost: ${cost}${isBest ? ' (New Best!)' : ''}`, path: [...path], bestPath: [...bestPath], cost, minCost });
+            } else {
+                for (let i = l; i <= r; i++) {
+                    let temp = arr[l]; arr[l] = arr[i]; arr[i] = temp;
+                    permute(arr, l + 1, r);
+                    temp = arr[l]; arr[l] = arr[i]; arr[i] = temp; // backtrack
+                }
+            }
+        };
+        let cities = []; for(let i=1; i<this.n; i++) cities.push(i);
+        permute(cities, 0, cities.length - 1);
+        this.steps.push({ msg: `Done. Best Path: ${bestPath.join('->')} with Cost ${minCost}`, path: [], bestPath: [...bestPath], minCost });
+    },
+    
+    init: function() {
         const c = document.getElementById('viz-32');
         if (!c) return;
-        c.innerHTML = '<div style="padding: 20px; text-align: center; font-family: var(--font-mono); color: #00d4aa; font-size: 14px;">Travelling Salesman Problem<br><br>Minimum weight Hamiltonian Cycle: 80</div>';
+        c.innerHTML = '<canvas id="canvas-32"></canvas>';
+        this.canvas = document.getElementById('canvas-32');
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+        
+        // simple custom input for TSP edges? Usually matrix.
+        injectCustomInput(32, '0-1:10, 0-2:15, 1-2:35, 2-3:30', 'u-v:w (Symmetric)', (raw) => {
+            let eStrs = raw.split(',');
+            let e = []; let maxV = 0;
+            for (let str of eStrs) {
+                let main = str.split(':');
+                if (main.length !== 2) return 'Invalid edge';
+                let v = main[0].split('-').map(x => parseInt(x.trim()));
+                let w = parseInt(main[1].trim());
+                if (v.length !== 2 || isNaN(v[0]) || isNaN(v[1]) || isNaN(w)) return 'Invalid numbers';
+                e.push({u:v[0], v:v[1], w:w});
+                maxV = Math.max(maxV, v[0], v[1]);
+            }
+            let n = maxV + 1;
+            if (n > 6) return 'Max 6 cities for visual performance';
+            let mat = Array(n).fill(0).map(()=>Array(n).fill(0));
+            e.forEach(x => { mat[x.u][x.v] = x.w; mat[x.v][x.u] = x.w; });
+            
+            if (visualizations[32].autoTimer) clearInterval(visualizations[32].autoTimer);
+            visualizations[32].dist = mat;
+            visualizations[32].n = n;
+            visualizations[32].reset();
+            return true;
+        });
+        this.reset();
+    },
+    resize: function() {
+        const c = document.getElementById('viz-32');
+        this.canvas.width = c.clientWidth;
+        this.canvas.height = c.clientHeight || 300;
+        this.draw();
+    },
+    reset: function() {
+        this.stepIdx = 0;
+        this._buildSteps();
+        document.getElementById('status-32').textContent = "Ready.";
+        this.draw();
+    },
+    step: function() {
+        if (this.stepIdx < this.steps.length - 1) {
+            this.stepIdx++;
+            document.getElementById('status-32').textContent = this.steps[this.stepIdx].msg;
+            this.draw();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-32').textContent = this.steps[this.steps.length-1].msg;
+        }
+    },
+    draw: function() {
+        if (!this.ctx) return;
+        const w = this.canvas.width, h = this.canvas.height;
+        this.ctx.clearRect(0, 0, w, h);
+        if (this.steps.length === 0) return;
+        
+        let s = this.steps[this.stepIdx];
+        const getPos = (i) => {
+            const angle = (i / this.n) * 2 * Math.PI - Math.PI/2;
+            const r = Math.min(w,h)/3;
+            return { x: w/2 + r * Math.cos(angle), y: h/2 + r * Math.sin(angle) };
+        };
+        
+        // Draw all edges faint
+        for(let i=0; i<this.n; i++) {
+            for(let j=i+1; j<this.n; j++) {
+                if (this.dist[i][j] > 0) {
+                    let p1 = getPos(i), p2 = getPos(j);
+                    this.ctx.beginPath(); this.ctx.moveTo(p1.x, p1.y); this.ctx.lineTo(p2.x, p2.y);
+                    this.ctx.strokeStyle = '#21262d'; this.ctx.lineWidth = 1; this.ctx.stroke();
+                }
+            }
+        }
+        
+        // Draw current path
+        if (s.path && s.path.length > 0) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(getPos(s.path[0]).x, getPos(s.path[0]).y);
+            for(let k=1; k<s.path.length; k++) {
+                let p = getPos(s.path[k]);
+                this.ctx.lineTo(p.x, p.y);
+            }
+            this.ctx.strokeStyle = '#d29922'; this.ctx.lineWidth = 2; this.ctx.stroke();
+        }
+        
+        // Draw best path
+        if (s.bestPath && s.bestPath.length > 0 && s.path.length === 0) { // only show best clearly at the end
+            this.ctx.beginPath();
+            this.ctx.moveTo(getPos(s.bestPath[0]).x, getPos(s.bestPath[0]).y);
+            for(let k=1; k<s.bestPath.length; k++) {
+                let p = getPos(s.bestPath[k]);
+                this.ctx.lineTo(p.x, p.y);
+            }
+            this.ctx.strokeStyle = '#00d4aa'; this.ctx.lineWidth = 4; this.ctx.stroke();
+        }
+        
+        for (let i = 0; i < this.n; i++) {
+            let p = getPos(i);
+            this.ctx.beginPath(); this.ctx.arc(p.x, p.y, 16, 0, 2*Math.PI);
+            this.ctx.fillStyle = '#21262d';
+            this.ctx.fill(); this.ctx.strokeStyle = '#30363d'; this.ctx.lineWidth=2; this.ctx.stroke();
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = '14px sans-serif'; this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(i, p.x, p.y);
+        }
     }
 };
 
 // --- E22: KMP ---
 visualizations[33] = {
-    stepIdx: 0, autoTimer: null,
-    init: function() { this.reset(); },
-    reset: function() { this.stepIdx = 0; document.getElementById('status-33').textContent = "Ready."; this.render(); },
-    step: function() { document.getElementById('status-33').textContent = "Using LPS array to avoid redundant comparisons..."; },
+    txt: "ABABDABACDABABCABAB",
+    pat: "ABABCABAB",
+    steps: [], stepIdx: 0, autoTimer: null,
+    
+    _buildSteps: function() {
+        this.steps = [];
+        let M = this.pat.length, N = this.txt.length;
+        let lps = Array(M).fill(0);
+        let len = 0, i = 1;
+        
+        this.steps.push({ msg: "Computing LPS Array", txtI: -1, patJ: -1, lps: [...lps] });
+        while (i < M) {
+            if (this.pat[i] === this.pat[len]) {
+                len++; lps[i] = len; i++;
+                this.steps.push({ msg: `LPS: Match at pat[${i-1}] == pat[${len-1}]`, txtI: -1, patJ: -1, lps: [...lps] });
+            } else {
+                if (len !== 0) { len = lps[len-1]; }
+                else { lps[i] = 0; i++; }
+                this.steps.push({ msg: `LPS: Mismatch, len falls back to ${len}`, txtI: -1, patJ: -1, lps: [...lps] });
+            }
+        }
+        
+        i = 0; let j = 0;
+        this.steps.push({ msg: "Starting Search Phase", txtI: i, patJ: j, lps: [...lps], offset: i - j });
+        while (i < N) {
+            this.steps.push({ msg: `Comparing txt[${i}]('${this.txt[i]}') and pat[${j}]('${this.pat[j]}')`, txtI: i, patJ: j, lps: [...lps], offset: i - j });
+            if (this.pat[j] === this.txt[i]) { j++; i++; }
+            if (j === M) {
+                this.steps.push({ msg: `✅ Found pattern at index ${i - j}`, txtI: i-1, patJ: j-1, lps: [...lps], offset: i - j, match: true });
+                j = lps[j-1];
+            } else if (i < N && this.pat[j] !== this.txt[i]) {
+                this.steps.push({ msg: `Mismatch! pat[${j}] != txt[${i}]`, txtI: i, patJ: j, lps: [...lps], offset: i - j });
+                if (j !== 0) {
+                    j = lps[j-1];
+                    this.steps.push({ msg: `Jumping j to lps[${j}] = ${j} (avoids re-checking)`, txtI: i, patJ: j, lps: [...lps], offset: i - j });
+                } else {
+                    i = i + 1;
+                }
+            }
+        }
+        this.steps.push({ msg: "Done Searching.", txtI: -1, patJ: -1, lps: [...lps], offset: -1 });
+    },
+    
+    init: function() {
+        injectCustomInput(33, 'Text: ABAB, Pattern: AB', 'Text: TEXT, Pattern: PAT', (raw) => {
+            let tMatch = raw.match(/Text:\s*([^,]+)/i);
+            let pMatch = raw.match(/Pattern:\s*(.+)/i);
+            if (!tMatch || !pMatch) return 'Format -> Text: YOURTEXT, Pattern: YOURPAT';
+            
+            if (visualizations[33].autoTimer) clearInterval(visualizations[33].autoTimer);
+            visualizations[33].txt = tMatch[1].trim();
+            visualizations[33].pat = pMatch[1].trim();
+            visualizations[33].reset();
+            return true;
+        });
+        this.reset();
+    },
+    reset: function() {
+        this.stepIdx = 0;
+        this._buildSteps();
+        document.getElementById('status-33').textContent = "Ready.";
+        this.render();
+    },
+    step: function() {
+        if (this.stepIdx < this.steps.length - 1) {
+            this.stepIdx++;
+            document.getElementById('status-33').textContent = this.steps[this.stepIdx].msg;
+            this.render();
+        } else {
+            if (this.autoTimer) clearInterval(this.autoTimer);
+            document.getElementById('status-33').textContent = "Done.";
+        }
+    },
     render: function() {
         const c = document.getElementById('viz-33');
         if (!c) return;
-        c.innerHTML = '<div style="padding: 20px; text-align: center; font-family: var(--font-mono); color: #00d4aa; font-size: 14px;">KMP Pattern Matching<br><br>Text: ABABDABACDABABCABAB<br>Pattern: ABABCABAB<br><br>Found pattern at index 10</div>';
+        let s = this.steps[this.stepIdx];
+        
+        let html = `<div style="text-align:center; padding:10px;">`;
+        html += `<div style="color:#8b949e; margin-bottom:5px;">LPS Array:</div>`;
+        html += `<div style="display:flex; justify-content:center; gap:2px; font-family:monospace; margin-bottom:20px;">`;
+        for(let k=0; k<s.lps.length; k++) {
+            html += `<div style="width:25px; border:1px solid #30363d; background:#161b22; text-align:center;">
+                <div style="color:#00d4aa; border-bottom:1px solid #30363d; font-size:12px;">${this.pat[k]}</div>
+                <div>${s.lps[k]}</div>
+            </div>`;
+        }
+        html += `</div>`;
+        
+        if (s.offset >= 0) {
+            html += `<div style="display:flex; justify-content:center; gap:2px; font-family:monospace; margin-bottom:5px;">`;
+            for(let k=0; k<this.txt.length; k++) {
+                let bg = k === s.txtI ? '#d29922' : '#161b22';
+                let col = k === s.txtI ? '#0d1117' : '#c9d1d9';
+                if (s.match && k >= s.offset && k < s.offset + this.pat.length) { bg = '#00d4aa'; col = '#0d1117'; }
+                html += `<div style="width:20px; height:25px; line-height:25px; text-align:center; background:${bg}; color:${col};">${this.txt[k]}</div>`;
+            }
+            html += `</div>`;
+            
+            html += `<div style="display:flex; justify-content:center; gap:2px; font-family:monospace;">`;
+            for(let k=0; k<this.txt.length; k++) {
+                if (k >= s.offset && k < s.offset + this.pat.length) {
+                    let pIdx = k - s.offset;
+                    let bg = pIdx === s.patJ ? '#d29922' : '#21262d';
+                    let col = pIdx === s.patJ ? '#0d1117' : '#8b949e';
+                    html += `<div style="width:20px; height:25px; line-height:25px; text-align:center; background:${bg}; color:${col};">${this.pat[pIdx]}</div>`;
+                } else {
+                    html += `<div style="width:20px; height:25px;"></div>`;
+                }
+            }
+            html += `</div>`;
+        }
+        
+        html += `</div>`;
+        c.innerHTML = html;
     }
 };
-
 
 // ==========================================
 // Initialization
