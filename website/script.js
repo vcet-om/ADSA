@@ -2257,27 +2257,28 @@ visualizations[24] = {
         // True RBT involves complex rotations which are hard to animate step-by-step in 2D space without physics.
         // We will do a BST insert, and then just color them to satisfy RBT properties.
         const addNode = (val) => {
-            let n = {id: val, c: 'R', x: 0.5, y: 0.1, left: null, right: null, p: null};
+            let n = {id: val, c: 'R', x: 0.5, y: 0.1, pId: null};
             if (nodes.length === 0) { n.c = 'B'; nodes.push(n); }
             else {
                 let curr = nodes[0];
                 let depth = 1;
                 while (true) {
                     if (val < curr.id) {
-                        if (!curr.left) { curr.left = n; n.p = curr; n.x = curr.x - 0.3/depth; n.y = curr.y + 0.15; break; }
-                        curr = curr.left;
+                        if (!nodes.find(x => x.pId === curr.id && x.id < curr.id)) { n.pId = curr.id; n.x = curr.x - 0.3/depth; n.y = curr.y + 0.15; break; }
+                        curr = nodes.find(x => x.pId === curr.id && x.id < curr.id);
                     } else {
-                        if (!curr.right) { curr.right = n; n.p = curr; n.x = curr.x + 0.3/depth; n.y = curr.y + 0.15; break; }
-                        curr = curr.right;
+                        if (!nodes.find(x => x.pId === curr.id && x.id > curr.id)) { n.pId = curr.id; n.x = curr.x + 0.3/depth; n.y = curr.y + 0.15; break; }
+                        curr = nodes.find(x => x.pId === curr.id && x.id > curr.id);
                     }
                     depth++;
                 }
                 nodes.push(n);
-                // Fixup simulation (just recolor root to black, others random valid-ish for visual)
                 nodes[0].c = 'B';
-                if (n.p && n.p.c === 'R') n.c = 'B'; 
+                if (n.pId) {
+                    let parent = nodes.find(x => x.id === n.pId);
+                    if (parent && parent.c === 'R') n.c = 'B'; 
+                }
             }
-            // Snapshot
             this.steps.push({ msg: `Inserted ${val}`, nodes: JSON.parse(JSON.stringify(nodes)) });
         };
         this.keys.forEach(k => addNode(k));
@@ -2337,8 +2338,8 @@ visualizations[24] = {
         
         this.ctx.strokeStyle = '#30363d'; this.ctx.lineWidth = 2;
         state.nodes.forEach(n => {
-            if (n.p) {
-                let parent = state.nodes.find(x => x.id === n.p.id);
+            if (n.pId) {
+                let parent = state.nodes.find(x => x.id === n.pId);
                 if (parent) {
                     let p1 = getPos(parent), p2 = getPos(n);
                     this.ctx.beginPath(); this.ctx.moveTo(p1.x, p1.y); this.ctx.lineTo(p2.x, p2.y); this.ctx.stroke();
