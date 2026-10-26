@@ -4,29 +4,7 @@ Welcome to the Advanced Data Structures and Algorithms (ADSA) Practicals reposit
 
 ## Directory Structure
 
-This repository is divided into three main activity modules:
-
-### 1. Collaborative Learning
-This folder contains fundamental data structures and graph algorithms:
-* **Question 1:** AVL Tree Construction and Traversals.
-* **Question 2:** B-Tree (Order 3) Implementation.
-* **Question 3:** B+ Tree (Order 4) Implementation.
-* **Question 4:** Graph Breadth-First Search (BFS) Traversal.
-* **Question 5:** Graph BFS and DFS Traversals with Time Complexity analysis.
-* **Question 6:** Adjacency List representation alongside BFS and DFS graph traversals.
-
-### 2. Problem-Based Learning Activity
-This folder focuses on applying algorithms to real-world scenarios:
-* **Question 1 (Minimum Spanning Tree):** Connecting cities using optical fiber cables using Prim's and Kruskal's algorithms to minimize infrastructure cost.
-* **Question 2 (Job Sequencing with Deadlines):** Using the Greedy approach to schedule client projects and maximize total company profit within limited time slots.
-
-### 3. Problem Solving
-This folder contains string matching and dynamic programming problems:
-* **Question 1 (Rabin-Karp Algorithm):** Calculating rolling hash values to detect plagiarism and matching patterns while handling spurious hits.
-* **Question 2 (Longest Common Subsequence):** Using Dynamic Programming to find the LCS of DNA sequences, highlighting its importance in bioinformatics.
-* **Question 3 (Spam Email Detection):** Comparing the Naïve String Matching algorithm against the Rabin-Karp algorithm for efficient spam filtering on large datasets.
-
-### 4. Experiments (Basic Experiments)
+## Experiments (Basic Experiments)
 This folder contains the core basic experiments defined in the lab syllabus:
 * **Experiment 1:** Implementation of Merge Sort
 * **Experiment 2:** Implementation of a hash function
