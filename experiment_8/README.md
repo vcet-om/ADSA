@@ -8,5 +8,32 @@ LCS: CB
 Length: 2
 ```
 
-## Explanation
-The Longest Common Subsequence (LCS) algorithm uses dynamic programming. It builds a 2D array to store the lengths of longest common subsequences of sub-problems. It then backtracks from the bottom-right corner to print the exact matching subsequence.
+## Experiment Details
+
+### Problem Statement
+Find the longest subsequence common to two strings without changing the order of their characters.
+
+### Aim and Objectives
+To implement LCS using dynamic programming and reconstruct the resulting subsequence.
+
+### Theory and Concept
+For matching characters, the LCS length increases from the diagonal subproblem. For different characters, it is the maximum of the values from the top and left subproblems. Backtracking through the table reconstructs one valid LCS.
+
+### Algorithm
+1. Create a table for prefixes of both strings.
+2. Fill the table using the matching and non-matching character rules.
+3. Start at the bottom-right cell.
+4. Follow diagonal matches while backtracking to build the LCS.
+
+### Complexity Analysis
+- Time complexity: `O(mn)`.
+- Space complexity: `O(mn)`, where `m` and `n` are the string lengths.
+
+### How to Run
+```bash
+javac LCS.java
+java LCS
+```
+
+### Explanation
+For `ACADB` and `CBDA`, the program reconstructs `CB`, whose length is `2`.

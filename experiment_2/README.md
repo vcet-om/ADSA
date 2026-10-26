@@ -13,5 +13,33 @@ Bucket 5: 12 -> null
 Bucket 6: 27 -> null
 ```
 
-## Explanation
-This code implements a basic hash table using separate chaining for collision resolution. The hash function uses the modulo operator (`key % capacity`) to determine the bucket index for each key.
+## Experiment Details
+
+### Problem Statement
+Implement a hash table for integer keys and resolve collisions using chaining.
+
+### Aim and Objectives
+To understand hash functions, bucket indexing, insertion, and collision handling.
+
+### Theory and Concept
+The hash function maps a key to a bucket using `key % capacity`. When multiple keys map to the same bucket, a linked list stores all keys in that bucket. This is called separate chaining.
+
+### Algorithm
+1. Create a table containing one linked list for each bucket.
+2. Compute `key % capacity` for every key.
+3. Insert the key at the corresponding linked list.
+4. Display all buckets and their chained keys.
+
+### Complexity Analysis
+- Average insertion time: `O(1)`.
+- Worst-case insertion and search time: `O(n)` when many keys collide.
+- Space complexity: `O(n + m)`, where `n` is the number of keys and `m` is the number of buckets.
+
+### How to Run
+```bash
+javac HashFunction.java
+java HashFunction
+```
+
+### Explanation
+Keys such as `15` and `8` are placed in the same bucket because they have the same remainder when divided by the table capacity. The linked lists preserve every inserted key.
